@@ -6,10 +6,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import vista.Login;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.SwingConstants;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Registro extends JFrame {
 
@@ -22,6 +30,15 @@ public class Registro extends JFrame {
 	private JLabel lblEmail;
 	private JLabel lblFecNac;
 	private JLabel lblContraseña;
+	private JTextField textFieldNombre;
+	private JTextField textFieldApellidoUno;
+	private JTextField textFieldApellidoDos;
+	private JTextField textFieldEmail;
+	private JPasswordField passwordField;
+	private JTextField textFieldFecNac;
+	private JLabel tituloRegistro;
+	private JButton btnRegistro;
+	private JButton btnVolver;
 
 
 	/**
@@ -101,7 +118,73 @@ public class Registro extends JFrame {
 		lblFecNac.setFont(new Font("Arial", Font.BOLD, 13));
 		lblFecNac.setBackground(new Color(255, 255, 255, 150));
 		lblFecNac.setBounds(47, 446, 184, 29);
+		
+		textFieldNombre = new JTextField();
+		textFieldNombre.setBounds(218, 177, 177, 30);
+		lblFondoRegistro.add(textFieldNombre);
+		textFieldNombre.setColumns(10);
+		
+		textFieldApellidoUno = new JTextField();
+		textFieldApellidoUno.setColumns(10);
+		textFieldApellidoUno.setBounds(218, 232, 177, 30);
+		lblFondoRegistro.add(textFieldApellidoUno);
+		
+		textFieldApellidoDos = new JTextField();
+		textFieldApellidoDos.setColumns(10);
+		textFieldApellidoDos.setBounds(207, 285, 177, 30);
+		lblFondoRegistro.add(textFieldApellidoDos);
+		
+		textFieldEmail = new JTextField();
+		textFieldEmail.setColumns(10);
+		textFieldEmail.setBounds(218, 339, 276, 30);
+		lblFondoRegistro.add(textFieldEmail);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(218, 393, 177, 30);
+		lblFondoRegistro.add(passwordField);
+		
+		textFieldFecNac = new JTextField();
+		textFieldFecNac.setColumns(10);
+		textFieldFecNac.setBounds(256, 446, 177, 30);
+		lblFondoRegistro.add(textFieldFecNac);
+		
+		tituloRegistro = new JLabel("REGISTRO");
+		tituloRegistro.setOpaque(true);
+		tituloRegistro.setBackground(new Color(255, 255, 255, 150));
+		tituloRegistro.setFont(new Font("Arial", Font.BOLD, 39));
+		tituloRegistro.setHorizontalAlignment(SwingConstants.CENTER);
+		tituloRegistro.setBounds(218, 23, 432, 79);
+		lblFondoRegistro.add(tituloRegistro);
+		
+		btnRegistro = new JButton("REGISTRARME");
+		btnRegistro.setOpaque(true);
+		btnRegistro.setForeground(new Color(255, 255, 255));
+		btnRegistro.setFont(new Font("Arial", Font.BOLD, 13));
+		btnRegistro.setFocusPainted(false);
+		btnRegistro.setContentAreaFilled(false);
+		btnRegistro.setBorderPainted(false);
+		btnRegistro.setBackground(new Color(255, 255, 255, 150));
+		btnRegistro.setBounds(237, 534, 159, 41);
+		lblFondoRegistro.add(btnRegistro);
+		
+		btnVolver = new JButton("VOLVER");
+		btnVolver.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Login pantallaLogin = new Login();
+				pantallaLogin.setVisible(true);
+				dispose();
+			}
+		});
+		btnVolver.setOpaque(true);
+		btnVolver.setForeground(new Color(255, 255, 255));
+		btnVolver.setFont(new Font("Arial", Font.BOLD, 13));
+		btnVolver.setFocusPainted(false);
+		btnVolver.setContentAreaFilled(false);
+		btnVolver.setBorderPainted(false);
+		btnVolver.setBackground(new Color(255, 255, 255, 150));
+		btnVolver.setBounds(480, 534, 159, 41);
+		lblFondoRegistro.add(btnVolver);
 
 	}
-
 }

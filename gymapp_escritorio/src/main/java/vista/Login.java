@@ -30,6 +30,7 @@ public class Login extends JFrame {
 	private JTextField textFieldContraseña;
 	private JButton btnIniciarSesion;
 	private JButton btnRegistro;
+	private JLabel tituloLogin;
 
 	/**
 	 * Launch the application.
@@ -74,7 +75,7 @@ public class Login extends JFrame {
 		
 		labelContraseña = new JLabel("CONTRASEÑA");
 		labelFondo.add(labelContraseña);
-		labelContraseña.setForeground(new Color(255, 255, 255));
+		labelContraseña.setForeground(new Color(0, 0, 0));
 		labelContraseña.setFont(new Font("Arial", Font.BOLD, 14));
 		labelContraseña.setHorizontalAlignment(SwingConstants.CENTER);
 		labelContraseña.setBounds(322, 342, 223, 49);
@@ -83,7 +84,7 @@ public class Login extends JFrame {
 		
 		labelUsuario = new JLabel("USUARIO");
 		labelFondo.add(labelUsuario);
-		labelUsuario.setForeground(new Color(255, 255, 255));
+		labelUsuario.setForeground(new Color(0, 0, 0));
 		labelUsuario.setFont(new Font("Arial", Font.BOLD, 14));
 		labelUsuario.setHorizontalAlignment(SwingConstants.CENTER);
 		labelUsuario.setBounds(322, 198, 223, 49);
@@ -142,6 +143,14 @@ public class Login extends JFrame {
 		btnRegistro.setContentAreaFilled(false);
 		btnRegistro.setOpaque(false);
 		labelFondo.add(btnRegistro);
+		
+		tituloLogin = new JLabel("LOGIN");
+		tituloLogin.setOpaque(true);
+		tituloLogin.setHorizontalAlignment(SwingConstants.CENTER);
+		tituloLogin.setFont(new Font("Arial", Font.BOLD, 39));
+		tituloLogin.setBackground(new Color(255, 255, 255, 150));
+		tituloLogin.setBounds(224, 26, 432, 79);
+		labelFondo.add(tituloLogin);
 
 	}
 }
