@@ -63,8 +63,6 @@ public class Login extends JFrame {
 		ImageIcon originalIcon = new ImageIcon("C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\fondo.jpg");
 		
 		Image imagenOriginal = originalIcon.getImage();
-
-		// Escalar imagen al tamaño del label manteniendo calidad
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 		
@@ -113,7 +111,7 @@ public class Login extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 			}
 		});
-		btnIniciarSesion.setFont(new Font("Arial", Font.BOLD, 12));
+		btnIniciarSesion.setFont(new Font("Arial", Font.BOLD, 13));
 		btnIniciarSesion.setForeground(new Color(255, 255, 255));
 		btnIniciarSesion.setBounds(282, 516, 159, 41);
 		btnIniciarSesion.setOpaque(true);
@@ -133,7 +131,7 @@ public class Login extends JFrame {
 				dispose(); //cierra login
 			}
 		});
-		btnRegistro.setFont(new Font("Arial", Font.BOLD, 12));
+		btnRegistro.setFont(new Font("Arial", Font.BOLD, 13));
 		btnRegistro.setForeground(new Color(255, 255, 255));
 		btnRegistro.setBounds(451, 516, 159, 41);
 		btnRegistro.setOpaque(true);

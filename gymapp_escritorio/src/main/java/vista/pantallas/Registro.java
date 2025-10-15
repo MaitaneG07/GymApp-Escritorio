@@ -69,7 +69,7 @@ public class Registro extends JFrame {
 		lblFondoRegistro.add(lblNombre);
 		lblNombre.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNombre.setForeground(new Color(0, 0, 0));
-		lblNombre.setFont(new Font("Arial", Font.BOLD, 13));
+		lblNombre.setFont(new Font("Arial", Font.BOLD, 14));
 		lblNombre.setBounds(44, 177, 148, 29);
 		lblNombre.setOpaque(true);
 		lblNombre.setBackground(new Color(255, 255, 255, 150));
@@ -79,7 +79,7 @@ public class Registro extends JFrame {
 		lblApellidoUno.setOpaque(true);
 		lblApellidoUno.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApellidoUno.setForeground(new Color(0, 0, 0));
-		lblApellidoUno.setFont(new Font("Arial", Font.BOLD, 13));
+		lblApellidoUno.setFont(new Font("Arial", Font.BOLD, 14));
 		lblApellidoUno.setBackground(new Color(255, 255, 255, 150));
 		lblApellidoUno.setBounds(44, 232, 148, 29);
 		
@@ -88,7 +88,7 @@ public class Registro extends JFrame {
 		lblApellidoDos.setOpaque(true);
 		lblApellidoDos.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApellidoDos.setForeground(Color.BLACK);
-		lblApellidoDos.setFont(new Font("Arial", Font.BOLD, 13));
+		lblApellidoDos.setFont(new Font("Arial", Font.BOLD, 14));
 		lblApellidoDos.setBackground(new Color(255, 255, 255, 150));
 		lblApellidoDos.setBounds(44, 286, 148, 29);
 		
@@ -97,7 +97,7 @@ public class Registro extends JFrame {
 		lblEmail.setOpaque(true);
 		lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEmail.setForeground(Color.BLACK);
-		lblEmail.setFont(new Font("Arial", Font.BOLD, 13));
+		lblEmail.setFont(new Font("Arial", Font.BOLD, 14));
 		lblEmail.setBackground(new Color(255, 255, 255, 150));
 		lblEmail.setBounds(45, 339, 148, 29);
 		
@@ -106,7 +106,7 @@ public class Registro extends JFrame {
 		lblContraseña.setOpaque(true);
 		lblContraseña.setHorizontalAlignment(SwingConstants.CENTER);
 		lblContraseña.setForeground(Color.BLACK);
-		lblContraseña.setFont(new Font("Arial", Font.BOLD, 13));
+		lblContraseña.setFont(new Font("Arial", Font.BOLD, 14));
 		lblContraseña.setBackground(new Color(255, 255, 255, 150));
 		lblContraseña.setBounds(46, 392, 148, 29);
 		
@@ -115,7 +115,7 @@ public class Registro extends JFrame {
 		lblFecNac.setOpaque(true);
 		lblFecNac.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFecNac.setForeground(Color.BLACK);
-		lblFecNac.setFont(new Font("Arial", Font.BOLD, 13));
+		lblFecNac.setFont(new Font("Arial", Font.BOLD, 14));
 		lblFecNac.setBackground(new Color(255, 255, 255, 150));
 		lblFecNac.setBounds(47, 446, 184, 29);
 		
