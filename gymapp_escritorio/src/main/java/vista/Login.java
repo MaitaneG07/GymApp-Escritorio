@@ -1,0 +1,147 @@
+package vista;
+
+import java.awt.Color;
+import java.awt.EventQueue;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import vista.pantallas.Registro;
+
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.Font;
+import java.awt.Image;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class Login extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JLabel labelFondo;
+	private JLabel labelUsuario;
+	private JLabel labelContraseña;
+	private JTextField textFieldUsuario;
+	private JTextField textFieldContraseña;
+	private JButton btnIniciarSesion;
+	private JButton btnRegistro;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Login frame = new Login();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Login() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 885, 658);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		labelFondo = new JLabel();
+		ImageIcon originalIcon = new ImageIcon("C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\fondo.jpg");
+		
+		Image imagenOriginal = originalIcon.getImage();
+
+		// Escalar imagen al tamaño del label manteniendo calidad
+		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+		
+		labelFondo.setIcon(iconoEscalado);
+		labelFondo.setBounds(0, 0, 885, 658);
+		labelFondo.setLayout(null);
+		contentPane.add(labelFondo);
+		
+		labelContraseña = new JLabel("CONTRASEÑA");
+		labelFondo.add(labelContraseña);
+		labelContraseña.setForeground(new Color(255, 255, 255));
+		labelContraseña.setFont(new Font("Arial", Font.BOLD, 14));
+		labelContraseña.setHorizontalAlignment(SwingConstants.CENTER);
+		labelContraseña.setBounds(322, 342, 223, 49);
+		labelContraseña.setOpaque(true);
+		labelContraseña.setBackground(new Color(255, 255, 255, 150));
+		
+		labelUsuario = new JLabel("USUARIO");
+		labelFondo.add(labelUsuario);
+		labelUsuario.setForeground(new Color(255, 255, 255));
+		labelUsuario.setFont(new Font("Arial", Font.BOLD, 14));
+		labelUsuario.setHorizontalAlignment(SwingConstants.CENTER);
+		labelUsuario.setBounds(322, 198, 223, 49);
+		labelUsuario.setOpaque(true);
+		labelUsuario.setBackground(new Color(255, 255, 255, 150));
+		
+		textFieldUsuario = new JTextField();
+		textFieldUsuario.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldUsuario.setForeground(new Color(0, 0, 0));
+		textFieldUsuario.setFont(new Font("Arial", Font.PLAIN, 11));
+		textFieldUsuario.setBounds(321, 261, 225, 30);
+		labelFondo.add(textFieldUsuario);
+		textFieldUsuario.setColumns(10);
+		
+		textFieldContraseña = new JTextField();
+		textFieldContraseña.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldContraseña.setForeground(new Color(0, 0, 0));
+		textFieldContraseña.setFont(new Font("Arial", Font.PLAIN, 11));
+		textFieldContraseña.setColumns(10);
+		textFieldContraseña.setBounds(321, 414, 225, 30);
+		labelFondo.add(textFieldContraseña);
+		
+		btnIniciarSesion = new JButton("INICIAR SESIÓN");
+		btnIniciarSesion.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+		btnIniciarSesion.setFont(new Font("Arial", Font.BOLD, 12));
+		btnIniciarSesion.setForeground(new Color(255, 255, 255));
+		btnIniciarSesion.setBounds(282, 516, 159, 41);
+		btnIniciarSesion.setOpaque(true);
+		btnIniciarSesion.setBackground(new Color(255, 255, 255, 150));
+		btnIniciarSesion.setFocusPainted(false);
+		btnIniciarSesion.setBorderPainted(false);
+		btnIniciarSesion.setContentAreaFilled(false);
+		btnIniciarSesion.setOpaque(false);
+		labelFondo.add(btnIniciarSesion);
+
+		btnRegistro = new JButton("REGISTRARME");
+		btnRegistro.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Registro panelRegistro = new Registro();
+				panelRegistro.setVisible(true);
+				dispose(); //cierra login
+			}
+		});
+		btnRegistro.setFont(new Font("Arial", Font.BOLD, 12));
+		btnRegistro.setForeground(new Color(255, 255, 255));
+		btnRegistro.setBounds(451, 516, 159, 41);
+		btnRegistro.setOpaque(true);
+		btnRegistro.setBackground(new Color(255, 255, 255, 150));
+		btnRegistro.setFocusPainted(false);
+		btnRegistro.setBorderPainted(false);
+		btnRegistro.setContentAreaFilled(false);
+		btnRegistro.setOpaque(false);
+		labelFondo.add(btnRegistro);
+
+	}
+}
