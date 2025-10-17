@@ -14,6 +14,13 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import vista.Login;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 public class Workout extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -69,7 +76,7 @@ public class Workout extends JFrame {
 		contentPane.setLayout(null);
 		
 		btnPerfil = new JButton();
-		iconoOriginal = new ImageIcon(("C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png"));
+		iconoOriginal = new ImageIcon("C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png");
 		imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 		btnPerfil.setIcon(new ImageIcon(imgEscalada));
 		btnPerfil.setBounds(10, 11, 60, 60);
@@ -120,6 +127,15 @@ public class Workout extends JFrame {
         scrollPaneDetallesWorkout.setViewportView(tablaDetallesWorkout);
         
         btnSeleccionar = new JButton("SELECCIONAR");
+        btnSeleccionar.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		Cronometro pantallaCronometro = new Cronometro();
+        		pantallaCronometro.setVisible(true);
+				dispose();
+        	}
+        });
+       
         btnSeleccionar.setFont(new Font("Arial", Font.BOLD, 13));
         btnSeleccionar.setBounds(367, 554, 155, 40);
         btnSeleccionar.setFocusPainted(false);
