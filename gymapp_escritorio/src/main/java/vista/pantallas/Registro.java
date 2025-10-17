@@ -53,11 +53,11 @@ public class Registro extends JFrame {
 		contentPane.setLayout(null);
 		
 		lblFondoRegistro = new JLabel();
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
+		//ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
+		ImageIcon originalIcon = new ImageIcon("C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\\\logoLight.jpg");
 		
 		Image imagenOriginal = originalIcon.getImage();
 
-		// Escalar imagen al tamaño del label manteniendo calidad
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 		

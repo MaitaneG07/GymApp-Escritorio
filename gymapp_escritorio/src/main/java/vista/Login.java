@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import vista.pantallas.Registro;
+import vista.pantallas.Workout;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -60,8 +61,9 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		
 		labelFondo = new JLabel();
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
-		
+		//ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
+		ImageIcon originalIcon = new ImageIcon("C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\\\logoLight.jpg");
+
 		Image imagenOriginal = originalIcon.getImage();
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
@@ -109,6 +111,9 @@ public class Login extends JFrame {
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				Workout panelWorkout = new Workout();
+				panelWorkout.setVisible(true);
+				dispose();
 			}
 		});
 		btnIniciarSesion.setFont(new Font("Arial", Font.BOLD, 13));
