@@ -1,0 +1,135 @@
+package vista.pantallas;
+
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+import vista.Login;
+
+import javax.swing.JButton;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class Historico extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JLabel lblFondoHistorico;
+	private JLabel tituloHistorico;
+	private JTable tableHistoricos;
+	private JButton btnAtras;
+	private DefaultTableModel modeloTabla;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Historico frame = new Historico();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Historico() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 885, 658);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		lblFondoHistorico = new JLabel();
+		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
+
+		Image imagenOriginal = originalIcon.getImage();
+		
+		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+
+		lblFondoHistorico.setIcon(iconoEscalado);
+		lblFondoHistorico.setBounds(0, 0, 885, 658);
+		contentPane.add(lblFondoHistorico);
+		
+		tituloHistorico = new JLabel("Historial de Workouts");
+		tituloHistorico.setOpaque(true);
+		tituloHistorico.setBackground(new Color(255, 255, 255, 150));
+		tituloHistorico.setFont(new Font("Arial", Font.BOLD, 39));
+		tituloHistorico.setHorizontalAlignment(SwingConstants.CENTER);
+		tituloHistorico.setBounds(218, 23, 432, 79);
+		lblFondoHistorico.add(tituloHistorico);
+		
+		btnAtras = new JButton("VOLVER");
+		btnAtras.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+//				Login pantallaLogin = new Login();
+//				pantallaLogin.setVisible(true); cambiar pot la pantalla workout
+				dispose();
+			}
+		});
+		btnAtras.setOpaque(true);
+		btnAtras.setForeground(new Color(0, 0, 0));
+		btnAtras.setFont(new Font("Arial", Font.BOLD, 13));
+		btnAtras.setFocusPainted(false);
+		btnAtras.setContentAreaFilled(false);
+		btnAtras.setBorderPainted(false);
+		btnAtras.setBackground(new Color(255, 255, 255, 150));
+		btnAtras.setBounds(48, 156, 89, 23);
+		lblFondoHistorico.add(btnAtras);
+		
+		modeloTabla = new DefaultTableModel();
+		modeloTabla.addColumn("Nombre Workout");
+		modeloTabla.addColumn("Nivel");
+		modeloTabla.addColumn("Tiempo Total");
+		modeloTabla.addColumn("Tiempo previsto");
+		modeloTabla.addColumn("Fecha");
+		modeloTabla.addColumn("% Ejercicios Completados");
+		
+		tableHistoricos = new JTable(modeloTabla);
+		tableHistoricos.getTableHeader().setFont(new Font("Arial", 1, 13));
+		tableHistoricos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); //poder seleccionar solo una tabla
+		tableHistoricos.setBounds(93, 237, 660, 319);
+		JScrollPane scrollPane = new JScrollPane(tableHistoricos);
+		scrollPane.setBounds(48, 237, 764, 319);
+		
+		// Hacer la tabla transparente
+		tableHistoricos.setOpaque(false);
+		tableHistoricos.setBackground(new Color(0, 0, 0, 0));
+		((DefaultTableCellRenderer)tableHistoricos.getDefaultRenderer(Object.class)).setOpaque(false);
+
+		// Hacer el scroll transparente
+		scrollPane.setOpaque(false);
+		scrollPane.getViewport().setOpaque(false);
+
+		// Cabecera semitransparente
+		tableHistoricos.getTableHeader().setOpaque(false);
+		tableHistoricos.getTableHeader().setBackground(new Color(255, 255, 255, 120));
+
+		
+		lblFondoHistorico.add(scrollPane);
+	}
+}
