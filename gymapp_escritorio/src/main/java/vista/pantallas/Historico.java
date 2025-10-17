@@ -1,7 +1,6 @@
 package vista.pantallas;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 
@@ -15,13 +14,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import utils.Constants;
 import vista.Login;
 
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -36,22 +34,6 @@ public class Historico extends JFrame {
 	private DefaultTableModel modeloTabla;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Historico frame = new Historico();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public Historico() {
@@ -63,7 +45,7 @@ public class Historico extends JFrame {
 		contentPane.setLayout(null);
 		
 		lblFondoHistorico = new JLabel();
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
 		
@@ -77,23 +59,23 @@ public class Historico extends JFrame {
 		tituloHistorico = new JLabel("Historial de Workouts");
 		tituloHistorico.setOpaque(true);
 		tituloHistorico.setBackground(new Color(255, 255, 255, 150));
-		tituloHistorico.setFont(new Font("Arial", Font.BOLD, 39));
+		tituloHistorico.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
 		tituloHistorico.setHorizontalAlignment(SwingConstants.CENTER);
 		tituloHistorico.setBounds(218, 23, 432, 79);
 		lblFondoHistorico.add(tituloHistorico);
 		
-		btnAtras = new JButton("VOLVER");
+		btnAtras = new JButton(Constants.VOLVER_BOTON);
 		btnAtras.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-//				Login pantallaLogin = new Login();
-//				pantallaLogin.setVisible(true); cambiar pot la pantalla workout
+				Login pantallaLogin = new Login();
+				pantallaLogin.setVisible(true);
 				dispose();
 			}
 		});
 		btnAtras.setOpaque(true);
 		btnAtras.setForeground(new Color(0, 0, 0));
-		btnAtras.setFont(new Font("Arial", Font.BOLD, 13));
+		btnAtras.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnAtras.setFocusPainted(false);
 		btnAtras.setContentAreaFilled(false);
 		btnAtras.setBorderPainted(false);
@@ -110,7 +92,7 @@ public class Historico extends JFrame {
 		modeloTabla.addColumn("% Ejercicios Completados");
 		
 		tableHistoricos = new JTable(modeloTabla);
-		tableHistoricos.getTableHeader().setFont(new Font("Arial", 1, 13));
+		tableHistoricos.getTableHeader().setFont(new Font(Constants.FONT_FAMILY, 1, 13));
 		tableHistoricos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); //poder seleccionar solo una tabla
 		tableHistoricos.setBounds(93, 237, 660, 319);
 		JScrollPane scrollPane = new JScrollPane(tableHistoricos);

@@ -72,15 +72,6 @@ public class Login extends JFrame {
 		labelFondo.setLayout(null);
 		contentPane.add(labelFondo);
 		
-		labelPassword = new JLabel(Constants.PASSWORD_LABEL);
-		labelFondo.add(labelPassword);
-		labelPassword.setForeground(new Color(0, 0, 0));
-		labelPassword.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
-		labelPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		labelPassword.setBounds(322, 342, 223, 49);
-		labelPassword.setOpaque(true);
-		labelPassword.setBackground(new Color(181, 179, 179, 150));
-		
 		labelUsuario = new JLabel(Constants.USUARIO_LABEL);
 		labelFondo.add(labelUsuario);
 		labelUsuario.setForeground(new Color(0, 0, 0));
@@ -97,14 +88,6 @@ public class Login extends JFrame {
 		textFieldUsuario.setBounds(321, 261, 225, 30);
 		labelFondo.add(textFieldUsuario);
 		textFieldUsuario.setColumns(10);
-		
-		textFieldPassword = new JTextField();
-		textFieldPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		textFieldPassword.setForeground(new Color(0, 0, 0));
-		textFieldPassword.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
-		textFieldPassword.setColumns(10);
-		textFieldPassword.setBounds(321, 414, 225, 30);
-		labelFondo.add(textFieldPassword);
 		
 		btnIniciarSesion = new JButton("INICIAR SESIÓN");
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
@@ -153,6 +136,23 @@ public class Login extends JFrame {
 		tituloLogin.setBackground(new Color(255, 255, 255, 150));
 		tituloLogin.setBounds(224, 26, 432, 79);
 		labelFondo.add(tituloLogin);
+		
+		labelPassword = new JLabel(Constants.PASSWORD_LABEL);
+		labelFondo.add(labelPassword);
+		labelPassword.setForeground(new Color(0, 0, 0));
+		labelPassword.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
+		labelPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		labelPassword.setBounds(322, 308, 223, 49);
+		labelPassword.setOpaque(true);
+		labelPassword.setBackground(new Color(181, 179, 179, 150));
+		
+		textFieldPassword = new JTextField();
+		labelFondo.add(textFieldPassword);
+		textFieldPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldPassword.setForeground(new Color(0, 0, 0));
+		textFieldPassword.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
+		textFieldPassword.setColumns(10);
+		textFieldPassword.setBounds(321, 380, 225, 30);
 
 	}
 }

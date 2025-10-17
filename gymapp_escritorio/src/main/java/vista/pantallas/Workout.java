@@ -1,5 +1,6 @@
 package vista.pantallas;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 
@@ -73,6 +74,9 @@ public class Workout extends JFrame {
 		popupMenuPerfil.add(menuHistorico);
 		menuHistorico.addActionListener(e -> {
 
+			Historico pantallaHistorico = new Historico();
+			pantallaHistorico.setVisible(true);
+			dispose();
 		});
 
 		menuCerrarPerfil = new JMenuItem("Cerrar sesión");
