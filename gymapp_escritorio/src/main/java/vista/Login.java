@@ -60,11 +60,9 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		
 		labelFondo = new JLabel();
-<<<<<<< Updated upstream
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
-=======
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\fondo.jpg");
->>>>>>> Stashed changes
+
+		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
+
 		
 		Image imagenOriginal = originalIcon.getImage();
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);

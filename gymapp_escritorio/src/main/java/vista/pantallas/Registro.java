@@ -53,7 +53,7 @@ public class Registro extends JFrame {
 		contentPane.setLayout(null);
 		
 		lblFondoRegistro = new JLabel();
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
+		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
 		
 		Image imagenOriginal = originalIcon.getImage();
 
