@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import utils.Constants;
 import vista.pantallas.Registro;
 import vista.pantallas.Workout;
 
@@ -26,9 +27,9 @@ public class Login extends JFrame {
 	private JPanel contentPane;
 	private JLabel labelFondo;
 	private JLabel labelUsuario;
-	private JLabel labelContraseña;
+	private JLabel labelPassword;
 	private JTextField textFieldUsuario;
-	private JTextField textFieldContraseña;
+	private JTextField textFieldPassword;
 	private JButton btnIniciarSesion;
 	private JButton btnRegistro;
 	private JLabel tituloLogin;
@@ -37,14 +38,12 @@ public class Login extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
+		EventQueue.invokeLater(() -> {
 				try {
 					Login frame = new Login();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
-				}
 			}
 		});
 	}
@@ -61,8 +60,8 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		
 		labelFondo = new JLabel();
-		//ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\\\logoLight.jpg");
+		//ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
@@ -73,19 +72,19 @@ public class Login extends JFrame {
 		labelFondo.setLayout(null);
 		contentPane.add(labelFondo);
 		
-		labelContraseña = new JLabel("CONTRASEÑA");
-		labelFondo.add(labelContraseña);
-		labelContraseña.setForeground(new Color(0, 0, 0));
-		labelContraseña.setFont(new Font("Arial", Font.BOLD, 14));
-		labelContraseña.setHorizontalAlignment(SwingConstants.CENTER);
-		labelContraseña.setBounds(322, 342, 223, 49);
-		labelContraseña.setOpaque(true);
-		labelContraseña.setBackground(new Color(181, 179, 179, 150));
+		labelPassword = new JLabel(Constants.PASSWORD_LABEL);
+		labelFondo.add(labelPassword);
+		labelPassword.setForeground(new Color(0, 0, 0));
+		labelPassword.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
+		labelPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		labelPassword.setBounds(322, 342, 223, 49);
+		labelPassword.setOpaque(true);
+		labelPassword.setBackground(new Color(181, 179, 179, 150));
 		
-		labelUsuario = new JLabel("USUARIO");
+		labelUsuario = new JLabel(Constants.USUARIO_LABEL);
 		labelFondo.add(labelUsuario);
 		labelUsuario.setForeground(new Color(0, 0, 0));
-		labelUsuario.setFont(new Font("Arial", Font.BOLD, 14));
+		labelUsuario.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		labelUsuario.setHorizontalAlignment(SwingConstants.CENTER);
 		labelUsuario.setBounds(322, 198, 223, 49);
 		labelUsuario.setOpaque(true);
@@ -94,18 +93,18 @@ public class Login extends JFrame {
 		textFieldUsuario = new JTextField();
 		textFieldUsuario.setHorizontalAlignment(SwingConstants.CENTER);
 		textFieldUsuario.setForeground(new Color(0, 0, 0));
-		textFieldUsuario.setFont(new Font("Arial", Font.PLAIN, 11));
+		textFieldUsuario.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
 		textFieldUsuario.setBounds(321, 261, 225, 30);
 		labelFondo.add(textFieldUsuario);
 		textFieldUsuario.setColumns(10);
 		
-		textFieldContraseña = new JTextField();
-		textFieldContraseña.setHorizontalAlignment(SwingConstants.CENTER);
-		textFieldContraseña.setForeground(new Color(0, 0, 0));
-		textFieldContraseña.setFont(new Font("Arial", Font.PLAIN, 11));
-		textFieldContraseña.setColumns(10);
-		textFieldContraseña.setBounds(321, 414, 225, 30);
-		labelFondo.add(textFieldContraseña);
+		textFieldPassword = new JTextField();
+		textFieldPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldPassword.setForeground(new Color(0, 0, 0));
+		textFieldPassword.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
+		textFieldPassword.setColumns(10);
+		textFieldPassword.setBounds(321, 414, 225, 30);
+		labelFondo.add(textFieldPassword);
 		
 		btnIniciarSesion = new JButton("INICIAR SESIÓN");
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
@@ -116,7 +115,7 @@ public class Login extends JFrame {
 				dispose();
 			}
 		});
-		btnIniciarSesion.setFont(new Font("Arial", Font.BOLD, 13));
+		btnIniciarSesion.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnIniciarSesion.setForeground(new Color(0, 0, 0));
 		btnIniciarSesion.setBounds(282, 516, 159, 41);
 		btnIniciarSesion.setOpaque(true);
@@ -133,10 +132,10 @@ public class Login extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				Registro panelRegistro = new Registro();
 				panelRegistro.setVisible(true);
-				dispose(); //cierra login
+				dispose();
 			}
 		});
-		btnRegistro.setFont(new Font("Arial", Font.BOLD, 13));
+		btnRegistro.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnRegistro.setForeground(new Color(0, 0, 0));
 		btnRegistro.setBounds(451, 516, 159, 41);
 		btnRegistro.setOpaque(true);
@@ -150,7 +149,7 @@ public class Login extends JFrame {
 		tituloLogin = new JLabel("LOGIN");
 		tituloLogin.setOpaque(true);
 		tituloLogin.setHorizontalAlignment(SwingConstants.CENTER);
-		tituloLogin.setFont(new Font("Arial", Font.BOLD, 39));
+		tituloLogin.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
 		tituloLogin.setBackground(new Color(255, 255, 255, 150));
 		tituloLogin.setBounds(224, 26, 432, 79);
 		labelFondo.add(tituloLogin);

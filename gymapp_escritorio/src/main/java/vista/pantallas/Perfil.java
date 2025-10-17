@@ -1,51 +1,45 @@
 package vista.pantallas;
 
-import java.awt.Image;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import utils.Constants;
-import vista.Login;
-
-import javax.swing.JLabel;
-import java.awt.Font;
 import java.awt.Color;
-import javax.swing.SwingConstants;
-import javax.swing.JTextField;
-import javax.swing.JPasswordField;
-import javax.swing.JButton;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Registro extends JFrame {
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import utils.Constants;
+
+public class Perfil extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JLabel lblFondoRegistro;
+	private JLabel tituloRegistro;
+	private JButton btnRegistro;
+	private JButton btnVolver;
 	private JLabel lblNombre;
 	private JLabel lblApellidoUno;
 	private JLabel lblApellidoDos;
 	private JLabel lblEmail;
-	private JLabel lblFecNac;
 	private JLabel lblPassword;
-	private JTextField textFieldNombre;
-	private JTextField textFieldApellidoUno;
-	private JTextField textFieldApellidoDos;
+	private JLabel lblFecNac;
 	private JTextField textFieldEmail;
+	private JTextField textFieldApellidoDos;
 	private JPasswordField passwordField;
+	private JTextField textFieldApellidoUno;
+	private JTextField textFieldNombre;
 	private JTextField textFieldFecNac;
-	private JLabel tituloRegistro;
-	private JButton btnRegistro;
-	private JButton btnVolver;
-
 
 	/**
 	 * Create the frame.
 	 */
-	public Registro() {
+	public Perfil() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -53,28 +47,15 @@ public class Registro extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		lblFondoRegistro = new JLabel();
-		//ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
-		
-		Image imagenOriginal = originalIcon.getImage();
-
-		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
-		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-		
-		lblFondoRegistro.setIcon(iconoEscalado);
-		lblFondoRegistro.setBounds(0, 0, 873, 623);
-		contentPane.add(lblFondoRegistro);
-		
-		tituloRegistro = new JLabel("REGISTRO");
+		tituloRegistro = new JLabel("PERFIL");
 		tituloRegistro.setOpaque(true);
 		tituloRegistro.setBackground(new Color(255, 255, 255, 150));
 		tituloRegistro.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
 		tituloRegistro.setHorizontalAlignment(SwingConstants.CENTER);
 		tituloRegistro.setBounds(218, 23, 432, 79);
-		lblFondoRegistro.add(tituloRegistro);
+		contentPane.add(tituloRegistro);
 		
-		btnRegistro = new JButton("REGISTRARME");
+		btnRegistro = new JButton("MODIFICAR");
 		btnRegistro.setOpaque(true);
 		btnRegistro.setForeground(new Color(0, 0, 0));
 		btnRegistro.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
@@ -83,14 +64,14 @@ public class Registro extends JFrame {
 		btnRegistro.setBorderPainted(false);
 		btnRegistro.setBackground(new Color(255, 255, 255, 150));
 		btnRegistro.setBounds(237, 534, 159, 41);
-		lblFondoRegistro.add(btnRegistro);
+		contentPane.add(btnRegistro);
 		
 		btnVolver = new JButton(Constants.VOLVER_BOTON);
 		btnVolver.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Login pantallaLogin = new Login();
-				pantallaLogin.setVisible(true);
+				Workout pantallaWorkout = new Workout();
+				pantallaWorkout.setVisible(true);
 				dispose();
 			}
 		});
@@ -103,10 +84,10 @@ public class Registro extends JFrame {
 		btnVolver.setBorderPainted(false);
 		btnVolver.setBackground(new Color(255, 255, 255, 150));
 		btnVolver.setBounds(480, 534, 159, 41);
-		lblFondoRegistro.add(btnVolver);
+		contentPane.add(btnVolver);
 		
 		lblNombre = new JLabel(Constants.NOMBRE_LABEL);
-		lblFondoRegistro.add(lblNombre);
+		contentPane.add(lblNombre);
 		lblNombre.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNombre.setForeground(new Color(0, 0, 0));
 		lblNombre.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
@@ -115,7 +96,7 @@ public class Registro extends JFrame {
 		lblNombre.setBackground(new Color(181, 179, 179, 150));
 		
 		lblApellidoUno = new JLabel(Constants.APELLIDO_LABEL);
-		lblFondoRegistro.add(lblApellidoUno);
+		contentPane.add(lblApellidoUno);
 		lblApellidoUno.setOpaque(true);
 		lblApellidoUno.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApellidoUno.setForeground(new Color(0, 0, 0));
@@ -124,7 +105,7 @@ public class Registro extends JFrame {
 		lblApellidoUno.setBounds(247, 228, 148, 29);
 		
 		lblApellidoDos = new JLabel(Constants.APELLIDO_DOS_LABEL);
-		lblFondoRegistro.add(lblApellidoDos);
+		contentPane.add(lblApellidoDos);
 		lblApellidoDos.setOpaque(true);
 		lblApellidoDos.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApellidoDos.setForeground(Color.BLACK);
@@ -133,7 +114,7 @@ public class Registro extends JFrame {
 		lblApellidoDos.setBounds(247, 282, 148, 29);
 		
 		lblEmail = new JLabel(Constants.EMAIL_LABEL);
-		lblFondoRegistro.add(lblEmail);
+		contentPane.add(lblEmail);
 		lblEmail.setOpaque(true);
 		lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEmail.setForeground(Color.BLACK);
@@ -142,7 +123,7 @@ public class Registro extends JFrame {
 		lblEmail.setBounds(248, 335, 148, 29);
 		
 		lblPassword = new JLabel(Constants.PASSWORD_LABEL);
-		lblFondoRegistro.add(lblPassword);
+		contentPane.add(lblPassword);
 		lblPassword.setOpaque(true);
 		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPassword.setForeground(Color.BLACK);
@@ -151,7 +132,7 @@ public class Registro extends JFrame {
 		lblPassword.setBounds(249, 388, 148, 29);
 		
 		lblFecNac = new JLabel(Constants.FECHA_NACIMIENTO_LABEL);
-		lblFondoRegistro.add(lblFecNac);
+		contentPane.add(lblFecNac);
 		lblFecNac.setOpaque(true);
 		lblFecNac.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFecNac.setForeground(Color.BLACK);
@@ -160,32 +141,33 @@ public class Registro extends JFrame {
 		lblFecNac.setBounds(250, 442, 184, 29);
 		
 		textFieldEmail = new JTextField();
-		lblFondoRegistro.add(textFieldEmail);
+		contentPane.add(textFieldEmail);
 		textFieldEmail.setColumns(10);
 		textFieldEmail.setBounds(462, 335, 276, 30);
 		
 		textFieldApellidoDos = new JTextField();
-		lblFondoRegistro.add(textFieldApellidoDos);
+		contentPane.add(textFieldApellidoDos);
 		textFieldApellidoDos.setColumns(10);
 		textFieldApellidoDos.setBounds(461, 280, 277, 30);
 		
 		passwordField = new JPasswordField();
-		lblFondoRegistro.add(passwordField);
+		contentPane.add(passwordField);
 		passwordField.setBounds(563, 387, 177, 30);
 		
 		textFieldApellidoUno = new JTextField();
-		lblFondoRegistro.add(textFieldApellidoUno);
+		contentPane.add(textFieldApellidoUno);
 		textFieldApellidoUno.setColumns(10);
 		textFieldApellidoUno.setBounds(563, 228, 177, 30);
 		
 		textFieldNombre = new JTextField();
-		lblFondoRegistro.add(textFieldNombre);
+		contentPane.add(textFieldNombre);
 		textFieldNombre.setBounds(563, 172, 177, 30);
 		textFieldNombre.setColumns(10);
 		
 		textFieldFecNac = new JTextField();
-		lblFondoRegistro.add(textFieldFecNac);
+		contentPane.add(textFieldFecNac);
 		textFieldFecNac.setColumns(10);
 		textFieldFecNac.setBounds(563, 440, 177, 30);
 	}
+
 }
