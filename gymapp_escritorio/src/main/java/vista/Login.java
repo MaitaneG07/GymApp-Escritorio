@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import vista.pantallas.Registro;
+import vista.pantallas.Workout;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -60,8 +61,9 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		
 		labelFondo = new JLabel();
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\fondo.jpg");
-		
+		//ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg");
+		ImageIcon originalIcon = new ImageIcon("C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\\\logoLight.jpg");
+
 		Image imagenOriginal = originalIcon.getImage();
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
@@ -78,7 +80,7 @@ public class Login extends JFrame {
 		labelContraseña.setHorizontalAlignment(SwingConstants.CENTER);
 		labelContraseña.setBounds(322, 342, 223, 49);
 		labelContraseña.setOpaque(true);
-		labelContraseña.setBackground(new Color(255, 255, 255, 150));
+		labelContraseña.setBackground(new Color(181, 179, 179, 150));
 		
 		labelUsuario = new JLabel("USUARIO");
 		labelFondo.add(labelUsuario);
@@ -87,7 +89,7 @@ public class Login extends JFrame {
 		labelUsuario.setHorizontalAlignment(SwingConstants.CENTER);
 		labelUsuario.setBounds(322, 198, 223, 49);
 		labelUsuario.setOpaque(true);
-		labelUsuario.setBackground(new Color(255, 255, 255, 150));
+		labelUsuario.setBackground(new Color(181, 179, 179, 150));
 		
 		textFieldUsuario = new JTextField();
 		textFieldUsuario.setHorizontalAlignment(SwingConstants.CENTER);
@@ -109,10 +111,13 @@ public class Login extends JFrame {
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				Workout panelWorkout = new Workout();
+				panelWorkout.setVisible(true);
+				dispose();
 			}
 		});
 		btnIniciarSesion.setFont(new Font("Arial", Font.BOLD, 13));
-		btnIniciarSesion.setForeground(new Color(255, 255, 255));
+		btnIniciarSesion.setForeground(new Color(0, 0, 0));
 		btnIniciarSesion.setBounds(282, 516, 159, 41);
 		btnIniciarSesion.setOpaque(true);
 		btnIniciarSesion.setBackground(new Color(255, 255, 255, 150));
@@ -132,7 +137,7 @@ public class Login extends JFrame {
 			}
 		});
 		btnRegistro.setFont(new Font("Arial", Font.BOLD, 13));
-		btnRegistro.setForeground(new Color(255, 255, 255));
+		btnRegistro.setForeground(new Color(0, 0, 0));
 		btnRegistro.setBounds(451, 516, 159, 41);
 		btnRegistro.setOpaque(true);
 		btnRegistro.setBackground(new Color(255, 255, 255, 150));
