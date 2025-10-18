@@ -1,10 +1,11 @@
 package vista.pantallas;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import utils.Constants;
+
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,23 +25,8 @@ public class Cronometro extends JFrame {
 	private JLabel lblCronometro;
 	private JLabel lblNombreEjercicio;
 	private JLabel lblFondoCronometro;
-	
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Cronometro frame = new Cronometro();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JButton btnSalir;
+	private JButton btnPrueba;
 
 	/**
 	 * Create the frame.
@@ -53,26 +39,27 @@ public class Cronometro extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\\\logoLight.jpg");
+
+		lblFondoCronometro = new JLabel();
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
-		Image imagenEscalada = imagenOriginal.getScaledInstance(869, 608, Image.SCALE_SMOOTH);
+		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 		
 		lblFondoCronometro.setIcon(iconoEscalado);
-		lblFondoCronometro = new JLabel("");
-		lblFondoCronometro.setBounds(0, 11, 869, 608);
+		lblFondoCronometro.setBounds(0, 0, 873, 623);
 		lblFondoCronometro.setLayout(null);
 		contentPane.add(lblFondoCronometro);
 		
 		
 		lblCronometro = new JLabel("Aqui va el cronometro");
-		lblCronometro.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblCronometro.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 15));
 		lblCronometro.setBounds(320, 418, 156, 42);
 		contentPane.add(lblCronometro);
 		
-		JButton btnSalir = new JButton("Salir");
+		btnSalir = new JButton(Constants.SALIR_BOTON);
 		btnSalir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -82,16 +69,16 @@ public class Cronometro extends JFrame {
 			}
 		});
 		btnSalir.setBounds(664, 555, 121, 23);
-		contentPane.add(btnSalir);
+		lblFondoCronometro.add(btnSalir);
 		
-		lblNombreEjercicio = new JLabel("Nombre Ejercicio");
-		lblNombreEjercicio.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblNombreEjercicio = new JLabel("Aquí va el Nombre Ejercicio");
+		lblNombreEjercicio.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 20));
 		lblNombreEjercicio.setBounds(320, 47, 177, 52);
-		contentPane.add(lblNombreEjercicio);
+		lblFondoCronometro.add(lblNombreEjercicio);
 		
-		btnCronometro = new JButton("Iniciar");
-		 String frase1 = "Iniciar";
-	        String frase2 = "Parar";
+		btnCronometro = new JButton(Constants.INICIAR_BOTON);
+		 String frase1 = Constants.INICIAR_BOTON;
+	        String frase2 = Constants.PARAR_BOTON;
 	        
 	        final boolean[] esFrase1 = {true};
 		
@@ -107,20 +94,23 @@ public class Cronometro extends JFrame {
             }
 		});
 		btnCronometro.setBounds(362, 503, 89, 23);
-		contentPane.add(btnCronometro);
+		lblFondoCronometro.add(btnCronometro);
 		
-		lblFondoDescripcion = new JLabel("Descripcion del ejercicio");
+		lblFondoDescripcion = new JLabel("Aquí va Descripcion del ejercicio");
 		lblFondoDescripcion.setBounds(247, 123, 354, 89);
-		contentPane.add(lblFondoDescripcion);
+		lblFondoCronometro.add(lblFondoDescripcion);
 		
-	
-		
-		
-		
-		
-		
-		
+		btnPrueba = new JButton(Constants.PRUEBA_BOTON);
+		lblFondoCronometro.add(btnPrueba);
+		btnPrueba.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Resumen panelResumen = new Resumen();
+				panelResumen.setVisible(true);
+				dispose();
+			}
+		});
+		btnPrueba.setBounds(48, 557, 222, 23);
 
-		
 	}
 }

@@ -54,8 +54,8 @@ public class Registro extends JFrame {
 		contentPane.setLayout(null);
 		
 		lblFondoRegistro = new JLabel();
-		//ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 		
 		Image imagenOriginal = originalIcon.getImage();
 
@@ -66,7 +66,7 @@ public class Registro extends JFrame {
 		lblFondoRegistro.setBounds(0, 0, 873, 623);
 		contentPane.add(lblFondoRegistro);
 		
-		tituloRegistro = new JLabel("REGISTRO");
+		tituloRegistro = new JLabel(Constants.REGISTRO_LABEL);
 		tituloRegistro.setOpaque(true);
 		tituloRegistro.setBackground(new Color(255, 255, 255, 150));
 		tituloRegistro.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
@@ -74,7 +74,7 @@ public class Registro extends JFrame {
 		tituloRegistro.setBounds(218, 23, 432, 79);
 		lblFondoRegistro.add(tituloRegistro);
 		
-		btnRegistro = new JButton("REGISTRARME");
+		btnRegistro = new JButton(Constants.REGISTRARME_LABEL);
 		btnRegistro.setOpaque(true);
 		btnRegistro.setForeground(new Color(0, 0, 0));
 		btnRegistro.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
@@ -105,12 +105,26 @@ public class Registro extends JFrame {
 		btnVolver.setBounds(480, 534, 159, 41);
 		lblFondoRegistro.add(btnVolver);
 		
+		lblFecNac = new JLabel(Constants.FECHA_NACIMIENTO_LABEL);
+		lblFondoRegistro.add(lblFecNac);
+		lblFecNac.setOpaque(true);
+		lblFecNac.setHorizontalAlignment(SwingConstants.CENTER);
+		lblFecNac.setForeground(Color.BLACK);
+		lblFecNac.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
+		lblFecNac.setBackground(new Color(181, 179, 179, 150));
+		lblFecNac.setBounds(250, 442, 184, 29);
+		
+		textFieldFecNac = new JTextField();
+		lblFondoRegistro.add(textFieldFecNac);
+		textFieldFecNac.setColumns(10);
+		textFieldFecNac.setBounds(563, 440, 177, 30);
+		
 		lblNombre = new JLabel(Constants.NOMBRE_LABEL);
 		lblFondoRegistro.add(lblNombre);
 		lblNombre.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNombre.setForeground(new Color(0, 0, 0));
 		lblNombre.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
-		lblNombre.setBounds(247, 173, 148, 29);
+		lblNombre.setBounds(246, 155, 148, 29);
 		lblNombre.setOpaque(true);
 		lblNombre.setBackground(new Color(181, 179, 179, 150));
 		
@@ -121,7 +135,7 @@ public class Registro extends JFrame {
 		lblApellidoUno.setForeground(new Color(0, 0, 0));
 		lblApellidoUno.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblApellidoUno.setBackground(new Color(181, 179, 179, 150));
-		lblApellidoUno.setBounds(247, 228, 148, 29);
+		lblApellidoUno.setBounds(246, 210, 148, 29);
 		
 		lblApellidoDos = new JLabel(Constants.APELLIDO_DOS_LABEL);
 		lblFondoRegistro.add(lblApellidoDos);
@@ -130,7 +144,7 @@ public class Registro extends JFrame {
 		lblApellidoDos.setForeground(Color.BLACK);
 		lblApellidoDos.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblApellidoDos.setBackground(new Color(181, 179, 179, 150));
-		lblApellidoDos.setBounds(247, 282, 148, 29);
+		lblApellidoDos.setBounds(246, 264, 148, 29);
 		
 		lblEmail = new JLabel(Constants.EMAIL_LABEL);
 		lblFondoRegistro.add(lblEmail);
@@ -139,7 +153,7 @@ public class Registro extends JFrame {
 		lblEmail.setForeground(Color.BLACK);
 		lblEmail.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblEmail.setBackground(new Color(181, 179, 179, 150));
-		lblEmail.setBounds(248, 335, 148, 29);
+		lblEmail.setBounds(247, 317, 148, 29);
 		
 		lblPassword = new JLabel(Constants.PASSWORD_LABEL);
 		lblFondoRegistro.add(lblPassword);
@@ -148,44 +162,30 @@ public class Registro extends JFrame {
 		lblPassword.setForeground(Color.BLACK);
 		lblPassword.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblPassword.setBackground(new Color(181, 179, 179, 150));
-		lblPassword.setBounds(249, 388, 148, 29);
+		lblPassword.setBounds(248, 370, 148, 29);
 		
-		lblFecNac = new JLabel(Constants.FECHA_NACIMIENTO_LABEL);
-		lblFondoRegistro.add(lblFecNac);
-		lblFecNac.setOpaque(true);
-		lblFecNac.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFecNac.setForeground(Color.BLACK);
-		lblFecNac.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
-		lblFecNac.setBackground(new Color(181, 179, 179, 150));
-		lblFecNac.setBounds(250, 442, 184, 29);
-		
-		textFieldEmail = new JTextField();
-		lblFondoRegistro.add(textFieldEmail);
-		textFieldEmail.setColumns(10);
-		textFieldEmail.setBounds(462, 335, 276, 30);
-		
-		textFieldApellidoDos = new JTextField();
-		lblFondoRegistro.add(textFieldApellidoDos);
-		textFieldApellidoDos.setColumns(10);
-		textFieldApellidoDos.setBounds(461, 280, 277, 30);
-		
-		passwordField = new JPasswordField();
-		lblFondoRegistro.add(passwordField);
-		passwordField.setBounds(563, 387, 177, 30);
+		textFieldNombre = new JTextField();
+		lblFondoRegistro.add(textFieldNombre);
+		textFieldNombre.setBounds(562, 154, 177, 30);
+		textFieldNombre.setColumns(10);
 		
 		textFieldApellidoUno = new JTextField();
 		lblFondoRegistro.add(textFieldApellidoUno);
 		textFieldApellidoUno.setColumns(10);
-		textFieldApellidoUno.setBounds(563, 228, 177, 30);
+		textFieldApellidoUno.setBounds(562, 210, 177, 30);
 		
-		textFieldNombre = new JTextField();
-		lblFondoRegistro.add(textFieldNombre);
-		textFieldNombre.setBounds(563, 172, 177, 30);
-		textFieldNombre.setColumns(10);
+		textFieldApellidoDos = new JTextField();
+		lblFondoRegistro.add(textFieldApellidoDos);
+		textFieldApellidoDos.setColumns(10);
+		textFieldApellidoDos.setBounds(460, 262, 277, 30);
 		
-		textFieldFecNac = new JTextField();
-		lblFondoRegistro.add(textFieldFecNac);
-		textFieldFecNac.setColumns(10);
-		textFieldFecNac.setBounds(563, 440, 177, 30);
+		textFieldEmail = new JTextField();
+		lblFondoRegistro.add(textFieldEmail);
+		textFieldEmail.setColumns(10);
+		textFieldEmail.setBounds(461, 317, 276, 30);
+		
+		passwordField = new JPasswordField();
+		lblFondoRegistro.add(passwordField);
+		passwordField.setBounds(562, 369, 177, 30);
 	}
 }

@@ -2,9 +2,11 @@ package vista.pantallas;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,8 +22,8 @@ public class Perfil extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JLabel tituloRegistro;
-	private JButton btnRegistro;
+	private JLabel tituloPerfil;
+	private JButton btnModificar;
 	private JButton btnVolver;
 	private JLabel lblNombre;
 	private JLabel lblApellidoUno;
@@ -35,6 +37,7 @@ public class Perfil extends JFrame {
 	private JTextField textFieldApellidoUno;
 	private JTextField textFieldNombre;
 	private JTextField textFieldFecNac;
+	private JLabel lblFondoPerfil;
 
 	/**
 	 * Create the frame.
@@ -47,24 +50,38 @@ public class Perfil extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		tituloRegistro = new JLabel("PERFIL");
-		tituloRegistro.setOpaque(true);
-		tituloRegistro.setBackground(new Color(255, 255, 255, 150));
-		tituloRegistro.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
-		tituloRegistro.setHorizontalAlignment(SwingConstants.CENTER);
-		tituloRegistro.setBounds(218, 23, 432, 79);
-		contentPane.add(tituloRegistro);
+		lblFondoPerfil = new JLabel();
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_OSCURO_CASA);
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 		
-		btnRegistro = new JButton("MODIFICAR");
-		btnRegistro.setOpaque(true);
-		btnRegistro.setForeground(new Color(0, 0, 0));
-		btnRegistro.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
-		btnRegistro.setFocusPainted(false);
-		btnRegistro.setContentAreaFilled(false);
-		btnRegistro.setBorderPainted(false);
-		btnRegistro.setBackground(new Color(255, 255, 255, 150));
-		btnRegistro.setBounds(237, 534, 159, 41);
-		contentPane.add(btnRegistro);
+		Image imagenOriginal = originalIcon.getImage();
+
+		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+		
+		lblFondoPerfil.setIcon(iconoEscalado);
+		lblFondoPerfil.setBounds(0, 0, 873, 623);
+		contentPane.add(lblFondoPerfil);
+		
+		tituloPerfil = new JLabel(Constants.PERFIL_LABEL);
+		tituloPerfil.setOpaque(true);
+		tituloPerfil.setForeground(Color.WHITE);
+		tituloPerfil.setBackground(new Color(0, 0, 0, 0));
+		tituloPerfil.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
+		tituloPerfil.setHorizontalAlignment(SwingConstants.CENTER);
+		tituloPerfil.setBounds(218, 23, 432, 79);
+		lblFondoPerfil.add(tituloPerfil);
+		
+		btnModificar = new JButton(Constants.MODIFICAR_BOTON);
+		btnModificar.setOpaque(true);
+		btnModificar.setForeground(Color.WHITE);
+		btnModificar.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
+		btnModificar.setFocusPainted(false);
+		btnModificar.setContentAreaFilled(false);
+		btnModificar.setBorderPainted(false);
+		btnModificar.setBackground(new Color(255, 255, 255, 150));
+		btnModificar.setBounds(237, 534, 159, 41);
+		lblFondoPerfil.add(btnModificar);
 		
 		btnVolver = new JButton(Constants.VOLVER_BOTON);
 		btnVolver.addMouseListener(new MouseAdapter() {
@@ -77,97 +94,97 @@ public class Perfil extends JFrame {
 		});
 		
 		btnVolver.setOpaque(true);
-		btnVolver.setForeground(new Color(0, 0, 0));
+		btnVolver.setForeground(Color.WHITE);
 		btnVolver.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnVolver.setFocusPainted(false);
 		btnVolver.setContentAreaFilled(false);
 		btnVolver.setBorderPainted(false);
 		btnVolver.setBackground(new Color(255, 255, 255, 150));
 		btnVolver.setBounds(480, 534, 159, 41);
-		contentPane.add(btnVolver);
+		lblFondoPerfil.add(btnVolver);
+		
+		textFieldNombre = new JTextField();
+		lblFondoPerfil.add(textFieldNombre);
+		textFieldNombre.setBounds(439, 136, 279, 30);
+		textFieldNombre.setColumns(10);
+		
+		textFieldApellidoUno = new JTextField();
+		lblFondoPerfil.add(textFieldApellidoUno);
+		textFieldApellidoUno.setColumns(10);
+		textFieldApellidoUno.setBounds(439, 191, 279, 30);
+		
+		passwordField = new JPasswordField();
+		lblFondoPerfil.add(passwordField);
+		passwordField.setBounds(441, 457, 279, 30);
+		
+		textFieldFecNac = new JTextField();
+		lblFondoPerfil.add(textFieldFecNac);
+		textFieldFecNac.setColumns(10);
+		textFieldFecNac.setBounds(442, 368, 279, 30);
 		
 		lblNombre = new JLabel(Constants.NOMBRE_LABEL);
-		contentPane.add(lblNombre);
+		lblFondoPerfil.add(lblNombre);
 		lblNombre.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNombre.setForeground(new Color(0, 0, 0));
+		lblNombre.setForeground(Color.WHITE);
 		lblNombre.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
-		lblNombre.setBounds(247, 173, 148, 29);
+		lblNombre.setBounds(224, 136, 148, 29);
 		lblNombre.setOpaque(true);
 		lblNombre.setBackground(new Color(181, 179, 179, 150));
 		
 		lblApellidoUno = new JLabel(Constants.APELLIDO_LABEL);
-		contentPane.add(lblApellidoUno);
+		lblFondoPerfil.add(lblApellidoUno);
 		lblApellidoUno.setOpaque(true);
 		lblApellidoUno.setHorizontalAlignment(SwingConstants.CENTER);
-		lblApellidoUno.setForeground(new Color(0, 0, 0));
+		lblApellidoUno.setForeground(Color.WHITE);
 		lblApellidoUno.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblApellidoUno.setBackground(new Color(181, 179, 179, 150));
-		lblApellidoUno.setBounds(247, 228, 148, 29);
+		lblApellidoUno.setBounds(224, 191, 148, 29);
 		
 		lblApellidoDos = new JLabel(Constants.APELLIDO_DOS_LABEL);
-		contentPane.add(lblApellidoDos);
+		lblFondoPerfil.add(lblApellidoDos);
 		lblApellidoDos.setOpaque(true);
 		lblApellidoDos.setHorizontalAlignment(SwingConstants.CENTER);
-		lblApellidoDos.setForeground(Color.BLACK);
+		lblApellidoDos.setForeground(Color.WHITE);
 		lblApellidoDos.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblApellidoDos.setBackground(new Color(181, 179, 179, 150));
-		lblApellidoDos.setBounds(247, 282, 148, 29);
+		lblApellidoDos.setBounds(224, 245, 148, 29);
 		
 		lblEmail = new JLabel(Constants.EMAIL_LABEL);
-		contentPane.add(lblEmail);
+		lblFondoPerfil.add(lblEmail);
 		lblEmail.setOpaque(true);
 		lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
-		lblEmail.setForeground(Color.BLACK);
+		lblEmail.setForeground(Color.WHITE);
 		lblEmail.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblEmail.setBackground(new Color(181, 179, 179, 150));
-		lblEmail.setBounds(248, 335, 148, 29);
-		
-		lblPassword = new JLabel(Constants.PASSWORD_LABEL);
-		contentPane.add(lblPassword);
-		lblPassword.setOpaque(true);
-		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPassword.setForeground(Color.BLACK);
-		lblPassword.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
-		lblPassword.setBackground(new Color(181, 179, 179, 150));
-		lblPassword.setBounds(249, 388, 148, 29);
+		lblEmail.setBounds(225, 298, 148, 29);
 		
 		lblFecNac = new JLabel(Constants.FECHA_NACIMIENTO_LABEL);
-		contentPane.add(lblFecNac);
+		lblFondoPerfil.add(lblFecNac);
 		lblFecNac.setOpaque(true);
 		lblFecNac.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFecNac.setForeground(Color.BLACK);
+		lblFecNac.setForeground(Color.WHITE);
 		lblFecNac.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblFecNac.setBackground(new Color(181, 179, 179, 150));
-		lblFecNac.setBounds(250, 442, 184, 29);
+		lblFecNac.setBounds(223, 368, 184, 29);
 		
 		textFieldEmail = new JTextField();
-		contentPane.add(textFieldEmail);
+		lblFondoPerfil.add(textFieldEmail);
 		textFieldEmail.setColumns(10);
-		textFieldEmail.setBounds(462, 335, 276, 30);
+		textFieldEmail.setBounds(442, 298, 276, 30);
 		
 		textFieldApellidoDos = new JTextField();
-		contentPane.add(textFieldApellidoDos);
+		lblFondoPerfil.add(textFieldApellidoDos);
 		textFieldApellidoDos.setColumns(10);
-		textFieldApellidoDos.setBounds(461, 280, 277, 30);
+		textFieldApellidoDos.setBounds(441, 243, 277, 30);
 		
-		passwordField = new JPasswordField();
-		contentPane.add(passwordField);
-		passwordField.setBounds(563, 387, 177, 30);
-		
-		textFieldApellidoUno = new JTextField();
-		contentPane.add(textFieldApellidoUno);
-		textFieldApellidoUno.setColumns(10);
-		textFieldApellidoUno.setBounds(563, 228, 177, 30);
-		
-		textFieldNombre = new JTextField();
-		contentPane.add(textFieldNombre);
-		textFieldNombre.setBounds(563, 172, 177, 30);
-		textFieldNombre.setColumns(10);
-		
-		textFieldFecNac = new JTextField();
-		contentPane.add(textFieldFecNac);
-		textFieldFecNac.setColumns(10);
-		textFieldFecNac.setBounds(563, 440, 177, 30);
+		lblPassword = new JLabel(Constants.PASSWORD_LABEL);
+		lblFondoPerfil.add(lblPassword);
+		lblPassword.setOpaque(true);
+		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPassword.setForeground(Color.WHITE);
+		lblPassword.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
+		lblPassword.setBackground(new Color(181, 179, 179, 150));
+		lblPassword.setBounds(222, 457, 148, 29);
 	}
 
 }

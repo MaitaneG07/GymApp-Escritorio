@@ -60,8 +60,8 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		
 		labelFondo = new JLabel();
-		//ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
@@ -89,7 +89,7 @@ public class Login extends JFrame {
 		labelFondo.add(textFieldUsuario);
 		textFieldUsuario.setColumns(10);
 		
-		btnIniciarSesion = new JButton("INICIAR SESIÓN");
+		btnIniciarSesion = new JButton(Constants.INICAR_SESION_BOTON);
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -109,7 +109,7 @@ public class Login extends JFrame {
 		btnIniciarSesion.setOpaque(false);
 		labelFondo.add(btnIniciarSesion);
 
-		btnRegistro = new JButton("REGISTRARME");
+		btnRegistro = new JButton(Constants.REGISTRARME_BOTON);
 		btnRegistro.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {

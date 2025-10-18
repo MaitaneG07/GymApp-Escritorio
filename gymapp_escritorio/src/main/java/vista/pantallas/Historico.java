@@ -32,6 +32,7 @@ public class Historico extends JFrame {
 	private JTable tableHistoricos;
 	private JButton btnAtras;
 	private DefaultTableModel modeloTabla;
+	private JScrollPane scrollPane;
 
 	/**
 	 * Create the frame.
@@ -45,7 +46,8 @@ public class Historico extends JFrame {
 		contentPane.setLayout(null);
 		
 		lblFondoHistorico = new JLabel();
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
 
 		Image imagenOriginal = originalIcon.getImage();
 		
@@ -55,14 +57,6 @@ public class Historico extends JFrame {
 		lblFondoHistorico.setIcon(iconoEscalado);
 		lblFondoHistorico.setBounds(0, 0, 885, 658);
 		contentPane.add(lblFondoHistorico);
-		
-		tituloHistorico = new JLabel("Historial de Workouts");
-		tituloHistorico.setOpaque(true);
-		tituloHistorico.setBackground(new Color(255, 255, 255, 150));
-		tituloHistorico.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
-		tituloHistorico.setHorizontalAlignment(SwingConstants.CENTER);
-		tituloHistorico.setBounds(218, 23, 432, 79);
-		lblFondoHistorico.add(tituloHistorico);
 		
 		btnAtras = new JButton(Constants.VOLVER_BOTON);
 		btnAtras.addMouseListener(new MouseAdapter() {
@@ -84,18 +78,18 @@ public class Historico extends JFrame {
 		lblFondoHistorico.add(btnAtras);
 		
 		modeloTabla = new DefaultTableModel();
-		modeloTabla.addColumn("Nombre Workout");
-		modeloTabla.addColumn("Nivel");
-		modeloTabla.addColumn("Tiempo Total");
-		modeloTabla.addColumn("Tiempo previsto");
-		modeloTabla.addColumn("Fecha");
-		modeloTabla.addColumn("% Ejercicios Completados");
+		modeloTabla.addColumn(Constants.COLUMNA_NOMBRE_WORKOUT);
+		modeloTabla.addColumn(Constants.COLUMNA_NIVEL_WORKOUT);
+		modeloTabla.addColumn(Constants.TIEMPO_TOTAL_WORKOUT);
+		modeloTabla.addColumn(Constants.TIEMPO_PREVISTO_WORKOUT);
+		modeloTabla.addColumn(Constants.FECHA_WORKOUT);
+		modeloTabla.addColumn(Constants.EJERCICIOS_COMPLETADOS);
 		
 		tableHistoricos = new JTable(modeloTabla);
 		tableHistoricos.getTableHeader().setFont(new Font(Constants.FONT_FAMILY, 1, 13));
 		tableHistoricos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); //poder seleccionar solo una tabla
 		tableHistoricos.setBounds(93, 237, 660, 319);
-		JScrollPane scrollPane = new JScrollPane(tableHistoricos);
+		scrollPane = new JScrollPane(tableHistoricos);
 		scrollPane.setBounds(48, 237, 764, 319);
 		
 		// Hacer la tabla transparente
@@ -113,5 +107,13 @@ public class Historico extends JFrame {
 
 		
 		lblFondoHistorico.add(scrollPane);
+		
+		tituloHistorico = new JLabel(Constants.HISTORIAL_WORKOUTS_LABEL);
+		lblFondoHistorico.add(tituloHistorico);
+		tituloHistorico.setOpaque(true);
+		tituloHistorico.setBackground(new Color(255, 255, 255, 150));
+		tituloHistorico.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
+		tituloHistorico.setHorizontalAlignment(SwingConstants.CENTER);
+		tituloHistorico.setBounds(175, 24, 545, 79);
 	}
 }

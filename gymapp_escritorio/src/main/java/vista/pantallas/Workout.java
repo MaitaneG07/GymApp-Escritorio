@@ -7,16 +7,20 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import utils.Constants;
 import vista.Login;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Workout extends JFrame {
 
@@ -36,6 +40,7 @@ public class Workout extends JFrame {
 	private JPopupMenu popupMenuNivel;
 	public static DefaultTableModel modeloWorkouts;
 	private DefaultTableModel modeloDetallesWorkouts;
+	private JLabel tituloWorkout;
 
 	/**
 	 * Create the frame.
@@ -47,10 +52,18 @@ public class Workout extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		tituloWorkout = new JLabel(Constants.WORKOUT_LABEL);
+		tituloWorkout.setOpaque(true);
+		tituloWorkout.setBackground(new Color(0, 0, 0, 0));
+		tituloWorkout.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
+		tituloWorkout.setHorizontalAlignment(SwingConstants.CENTER);
+		tituloWorkout.setBounds(230, 23, 432, 79);
+		contentPane.add(tituloWorkout);
 
 		btnPerfil = new JButton();
-		// ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA));
-		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
+		 ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA));
+//		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
 		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 		btnPerfil.setIcon(new ImageIcon(imgEscalada));
 		btnPerfil.setBounds(10, 11, 60, 60);
@@ -61,7 +74,7 @@ public class Workout extends JFrame {
 
 		popupMenuPerfil = new JPopupMenu();
 
-		menuGestionPerfil = new JMenuItem("Gestionar perfil");
+		menuGestionPerfil = new JMenuItem(Constants.GESTIONAR_PERFIL_MENU);
 		popupMenuPerfil.add(menuGestionPerfil);
 		menuGestionPerfil.addActionListener(e -> {
 			
@@ -70,7 +83,7 @@ public class Workout extends JFrame {
 			dispose();
 		});
 
-		menuHistorico = new JMenuItem("Consultar histórico");
+		menuHistorico = new JMenuItem(Constants.CONSULTAR_HISTORICO_MENU);
 		popupMenuPerfil.add(menuHistorico);
 		menuHistorico.addActionListener(e -> {
 
@@ -79,7 +92,7 @@ public class Workout extends JFrame {
 			dispose();
 		});
 
-		menuCerrarPerfil = new JMenuItem("Cerrar sesión");
+		menuCerrarPerfil = new JMenuItem(Constants.CERRAR_SESION_MENU);
 		popupMenuPerfil.add(menuCerrarPerfil);
 		menuCerrarPerfil.addActionListener(e -> {
 
@@ -94,13 +107,13 @@ public class Workout extends JFrame {
 		});
 
 		scrollPaneWorkouts = new JScrollPane();
-		scrollPaneWorkouts.setBounds(162, 106, 574, 149);
+		scrollPaneWorkouts.setBounds(162, 131, 574, 149);
 		contentPane.add(scrollPaneWorkouts);
 
 		modeloWorkouts = new DefaultTableModel();
-		modeloWorkouts.addColumn(Constants.COLUMNA_NOMBRE);
+		modeloWorkouts.addColumn(Constants.COLUMNA_NOMBRE_WORKOUT);
 		modeloWorkouts.addColumn(Constants.COLUMNA_EJERCICIOS);
-		modeloWorkouts.addColumn(Constants.COLUMNA_NIVEL);
+		modeloWorkouts.addColumn(Constants.COLUMNA_NIVEL_WORKOUT);
 		modeloWorkouts.addColumn(Constants.COLUMNA_VIDEO);
 
 		tablaWorkouts = new JTable(modeloWorkouts);
@@ -111,23 +124,31 @@ public class Workout extends JFrame {
 		contentPane.add(scrollPaneDetallesWorkout);
 
 		modeloDetallesWorkouts = new DefaultTableModel();
-		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_NOMBRE);
+		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_NOMBRE_EJERCICIO);
 		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_DESCRIPCION);
 		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_SERIES);
 
 		tablaDetallesWorkout = new JTable(modeloDetallesWorkouts);
 		scrollPaneDetallesWorkout.setViewportView(tablaDetallesWorkout);
 
-		btnSeleccionar = new JButton("SELECCIONAR");
+		btnSeleccionar = new JButton(Constants.SELECCIONAR_BOTON);
+		btnSeleccionar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Cronometro pantallaCronometro = new Cronometro();
+				pantallaCronometro.setVisible(true);
+				dispose();
+			}
+		});
 		btnSeleccionar.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
-		btnSeleccionar.setBounds(367, 554, 155, 40);
+		btnSeleccionar.setBounds(360, 554, 155, 40);
 		btnSeleccionar.setFocusPainted(false);
 		btnSeleccionar.setContentAreaFilled(false);
 		btnSeleccionar.setBorderPainted(false);
 		contentPane.add(btnSeleccionar);
 
 		btnFiltrarPorNivel = new JButton();
-		btnFiltrarPorNivel.setText(Constants.COLUMNA_NIVEL);
+		btnFiltrarPorNivel.setText(Constants.COLUMNA_NIVEL_WORKOUT);
 		btnFiltrarPorNivel.setFocusPainted(false);
 		btnFiltrarPorNivel.setContentAreaFilled(false);
 		btnFiltrarPorNivel.setBorderPainted(false);
