@@ -1,23 +1,24 @@
 package vista.pantallas;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import utils.Constants;
 import vista.Login;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -36,33 +37,10 @@ public class Workout extends JFrame {
 	private JScrollPane scrollPaneDetallesWorkout;
 	private JButton btnSeleccionar;
 	private JButton btnFiltrarPorNivel;
-	private ImageIcon iconoOriginal;
-	private Image imgEscalada;
 	private JPopupMenu popupMenuNivel;
-	public DefaultTableModel modeloWorkouts;
+	public static DefaultTableModel modeloWorkouts;
 	private DefaultTableModel modeloDetallesWorkouts;
-	
-	// PARA OBTENER EL ID DEL USUARIO REGISTRADO
-	//public int idUsuario;
-	
-	/**
-	 * Recupera el id de agencia, carga el panel y el logo, y muestra la tabla
-	 * actualizada.
-	 * 
-	 * @param idAgencia
-	 */
-//	public void setIdAgencia(int idAgencia, int idViaje) {
-//		this.idAgencia = idAgencia;
-//		this.idViaje = idViaje;
-//		if (idAgencia > 0) {
-//			System.out.println("🛠️Seteando ID Agencia en PanelViajesEventos: " + idAgencia);// visualizar consola
-//			cargarColorPanel(idAgencia);
-//			cargarLogo(idAgencia);
-//			actualizarTablaViajes(modeloViajes, idAgencia);
-//			actualizarTablaEventos(modeloEventos, idViaje);
-//			panelViajesEventos.repaint();// Forzar actualización
-//		}
-//	}
+	private JLabel tituloWorkout;
 
 	/**
 	 * Create the frame.
@@ -75,83 +53,109 @@ public class Workout extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
+		tituloWorkout = new JLabel(Constants.WORKOUT_LABEL);
+		tituloWorkout.setOpaque(true);
+		tituloWorkout.setBackground(new Color(0, 0, 0, 0));
+		tituloWorkout.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
+		tituloWorkout.setHorizontalAlignment(SwingConstants.CENTER);
+		tituloWorkout.setBounds(230, 23, 432, 79);
+		contentPane.add(tituloWorkout);
+
 		btnPerfil = new JButton();
-		iconoOriginal = new ImageIcon("C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png");
-		imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+		 ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA));
+//		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
+		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 		btnPerfil.setIcon(new ImageIcon(imgEscalada));
 		btnPerfil.setBounds(10, 11, 60, 60);
 		btnPerfil.setFocusPainted(false);
 		btnPerfil.setContentAreaFilled(false);
 		btnPerfil.setBorderPainted(false);
 		contentPane.add(btnPerfil);
-		
-		popupMenuPerfil = new JPopupMenu();
-		
-		menuGestionPerfil = new JMenuItem("Gestionar perfil");
-		popupMenuPerfil.add(menuGestionPerfil);
-		
-		menuHistorico = new JMenuItem("Consultar histórico");
-		popupMenuPerfil.add(menuHistorico);
-		
-		menuCerrarPerfil = new JMenuItem("Cerrar sesión");
-		popupMenuPerfil.add(menuCerrarPerfil);
-		
-	    btnPerfil.addActionListener(e -> {
-	        popupMenuPerfil.show(btnPerfil, 0, btnPerfil.getHeight());
-	        
-	    });
 
-	    scrollPaneWorkouts = new JScrollPane();
-        scrollPaneWorkouts.setBounds(162, 106, 574, 149);
-        contentPane.add(scrollPaneWorkouts);
-        
-        modeloWorkouts = new DefaultTableModel();
-        modeloWorkouts.addColumn("NOMBRE");
-        modeloWorkouts.addColumn("EJERCICIOS");
-        modeloWorkouts.addColumn("NIVEL");
-        modeloWorkouts.addColumn("VÍDEO");
-        
-        tablaWorkouts = new JTable(modeloWorkouts);
-        scrollPaneWorkouts.setViewportView(tablaWorkouts);
-        
-        scrollPaneDetallesWorkout = new JScrollPane();
-        scrollPaneDetallesWorkout.setBounds(162, 351, 574, 149);
-        contentPane.add(scrollPaneDetallesWorkout);
-        
-        modeloDetallesWorkouts = new DefaultTableModel();
-        modeloDetallesWorkouts.addColumn("NOMBRE");
-        modeloDetallesWorkouts.addColumn("DESCRIPCIÓN");
-        modeloDetallesWorkouts.addColumn("SERIES");
-        
-        tablaDetallesWorkout = new JTable(modeloDetallesWorkouts);
-        scrollPaneDetallesWorkout.setViewportView(tablaDetallesWorkout);
-        
-        btnSeleccionar = new JButton("SELECCIONAR");
-        btnSeleccionar.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent e) {
-        		Ejercicio pantallaCronometro = new Ejercicio();
-        		pantallaCronometro.setVisible(true);
+		popupMenuPerfil = new JPopupMenu();
+
+		menuGestionPerfil = new JMenuItem(Constants.GESTIONAR_PERFIL_MENU);
+		popupMenuPerfil.add(menuGestionPerfil);
+		menuGestionPerfil.addActionListener(e -> {
+			
+			Perfil pantallaPerfil = new Perfil();
+			pantallaPerfil.setVisible(true);
+			dispose();
+		});
+
+		menuHistorico = new JMenuItem(Constants.CONSULTAR_HISTORICO_MENU);
+		popupMenuPerfil.add(menuHistorico);
+		menuHistorico.addActionListener(e -> {
+
+			Historico pantallaHistorico = new Historico();
+			pantallaHistorico.setVisible(true);
+			dispose();
+		});
+
+		menuCerrarPerfil = new JMenuItem(Constants.CERRAR_SESION_MENU);
+		popupMenuPerfil.add(menuCerrarPerfil);
+		menuCerrarPerfil.addActionListener(e -> {
+
+			Login pantallaLogin = new Login();
+			pantallaLogin.setVisible(true);
+			dispose();
+		});
+
+		btnPerfil.addActionListener(e -> {
+			popupMenuPerfil.show(btnPerfil, 0, btnPerfil.getHeight());
+
+		});
+
+		scrollPaneWorkouts = new JScrollPane();
+		scrollPaneWorkouts.setBounds(162, 131, 574, 149);
+		contentPane.add(scrollPaneWorkouts);
+
+		modeloWorkouts = new DefaultTableModel();
+		modeloWorkouts.addColumn(Constants.COLUMNA_NOMBRE_WORKOUT);
+		modeloWorkouts.addColumn(Constants.COLUMNA_EJERCICIOS);
+		modeloWorkouts.addColumn(Constants.COLUMNA_NIVEL_WORKOUT);
+		modeloWorkouts.addColumn(Constants.COLUMNA_VIDEO);
+
+		tablaWorkouts = new JTable(modeloWorkouts);
+		scrollPaneWorkouts.setViewportView(tablaWorkouts);
+
+		scrollPaneDetallesWorkout = new JScrollPane();
+		scrollPaneDetallesWorkout.setBounds(162, 351, 574, 149);
+		contentPane.add(scrollPaneDetallesWorkout);
+
+		modeloDetallesWorkouts = new DefaultTableModel();
+		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_NOMBRE_EJERCICIO);
+		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_DESCRIPCION);
+		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_SERIES);
+
+		tablaDetallesWorkout = new JTable(modeloDetallesWorkouts);
+		scrollPaneDetallesWorkout.setViewportView(tablaDetallesWorkout);
+
+		btnSeleccionar = new JButton(Constants.SELECCIONAR_BOTON);
+		btnSeleccionar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Cronometro pantallaCronometro = new Cronometro();
+				pantallaCronometro.setVisible(true);
 				dispose();
-        	}
-        });
-       
-        btnSeleccionar.setFont(new Font("Arial", Font.BOLD, 13));
-        btnSeleccionar.setBounds(367, 554, 155, 40);
-        btnSeleccionar.setFocusPainted(false);
-        btnSeleccionar.setContentAreaFilled(false);
-        btnSeleccionar.setBorderPainted(false);
-        contentPane.add(btnSeleccionar);
-        
-        btnFiltrarPorNivel = new JButton();
-        btnFiltrarPorNivel.setText("Nivel");
-        btnFiltrarPorNivel.setFocusPainted(false);
-        btnFiltrarPorNivel.setContentAreaFilled(false);
-        btnFiltrarPorNivel.setBorderPainted(false);
-        btnFiltrarPorNivel.setBounds(761, 11, 102, 40);
-        contentPane.add(btnFiltrarPorNivel);
-        
-        popupMenuNivel = new JPopupMenu();
-        //Crear los MenuItem cargandolos de la bbdd
+			}
+		});
+		btnSeleccionar.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
+		btnSeleccionar.setBounds(360, 554, 155, 40);
+		btnSeleccionar.setFocusPainted(false);
+		btnSeleccionar.setContentAreaFilled(false);
+		btnSeleccionar.setBorderPainted(false);
+		contentPane.add(btnSeleccionar);
+
+		btnFiltrarPorNivel = new JButton();
+		btnFiltrarPorNivel.setText(Constants.COLUMNA_NIVEL_WORKOUT);
+		btnFiltrarPorNivel.setFocusPainted(false);
+		btnFiltrarPorNivel.setContentAreaFilled(false);
+		btnFiltrarPorNivel.setBorderPainted(false);
+		btnFiltrarPorNivel.setBounds(761, 11, 102, 40);
+		contentPane.add(btnFiltrarPorNivel);
+
+		popupMenuNivel = new JPopupMenu();
+		// Crear los MenuItem cargandolos de la bbdd
 	}
 }

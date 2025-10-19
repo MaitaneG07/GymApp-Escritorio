@@ -1,11 +1,11 @@
 package vista.pantallas;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
+
+import utils.Constants;
+
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -27,25 +27,10 @@ public class Ejercicio extends JFrame {
 	private JLabel lblDescripcion;
 	private JButton btnCronometro;
 	private JLabel lblCronometro;
-	private JTable tableSeries;
-	private DefaultTableModel tablaDetallesSeries;
-	
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Ejercicio frame = new Ejercicio();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JLabel lblNombreEjercicio;
+	private JLabel lblFondoCronometro;
+	private JButton btnSalir;
+	private JButton btnPrueba;
 
 	/**
 	 * Create the frame.
@@ -58,22 +43,27 @@ public class Ejercicio extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		
-		ImageIcon originalIcon = new ImageIcon("C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\\\logoLight.jpg");
+
+		lblFondoCronometro = new JLabel();
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
-		Image imagenEscalada = imagenOriginal.getScaledInstance(869, 608, Image.SCALE_SMOOTH);
+		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 		
+		lblFondoCronometro.setIcon(iconoEscalado);
+		lblFondoCronometro.setBounds(0, 0, 873, 623);
+		lblFondoCronometro.setLayout(null);
+		contentPane.add(lblFondoCronometro);
 		
 		
 		lblCronometro = new JLabel("Aqui va el cronometro");
-		lblCronometro.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblCronometro.setBounds(332, 435, 177, 74);
+		lblCronometro.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 15));
+		lblCronometro.setBounds(320, 418, 156, 42);
 		contentPane.add(lblCronometro);
 		
-		JButton btnSalir = new JButton("Salir");
-		btnSalir.setBackground(new Color(255, 255, 255));
+		btnSalir = new JButton(Constants.SALIR_BOTON);
 		btnSalir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -83,11 +73,16 @@ public class Ejercicio extends JFrame {
 			}
 		});
 		btnSalir.setBounds(664, 555, 121, 23);
-		contentPane.add(btnSalir);
+		lblFondoCronometro.add(btnSalir);
 		
-		btnCronometro = new JButton("Iniciar");
-		 String frase1 = "Iniciar";
-	        String frase2 = "Parar";
+		lblNombreEjercicio = new JLabel("Aquí va el Nombre Ejercicio");
+		lblNombreEjercicio.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 20));
+		lblNombreEjercicio.setBounds(320, 47, 177, 52);
+		lblFondoCronometro.add(lblNombreEjercicio);
+		
+		btnCronometro = new JButton(Constants.INICIAR_BOTON);
+		 String frase1 = Constants.INICIAR_BOTON;
+	        String frase2 = Constants.PARAR_BOTON;
 	        
 	        final boolean[] esFrase1 = {true};
 		
@@ -102,43 +97,24 @@ public class Ejercicio extends JFrame {
                 esFrase1[0] = !esFrase1[0]; // Cambia el estado para la próxima vez
             }
 		});
-		btnCronometro.setBounds(352, 520, 133, 58);
-		contentPane.add(btnCronometro);
+		btnCronometro.setBounds(362, 503, 89, 23);
+		lblFondoCronometro.add(btnCronometro);
 		
-		lblDescripcion = new JLabel("Descripcion del ejercicio");
-		lblDescripcion.setBounds(98, 97, 411, 137);
-		contentPane.add(lblDescripcion);
+		lblFondoDescripcion = new JLabel("Aquí va Descripcion del ejercicio");
+		lblFondoDescripcion.setBounds(247, 123, 354, 89);
+		lblFondoCronometro.add(lblFondoDescripcion);
 		
-		JLabel lblNombreEjercicio = new JLabel("Nombre del ejercicio");
-		lblNombreEjercicio.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblNombreEjercicio.setBounds(304, 38, 244, 28);
-		contentPane.add(lblNombreEjercicio);
-		
-		JLabel lblFotoEjercicio = new JLabel("Foto");
-		lblFotoEjercicio.setBounds(565, 97, 169, 137);
-		contentPane.add(lblFotoEjercicio);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(204, 325, 434, 99);
-		contentPane.add(scrollPane);
-		
-		 tablaDetallesSeries = new DefaultTableModel();
-		 tablaDetallesSeries.addColumn("SERIE");
-		 tablaDetallesSeries.addColumn("TIEMPO");
-		 tablaDetallesSeries.addColumn("DESCANSO");
-		
-		tableSeries = new JTable(tablaDetallesSeries);
-		scrollPane.setViewportView(tableSeries);
-		
-		
-	
-		
-		
-		
-		
-		
-		
+		btnPrueba = new JButton(Constants.PRUEBA_BOTON);
+		lblFondoCronometro.add(btnPrueba);
+		btnPrueba.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Resumen panelResumen = new Resumen();
+				panelResumen.setVisible(true);
+				dispose();
+			}
+		});
+		btnPrueba.setBounds(48, 557, 222, 23);
 
-		
 	}
 }
