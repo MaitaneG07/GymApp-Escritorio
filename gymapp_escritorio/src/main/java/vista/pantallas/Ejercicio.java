@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -14,16 +15,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
+import javax.swing.JSpinner;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
-public class Cronometro extends JFrame {
+public class Ejercicio extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JLabel lblFondoDescripcion;
+	private JLabel lblDescripcion;
 	private JButton btnCronometro;
 	private JLabel lblCronometro;
-	private JLabel lblNombreEjercicio;
-	private JLabel lblFondoCronometro;
+	private JTable tableSeries;
+	private DefaultTableModel tablaDetallesSeries;
 	
 
 	/**
@@ -33,7 +38,7 @@ public class Cronometro extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Cronometro frame = new Cronometro();
+					Ejercicio frame = new Ejercicio();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -45,7 +50,7 @@ public class Cronometro extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Cronometro() {
+	public Ejercicio() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -60,19 +65,15 @@ public class Cronometro extends JFrame {
 		Image imagenEscalada = imagenOriginal.getScaledInstance(869, 608, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 		
-		lblFondoCronometro.setIcon(iconoEscalado);
-		lblFondoCronometro = new JLabel("");
-		lblFondoCronometro.setBounds(0, 11, 869, 608);
-		lblFondoCronometro.setLayout(null);
-		contentPane.add(lblFondoCronometro);
 		
 		
 		lblCronometro = new JLabel("Aqui va el cronometro");
 		lblCronometro.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblCronometro.setBounds(320, 418, 156, 42);
+		lblCronometro.setBounds(332, 435, 177, 74);
 		contentPane.add(lblCronometro);
 		
 		JButton btnSalir = new JButton("Salir");
+		btnSalir.setBackground(new Color(255, 255, 255));
 		btnSalir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -83,11 +84,6 @@ public class Cronometro extends JFrame {
 		});
 		btnSalir.setBounds(664, 555, 121, 23);
 		contentPane.add(btnSalir);
-		
-		lblNombreEjercicio = new JLabel("Nombre Ejercicio");
-		lblNombreEjercicio.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblNombreEjercicio.setBounds(320, 47, 177, 52);
-		contentPane.add(lblNombreEjercicio);
 		
 		btnCronometro = new JButton("Iniciar");
 		 String frase1 = "Iniciar";
@@ -106,12 +102,34 @@ public class Cronometro extends JFrame {
                 esFrase1[0] = !esFrase1[0]; // Cambia el estado para la próxima vez
             }
 		});
-		btnCronometro.setBounds(362, 503, 89, 23);
+		btnCronometro.setBounds(352, 520, 133, 58);
 		contentPane.add(btnCronometro);
 		
-		lblFondoDescripcion = new JLabel("Descripcion del ejercicio");
-		lblFondoDescripcion.setBounds(247, 123, 354, 89);
-		contentPane.add(lblFondoDescripcion);
+		lblDescripcion = new JLabel("Descripcion del ejercicio");
+		lblDescripcion.setBounds(98, 97, 411, 137);
+		contentPane.add(lblDescripcion);
+		
+		JLabel lblNombreEjercicio = new JLabel("Nombre del ejercicio");
+		lblNombreEjercicio.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblNombreEjercicio.setBounds(304, 38, 244, 28);
+		contentPane.add(lblNombreEjercicio);
+		
+		JLabel lblFotoEjercicio = new JLabel("Foto");
+		lblFotoEjercicio.setBounds(565, 97, 169, 137);
+		contentPane.add(lblFotoEjercicio);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(204, 325, 434, 99);
+		contentPane.add(scrollPane);
+		
+		 tablaDetallesSeries = new DefaultTableModel();
+		 tablaDetallesSeries.addColumn("SERIE");
+		 tablaDetallesSeries.addColumn("TIEMPO");
+		 tablaDetallesSeries.addColumn("DESCANSO");
+		
+		tableSeries = new JTable(tablaDetallesSeries);
+		scrollPane.setViewportView(tableSeries);
+		
 		
 	
 		

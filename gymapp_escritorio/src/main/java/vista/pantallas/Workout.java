@@ -130,7 +130,7 @@ public class Workout extends JFrame {
         btnSeleccionar.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent e) {
-        		Cronometro pantallaCronometro = new Cronometro();
+        		Ejercicio pantallaCronometro = new Ejercicio();
         		pantallaCronometro.setVisible(true);
 				dispose();
         	}
