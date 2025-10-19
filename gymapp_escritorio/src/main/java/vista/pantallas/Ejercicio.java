@@ -3,6 +3,7 @@ package vista.pantallas;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import utils.Constants;
 
@@ -16,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
-import javax.swing.JSpinner;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -28,9 +28,11 @@ public class Ejercicio extends JFrame {
 	private JButton btnCronometro;
 	private JLabel lblCronometro;
 	private JLabel lblNombreEjercicio;
-	private JLabel lblFondoCronometro;
-	private JButton btnSalir;
-	private JButton btnPrueba;
+	private DefaultTableModel tablaDetallesSeries;
+	private JTable tableSeries;
+	private JScrollPane scrollPane;
+	private JLabel lblFotoEjercicio;
+	private JButton btnPerfil;
 
 	/**
 	 * Create the frame.
@@ -43,27 +45,25 @@ public class Ejercicio extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-
-		lblFondoCronometro = new JLabel();
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
-//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
-
-		Image imagenOriginal = originalIcon.getImage();
-		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
-		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-		
-		lblFondoCronometro.setIcon(iconoEscalado);
-		lblFondoCronometro.setBounds(0, 0, 873, 623);
-		lblFondoCronometro.setLayout(null);
-		contentPane.add(lblFondoCronometro);
+		btnPerfil = new JButton();
+		 ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_CASA));
+//		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
+		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+		btnPerfil.setIcon(new ImageIcon(imgEscalada));
+		btnPerfil.setBounds(10, 11, 60, 60);
+		btnPerfil.setFocusPainted(false);
+		btnPerfil.setContentAreaFilled(false);
+		btnPerfil.setBorderPainted(false);
+		contentPane.add(btnPerfil);
 		
 		
 		lblCronometro = new JLabel("Aqui va el cronometro");
 		lblCronometro.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 15));
-		lblCronometro.setBounds(320, 418, 156, 42);
+		lblCronometro.setBounds(332, 435, 177, 74);
 		contentPane.add(lblCronometro);
 		
-		btnSalir = new JButton(Constants.SALIR_BOTON);
+		JButton btnSalir = new JButton(Constants.SALIR_BOTON);
+		btnSalir.setBackground(new Color(255, 255, 255));
 		btnSalir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -73,12 +73,7 @@ public class Ejercicio extends JFrame {
 			}
 		});
 		btnSalir.setBounds(664, 555, 121, 23);
-		lblFondoCronometro.add(btnSalir);
-		
-		lblNombreEjercicio = new JLabel("Aquí va el Nombre Ejercicio");
-		lblNombreEjercicio.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 20));
-		lblNombreEjercicio.setBounds(320, 47, 177, 52);
-		lblFondoCronometro.add(lblNombreEjercicio);
+		contentPane.add(btnSalir);
 		
 		btnCronometro = new JButton(Constants.INICIAR_BOTON);
 		 String frase1 = Constants.INICIAR_BOTON;
@@ -97,24 +92,33 @@ public class Ejercicio extends JFrame {
                 esFrase1[0] = !esFrase1[0]; // Cambia el estado para la próxima vez
             }
 		});
-		btnCronometro.setBounds(362, 503, 89, 23);
-		lblFondoCronometro.add(btnCronometro);
+		btnCronometro.setBounds(352, 520, 133, 58);
+		contentPane.add(btnCronometro);
 		
-		lblFondoDescripcion = new JLabel("Aquí va Descripcion del ejercicio");
-		lblFondoDescripcion.setBounds(247, 123, 354, 89);
-		lblFondoCronometro.add(lblFondoDescripcion);
+		lblDescripcion = new JLabel("Descripcion del ejercicio");
+		lblDescripcion.setBounds(98, 97, 411, 137);
+		contentPane.add(lblDescripcion);
 		
-		btnPrueba = new JButton(Constants.PRUEBA_BOTON);
-		lblFondoCronometro.add(btnPrueba);
-		btnPrueba.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Resumen panelResumen = new Resumen();
-				panelResumen.setVisible(true);
-				dispose();
-			}
-		});
-		btnPrueba.setBounds(48, 557, 222, 23);
+		lblNombreEjercicio = new JLabel("Nombre del ejercicio");
+		lblNombreEjercicio.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 20));
+		lblNombreEjercicio.setBounds(304, 38, 244, 28);
+		contentPane.add(lblNombreEjercicio);
+		
+		lblFotoEjercicio = new JLabel("Foto");
+		lblFotoEjercicio.setBounds(565, 97, 169, 137);
+		contentPane.add(lblFotoEjercicio);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(204, 325, 434, 99);
+		contentPane.add(scrollPane);
+		
+		 tablaDetallesSeries = new DefaultTableModel();
+		 tablaDetallesSeries.addColumn(Constants.COLUMNA_SERIES);
+		 tablaDetallesSeries.addColumn(Constants.COLUMNA_TIEMPO);
+		 tablaDetallesSeries.addColumn(Constants.COLUMNA_DESCANSO);
+		
+		tableSeries = new JTable(tablaDetallesSeries);
+		scrollPane.setViewportView(tableSeries);
 
 	}
 }

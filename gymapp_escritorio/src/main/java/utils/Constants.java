@@ -8,12 +8,18 @@ public class Constants {
 	// Tipo de letra
 	public static final String FONT_FAMILY = "Arial";
 	
-	// URL Logo
+	// URL Logo Maitane
 	public static final String LOGO_OSCURO_CLASE = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
 	public static final String LOGO_OSCURO_CASA = "C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
 	public static final String LOGO_CLARO_CLASE = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
 	public static final String LOGO_CLARO_CASA = "C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
 
+	// URL Logo Giselle
+	public static final String LOGO_CLASE = "C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\\\logoLight.jpg";
+	public static final String LOGO_CASA = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
+	
+	
+	
 	// Nombre de los label
 	public static final String NOMBRE_LABEL = "NOMBRE";
 	public static final String APELLIDO_LABEL = "APELLIDO";
@@ -37,6 +43,8 @@ public class Constants {
 	public static final String COLUMNA_VIDEO = "VIDEO";
 	public static final String COLUMNA_DESCRIPCION = "DESCRIPCIÓN";
 	public static final String COLUMNA_SERIES = "SERIES";
+	public static final String COLUMNA_TIEMPO = "SERIES";
+	public static final String COLUMNA_DESCANSO = "SERIES";
 	public static final String TIEMPO_TOTAL_WORKOUT = "TIEMPO TOTAL";
 	public static final String TIEMPO_PREVISTO_WORKOUT= "TIEMPO PREVISTO";
 	public static final String FECHA_WORKOUT = "FECHA";
