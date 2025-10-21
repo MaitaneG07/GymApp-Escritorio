@@ -62,8 +62,8 @@ public class Workout extends JFrame {
 		contentPane.add(tituloWorkout);
 
 		btnPerfil = new JButton();
-		 ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA));
-//		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
+		// ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA));
+		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
 		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 		btnPerfil.setIcon(new ImageIcon(imgEscalada));
 		btnPerfil.setBounds(10, 11, 60, 60);
@@ -135,8 +135,8 @@ public class Workout extends JFrame {
 		btnSeleccionar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Cronometro pantallaCronometro = new Cronometro();
-				pantallaCronometro.setVisible(true);
+				Ejercicio pantallaEjercicio = new Ejercicio();
+				pantallaEjercicio.setVisible(true);
 				dispose();
 			}
 		});
