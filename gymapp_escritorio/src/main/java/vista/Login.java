@@ -8,6 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import modelo.entity.Cliente;
+import modelo.exceptions.FireBaseException;
+import modelo.gestores.GestorCliente;
 import utils.Constants;
 import vista.pantallas.Registro;
 import vista.pantallas.Workout;
@@ -18,8 +21,12 @@ import java.awt.Font;
 import java.awt.Image;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Scanner;
 
 public class Login extends JFrame {
 
@@ -33,6 +40,10 @@ public class Login extends JFrame {
 	private JButton btnIniciarSesion;
 	private JButton btnRegistro;
 	private JLabel tituloLogin;
+	
+	
+	private GestorCliente gestorCliente;
+	private Scanner scanner = null;;
 
 	/**
 	 * Launch the application.
@@ -47,11 +58,21 @@ public class Login extends JFrame {
 			}
 		});
 	}
+	
+	
 
 	/**
 	 * Create the frame.
 	 */
 	public Login() {
+		scanner = new Scanner(System.in);
+		try {
+			gestorCliente = new GestorCliente();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -90,13 +111,16 @@ public class Login extends JFrame {
 		textFieldUsuario.setColumns(10);
 		
 		btnIniciarSesion = new JButton(Constants.INICAR_SESION_BOTON);
-		btnIniciarSesion.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Workout panelWorkout = new Workout();
-				panelWorkout.setVisible(true);
-				dispose();
-			}
+			btnIniciarSesion.addActionListener((ActionEvent e) -> {
+				
+				try {
+					printCliente(gestorCliente.getCliente(getThingy("Nombre del cliente: ")));
+				} catch (FireBaseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				
 		});
 		btnIniciarSesion.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnIniciarSesion.setForeground(new Color(0, 0, 0));
@@ -154,5 +178,26 @@ public class Login extends JFrame {
 		textFieldPassword.setColumns(10);
 		textFieldPassword.setBounds(321, 380, 225, 30);
 
+	}
+	
+	//Para pruebas
+	private void printClientes(List<Cliente> clientes) {
+		for (Cliente cliente : clientes) {
+			printCliente(cliente);
+		}
+	}
+	//Para pruebas
+	private String getThingy(String text) {
+		System.out.print(text);
+		return scanner.nextLine().trim();
+	}
+	
+	//Para pruebas
+	private void printCliente(Cliente cliente) {
+		if (null != cliente) {
+			System.out.println(cliente.toString());
+			
+		} else
+			System.out.println("No hay documento de Cliente");
 	}
 }
