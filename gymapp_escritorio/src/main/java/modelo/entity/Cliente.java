@@ -5,94 +5,95 @@ import java.util.Objects;
 
 public class Cliente implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
-	private static final long serialVersionUID = -296374817012181865L;
-	
-	
+	private String id;
 	private String nombre;
 	private String apellido1;
 	private String apellido2;
-	private String fecha_nacimiento;
+	private String fechaNacimiento;
 	private String email;
-	
+	private String password;
 	
 	public Cliente() {
 		super();
 	}
 
-
-	public Cliente(String nombre, String apellido1, String apellido2, String fecha_nacimiento, String email) {
+	public Cliente(String id, String nombre, String password, String apellido1, String apellido2, String fechaNacimiento, String email) {
 		super();
+		this.id = id;
 		this.nombre = nombre;
 		this.apellido1 = apellido1;
 		this.apellido2 = apellido2;
-		this.fecha_nacimiento = fecha_nacimiento;
+		this.fechaNacimiento = fechaNacimiento;
 		this.email = email;
+		this.password = password;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getNombre() {
 		return nombre;
 	}
 
-
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-
 
 	public String getApellido1() {
 		return apellido1;
 	}
 
-
 	public void setApellido1(String apellido1) {
 		this.apellido1 = apellido1;
 	}
-
 
 	public String getApellido2() {
 		return apellido2;
 	}
 
-
 	public void setApellido2(String apellido2) {
 		this.apellido2 = apellido2;
 	}
 
-
-	public String getFecha_nacimiento() {
-		return fecha_nacimiento;
+	public String getFechaNacimiento() {
+		return fechaNacimiento;
 	}
 
-
-	public void setFecha_nacimiento(String fecha_nacimiento) {
-		this.fecha_nacimiento = fecha_nacimiento;
+	public void setFechaNacimiento(String fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
 	}
-
 
 	public String getEmail() {
 		return email;
 	}
 
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-
-
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public String getPassword() {
+		return password;
 	}
 
+	public void getPassword(String password) {
+		this.password = password;
+	}
 
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(apellido1, apellido2, email, fecha_nacimiento, nombre);
+		return Objects.hash(apellido1, apellido2, email, fechaNacimiento, id, nombre);
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -104,15 +105,14 @@ public class Cliente implements Serializable {
 			return false;
 		Cliente other = (Cliente) obj;
 		return Objects.equals(apellido1, other.apellido1) && Objects.equals(apellido2, other.apellido2)
-				&& Objects.equals(email, other.email) && Objects.equals(fecha_nacimiento, other.fecha_nacimiento)
+				&& Objects.equals(email, other.email) && Objects.equals(password, other.password)
+				&& Objects.equals(fechaNacimiento, other.fechaNacimiento) && id == other.id
 				&& Objects.equals(nombre, other.nombre);
 	}
 
-
 	@Override
 	public String toString() {
-		return "Cliente [nombre=" + nombre + ", apellido1=" + apellido1 + ", apellido2=" + apellido2
-				+ ", fecha_nacimiento=" + fecha_nacimiento + ", email=" + email + "]";
+		return id + ", " + nombre + ", " + apellido1 + ", " + apellido2
+				+ ", " + fechaNacimiento + ", " + email + ", " + password ;
 	}
-
 }

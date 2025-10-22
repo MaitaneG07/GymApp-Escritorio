@@ -54,8 +54,10 @@ public class Registro extends JFrame {
 		contentPane.setLayout(null);
 		
 		lblFondoRegistro = new JLabel();
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
-//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
+		
+		//LOGO MAITANE
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 		
 		Image imagenOriginal = originalIcon.getImage();
 

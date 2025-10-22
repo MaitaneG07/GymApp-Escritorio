@@ -7,7 +7,13 @@ public class Constants {
 
 	// Tipo de letra
 	public static final String FONT_FAMILY = "Arial";
-	
+
+	// URL Logo
+	public static final String LOGO_OSCURO_CLASE_Ak = "C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
+	public static final String LOGO_OSCURO_CASA_Ak = "C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
+	public static final String LOGO_CLARO_CLASE_Ak = "C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
+	public static final String LOGO_CLARO_CASA_Ak = "C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
+
 	// URL Logo Maitane
 	public static final String LOGO_OSCURO_CLASE = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
 	public static final String LOGO_OSCURO_CASA = "C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";

@@ -46,7 +46,9 @@ public class Ejercicio extends JFrame {
 		contentPane.setLayout(null);
 		
 		btnPerfil = new JButton();
-		 ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_CASA));
+		
+		//LOGO MAITANE
+		 ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA));
 //		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
 		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 		btnPerfil.setIcon(new ImageIcon(imgEscalada));

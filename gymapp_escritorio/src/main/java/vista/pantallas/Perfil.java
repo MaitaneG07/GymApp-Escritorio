@@ -51,8 +51,10 @@ public class Perfil extends JFrame {
 		contentPane.setLayout(null);
 		
 		lblFondoPerfil = new JLabel();
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_OSCURO_CASA);
-//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
+		
+		//LOGO MAITANE
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_OSCURO_CASA);
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 		
 		Image imagenOriginal = originalIcon.getImage();
 
