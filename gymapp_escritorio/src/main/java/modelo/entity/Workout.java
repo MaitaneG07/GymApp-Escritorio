@@ -1,0 +1,113 @@
+package modelo.entity;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+
+import vista.pantallas.Ejercicio;
+
+public class Workout implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private String id;
+	private String nombre;
+	private String fechaInicio;
+	private String video;
+	private boolean completado;
+	private List<Ejercicio> ejercicios;
+	
+	public Workout() {
+		super();
+	}
+
+	public Workout(String id, String nombre, String fechaInicio, String video, boolean completado,
+			List<Ejercicio> ejercicios) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.fechaInicio = fechaInicio;
+		this.video = video;
+		this.completado = completado;
+		this.ejercicios = ejercicios;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getFechaInicio() {
+		return fechaInicio;
+	}
+
+	public void setFechaInicio(String fechaInicio) {
+		this.fechaInicio = fechaInicio;
+	}
+
+	public String getVideo() {
+		return video;
+	}
+
+	public void setVideo(String video) {
+		this.video = video;
+	}
+
+	public boolean isCompletado() {
+		return completado;
+	}
+
+	public void setCompletado(boolean completado) {
+		this.completado = completado;
+	}
+
+	public List<Ejercicio> getEjercicios() {
+		return ejercicios;
+	}
+
+	public void setEjercicios(List<Ejercicio> ejercicios) {
+		this.ejercicios = ejercicios;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(completado, ejercicios, fechaInicio, id, nombre, video);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Workout other = (Workout) obj;
+		return completado == other.completado && Objects.equals(ejercicios, other.ejercicios)
+				&& Objects.equals(fechaInicio, other.fechaInicio) && id == other.id
+				&& Objects.equals(nombre, other.nombre) && Objects.equals(video, other.video);
+	}
+
+	@Override
+	public String toString() {
+		return id + ", " + nombre + ", " + fechaInicio + ", " + video
+				+ ", " + completado + ", " + ejercicios;
+	}
+	
+	
+
+}

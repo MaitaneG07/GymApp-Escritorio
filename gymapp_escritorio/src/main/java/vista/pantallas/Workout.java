@@ -62,6 +62,8 @@ public class Workout extends JFrame {
 		contentPane.add(tituloWorkout);
 
 		btnPerfil = new JButton();
+		
+		//LOGO MAITANE
 		// ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA));
 		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
 		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);

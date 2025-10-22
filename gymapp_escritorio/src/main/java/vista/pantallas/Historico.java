@@ -46,7 +46,12 @@ public class Historico extends JFrame {
 		contentPane.setLayout(null);
 		
 		lblFondoHistorico = new JLabel();
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE_Ak);
+		
+		//Logo AKIRA
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE_Ak);
+		
+		//LOGO MAITANE
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 //		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
 
 		Image imagenOriginal = originalIcon.getImage();

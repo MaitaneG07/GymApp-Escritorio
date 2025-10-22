@@ -8,11 +8,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.mindrot.jbcrypt.BCrypt;
+
+import controlador.FirebaseController;
+import modelo.entity.Cliente;
+import modelo.exceptions.FireBaseException;
+import modelo.gestores.FirebaseGestor;
 import utils.Constants;
 import vista.pantallas.Registro;
 import vista.pantallas.Workout;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.Image;
@@ -20,6 +27,9 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Scanner;
+import javax.swing.JPasswordField;
 
 public class Login extends JFrame {
 
@@ -33,6 +43,10 @@ public class Login extends JFrame {
 	private JButton btnIniciarSesion;
 	private JButton btnRegistro;
 	private JLabel tituloLogin;
+	private Scanner scanner;
+	private FirebaseGestor firebaseGestor;
+	private JPasswordField passwordField;
+	private FirebaseController firebaseController;
 
 	/**
 	 * Launch the application.
@@ -52,6 +66,16 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
+		
+		scanner = new Scanner(System.in);
+		firebaseController = new FirebaseController();
+		try {
+			firebaseGestor = new FirebaseGestor();
+		} catch (FireBaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -60,8 +84,10 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		
 		labelFondo = new JLabel();
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
-//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
+		
+		//LOGO MAITANE
+//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
@@ -93,9 +119,51 @@ public class Login extends JFrame {
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Workout panelWorkout = new Workout();
-				panelWorkout.setVisible(true);
-				dispose();
+				
+				realizarLogin();
+				limpiarCampos();
+			}
+
+			private void realizarLogin() {
+				String email = textFieldUsuario.getText().trim();
+			    String password = new String(passwordField.getPassword());
+			    
+			    System.out.println(email + "\n" + password);
+			    
+			    if (email.isEmpty() || password.isEmpty()) {
+			        JOptionPane.showMessageDialog(Login.this, 
+			            "Por favor, ingresa email y contraseña", 
+			            "Campos vacíos", 
+			            JOptionPane.WARNING_MESSAGE);
+			        return;
+			    }
+			    
+			    try {
+			    	Cliente cliente = firebaseController.login(email, password);
+			    	
+			    	System.out.println(cliente);
+			        
+			        if (cliente != null) {
+			           Workout pantallaWorkout = new Workout();
+			           pantallaWorkout.setVisible(true);
+			           dispose();
+			            
+			        } else {
+			            JOptionPane.showMessageDialog(Login.this, 
+			                "Email o contraseña incorrectos", 
+			                "Error de login", 
+			                JOptionPane.ERROR_MESSAGE);
+			        }
+			        
+			    } catch (FireBaseException e1) {
+			        e1.printStackTrace();
+			    }
+			}
+			
+			private void limpiarCampos() {
+			    
+			    textFieldUsuario.setText("");
+			    passwordField.setText("");
 			}
 		});
 		btnIniciarSesion.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
@@ -146,13 +214,21 @@ public class Login extends JFrame {
 		labelPassword.setOpaque(true);
 		labelPassword.setBackground(new Color(181, 179, 179, 150));
 		
-		textFieldPassword = new JTextField();
-		labelFondo.add(textFieldPassword);
-		textFieldPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		textFieldPassword.setForeground(new Color(0, 0, 0));
-		textFieldPassword.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
-		textFieldPassword.setColumns(10);
-		textFieldPassword.setBounds(321, 380, 225, 30);
+//		textFieldPassword = new JTextField();
+//		labelFondo.add(textFieldPassword);
+//		textFieldPassword.setHorizontalAlignment(SwingConstants.CENTER);
+//		textFieldPassword.setForeground(new Color(0, 0, 0));
+//		textFieldPassword.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
+//		textFieldPassword.setColumns(10);
+//		textFieldPassword.setBounds(321, 380, 225, 30);
+		
+		passwordField = new JPasswordField();
+		passwordField.setHorizontalAlignment(SwingConstants.CENTER);
+		passwordField.setForeground(new Color(0, 0, 0));
+		passwordField.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
+		passwordField.setColumns(10);
+		passwordField.setBounds(321, 380, 225, 30);
+		labelFondo.add(passwordField);
 
 	}
 }
