@@ -218,13 +218,7 @@ public class Login extends JFrame {
 		labelPassword.setOpaque(true);
 		labelPassword.setBackground(new Color(181, 179, 179, 150));
 		
-//		textFieldPassword = new JTextField();
-//		labelFondo.add(textFieldPassword);
-//		textFieldPassword.setHorizontalAlignment(SwingConstants.CENTER);
-//		textFieldPassword.setForeground(new Color(0, 0, 0));
-//		textFieldPassword.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
-//		textFieldPassword.setColumns(10);
-//		textFieldPassword.setBounds(321, 380, 225, 30);
+
 		
 		passwordField = new JPasswordField();
 		passwordField.setHorizontalAlignment(SwingConstants.CENTER);

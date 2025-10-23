@@ -61,7 +61,7 @@ public class Ejercicio extends JFrame {
 		
 		lblCronometro = new JLabel("Aqui va el cronometro");
 		lblCronometro.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 15));
-		lblCronometro.setBounds(332, 435, 177, 74);
+		lblCronometro.setBounds(331, 426, 177, 74);
 		contentPane.add(lblCronometro);
 		
 		JButton btnSalir = new JButton(Constants.SALIR_BOTON);
@@ -94,11 +94,11 @@ public class Ejercicio extends JFrame {
                 esFrase1[0] = !esFrase1[0]; // Cambia el estado para la próxima vez
             }
 		});
-		btnCronometro.setBounds(352, 520, 133, 58);
+		btnCronometro.setBounds(341, 520, 133, 58);
 		contentPane.add(btnCronometro);
 		
 		lblDescripcion = new JLabel("Descripcion del ejercicio");
-		lblDescripcion.setBounds(98, 97, 411, 137);
+		lblDescripcion.setBounds(98, 97, 411, 163);
 		contentPane.add(lblDescripcion);
 		
 		lblNombreEjercicio = new JLabel("Nombre del ejercicio");
@@ -106,12 +106,13 @@ public class Ejercicio extends JFrame {
 		lblNombreEjercicio.setBounds(304, 38, 244, 28);
 		contentPane.add(lblNombreEjercicio);
 		
-		lblFotoEjercicio = new JLabel("Foto");
-		lblFotoEjercicio.setBounds(565, 97, 169, 137);
+		lblFotoEjercicio = new JLabel("");
+		lblFotoEjercicio.setIcon(new ImageIcon("C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\remo.jpg"));
+		lblFotoEjercicio.setBounds(565, 97, 201, 163);
 		contentPane.add(lblFotoEjercicio);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(204, 325, 434, 99);
+		scrollPane.setBounds(204, 292, 434, 99);
 		contentPane.add(scrollPane);
 		
 		 tablaDetallesSeries = new DefaultTableModel();

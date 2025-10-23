@@ -5,12 +5,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
@@ -18,12 +24,16 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 
 import modelo.entity.Cliente;
+import modelo.entity.Ejercicio;
+import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 
 public class FirebaseGestor implements FirebaseInterface {
 	
-	private static final String CREDENTIALS = "/GymBBDD.json";
+	private static final String CREDENTIALS = "/FirebaseDB.json";
 	private static final String COLLECTION_CLIENTE = "Clientes";
+	private static final String COLLECTION_EJERCICIO = "Ejercicios";
+	
 	
 	public FirebaseGestor() throws FireBaseException {
 		try {
@@ -148,4 +158,76 @@ public class FirebaseGestor implements FirebaseInterface {
 		}
 		return ret;
 	}
+	
+	public boolean guardarUsuario(Cliente cliente) throws ExecutionException, InterruptedException, FireBaseException {
+        try {
+        	
+        	Firestore dataBase = FirestoreClient.getFirestore();
+        	
+            // Generar ID si no tiene
+            if (cliente.getId() == null || cliente.getId().isEmpty()) {
+            	cliente.setId(UUID.randomUUID().toString());
+            }
+            
+            // Crear mapa con los datos
+            Map<String, Object> usuarioData = new HashMap<>();
+            usuarioData.put("id", cliente.getId());
+            usuarioData.put("nombre", cliente.getNombre());
+            usuarioData.put("apellido1", cliente.getApellido1());
+            usuarioData.put("apellido2", cliente.getApellido2());
+            usuarioData.put("fechaNacimiento", cliente.getFechaNacimiento());
+            usuarioData.put("email", cliente.getEmail());
+            usuarioData.put("password", cliente.getPassword());
+            
+            // Guardar en Firestore
+            dataBase.collection(COLLECTION_CLIENTE).document(cliente.getId()).set(usuarioData).get();
+            
+            return true;
+        } catch (Exception e) {
+        	throw new FireBaseException("Error - " + e.getLocalizedMessage());
+            
+        }
+    
+	
+	}
+	
+	public String obtenerSiguienteId() throws FireBaseException {
+	    try {
+	    	Firestore dataBase = FirestoreClient.getFirestore();
+	    	
+	        ApiFuture<QuerySnapshot> future = dataBase.collection(COLLECTION_CLIENTE)
+	            .orderBy("id", Query.Direction.DESCENDING).limit(1).get();
+	            
+
+	        List<QueryDocumentSnapshot> documentos = future.get().getDocuments();
+
+	        if (documentos.isEmpty()) {
+	            return null;
+	        } else {
+	            String ultimoId = documentos.get(0).getString("id");
+	            String soloLetras = ultimoId.replaceAll("\\d+", "");
+	            String soloNumeros = ultimoId.replaceAll("\\D+", ""); 
+	            
+	            int incrementarNumero = Integer.parseInt(soloNumeros) + 1;
+	            
+	            return soloLetras + incrementarNumero;
+	            
+	          
+	        }
+	    } catch (Exception e) {
+	    	throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    }
+	}
+	
+	public void guardarCliente(Cliente cliente) throws FireBaseException {
+	    try {
+	    	Firestore dataBase = FirestoreClient.getFirestore();
+	   
+	    	dataBase.collection(COLLECTION_CLIENTE).document(cliente.getId()).set(cliente).get();
+	    } catch (Exception e) {
+	    	throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    }
+	}
+	
+	
 }

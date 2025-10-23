@@ -62,7 +62,7 @@ public class GestorCliente {
 	                  doc.getString("fecha_nacimiento"),
 	                  doc.getString("apellido1"),
 	                  doc.getString("apellido2"),
-	                  doc.getString("email")
+	                  doc.getString("email"), name, name
 	              );
 	          } else {
 	              return null; // O lanzar una excepción si quieres
