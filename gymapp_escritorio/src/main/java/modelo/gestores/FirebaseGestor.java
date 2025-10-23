@@ -15,6 +15,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.FieldPath;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -27,11 +28,14 @@ import modelo.entity.Cliente;
 import modelo.entity.Ejercicio;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
+import vista.pantallas.Registro;
 
 public class FirebaseGestor implements FirebaseInterface {
 	
 	private static final String CREDENTIALS = "/FirebaseDB.json";
 	private static final String COLLECTION_CLIENTE = "Clientes";
+	private static final String COLLECTION_GYM = "GymElorrietaBD";
+	private static final String DOCUMENTO_GYM = "gym_01";
 	private static final String COLLECTION_EJERCICIO = "Ejercicios";
 	
 	
@@ -65,7 +69,9 @@ public class FirebaseGestor implements FirebaseInterface {
 			Firestore dataBase = FirestoreClient.getFirestore();
 
 			// Query...
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_CLIENTE).get();
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+					.document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).get();
 
 			// Procesamos la query...
 			QuerySnapshot querySnapshot = query.get();
@@ -91,7 +97,9 @@ public class FirebaseGestor implements FirebaseInterface {
 			Firestore dataBase = FirestoreClient.getFirestore();
 
 			// Query...
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_CLIENTE).whereEqualTo("nombre", nombre).get();
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+					.document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).whereEqualTo("nombre", nombre).get();
 
 			// Procesamos la query...
 			QuerySnapshot querySnapshot = query.get();
@@ -117,7 +125,9 @@ public class FirebaseGestor implements FirebaseInterface {
 			Firestore dataBase = FirestoreClient.getFirestore();
 
 			// Query...
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_CLIENTE).whereEqualTo("email", email).get();
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+					.document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).whereEqualTo("email", email).get();
 
 			// Procesamos la query...
 			QuerySnapshot querySnapshot = query.get();
@@ -159,7 +169,8 @@ public class FirebaseGestor implements FirebaseInterface {
 		return ret;
 	}
 	
-	public boolean guardarUsuario(Cliente cliente) throws ExecutionException, InterruptedException, FireBaseException {
+	@Override
+	public boolean guardarUsuario(Cliente cliente) throws FireBaseException {
         try {
         	
         	Firestore dataBase = FirestoreClient.getFirestore();
@@ -171,7 +182,6 @@ public class FirebaseGestor implements FirebaseInterface {
             
             // Crear mapa con los datos
             Map<String, Object> usuarioData = new HashMap<>();
-            usuarioData.put("id", cliente.getId());
             usuarioData.put("nombre", cliente.getNombre());
             usuarioData.put("apellido1", cliente.getApellido1());
             usuarioData.put("apellido2", cliente.getApellido2());
@@ -180,7 +190,7 @@ public class FirebaseGestor implements FirebaseInterface {
             usuarioData.put("password", cliente.getPassword());
             
             // Guardar en Firestore
-            dataBase.collection(COLLECTION_CLIENTE).document(cliente.getId()).set(usuarioData).get();
+            dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM).collection(COLLECTION_CLIENTE).document(cliente.getId()).set(usuarioData).get();
             
             return true;
         } catch (Exception e) {
@@ -191,43 +201,51 @@ public class FirebaseGestor implements FirebaseInterface {
 	
 	}
 	
+	@Override
 	public String obtenerSiguienteId() throws FireBaseException {
 	    try {
-	    	Firestore dataBase = FirestoreClient.getFirestore();
-	    	
-	        ApiFuture<QuerySnapshot> future = dataBase.collection(COLLECTION_CLIENTE)
-	            .orderBy("id", Query.Direction.DESCENDING).limit(1).get();
-	            
+	        Firestore dataBase = FirestoreClient.getFirestore();
+
+	        ApiFuture<QuerySnapshot> future = dataBase.collection(COLLECTION_GYM)
+	                .document(DOCUMENTO_GYM)
+	                .collection(COLLECTION_CLIENTE)
+	                .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
+	                .limit(1)
+	                .get();
 
 	        List<QueryDocumentSnapshot> documentos = future.get().getDocuments();
 
 	        if (documentos.isEmpty()) {
-	            return null;
+	            // Si no hay documentos, empieza con C01
+	            return "C1";
 	        } else {
-	            String ultimoId = documentos.get(0).getString("id");
+	            // Tomamos el ID del documento (el nombre del documento, no un campo "id")
+	            String ultimoId = documentos.get(0).getId(); // <- aquí usamos getId()
 	            String soloLetras = ultimoId.replaceAll("\\d+", "");
-	            String soloNumeros = ultimoId.replaceAll("\\D+", ""); 
-	            
+	            String soloNumeros = ultimoId.replaceAll("\\D+", "");
+
 	            int incrementarNumero = Integer.parseInt(soloNumeros) + 1;
-	            
+
+	            // Formateamos con dos dígitos, por ejemplo C01, C02, C10
 	            return soloLetras + incrementarNumero;
-	            
-	          
 	        }
 	    } catch (Exception e) {
-	    	throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	        throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    
 	    }
 	}
-	
+
+
+	@Override
 	public void guardarCliente(Cliente cliente) throws FireBaseException {
 	    try {
 	    	Firestore dataBase = FirestoreClient.getFirestore();
 	   
-	    	dataBase.collection(COLLECTION_CLIENTE).document(cliente.getId()).set(cliente).get();
+	    	dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+	    	.collection(COLLECTION_CLIENTE)
+	    	.document(cliente.getId()).set(cliente).get();
 	    } catch (Exception e) {
 	    	throw new FireBaseException("Error - " + e.getLocalizedMessage());
 	    }
 	}
-	
-	
 }

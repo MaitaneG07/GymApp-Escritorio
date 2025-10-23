@@ -9,9 +9,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.v1.FirestoreClient;
-
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
 import modelo.exceptions.FireBaseException;
@@ -25,15 +22,11 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class Registro extends JFrame {
 
@@ -56,6 +49,7 @@ public class Registro extends JFrame {
 	private JButton btnRegistro;
 	private JButton btnVolver;
 	private FirebaseGestor firebaseGestor;
+	private FirebaseController firebaseController;
 
 
 	/**
@@ -65,6 +59,7 @@ public class Registro extends JFrame {
 		
 		try {
 			firebaseGestor = new FirebaseGestor();
+			firebaseController = new FirebaseController();
 		} catch (FireBaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,6 +98,8 @@ public class Registro extends JFrame {
 		
 		btnRegistro = new JButton(Constants.REGISTRARME_LABEL);
 		btnRegistro.addMouseListener(new MouseAdapter() {
+			
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				realizarRegistro();
@@ -147,7 +144,7 @@ public class Registro extends JFrame {
 			        cliente.setEmail(email);
 			        cliente.setPassword(passwordHash);
 
-			        firebaseGestor.guardarCliente(cliente);  // Este método guarda el cliente en Firestore
+			        firebaseController.guardarCliente(cliente);  // Este método guarda el cliente en Firestore
 
 			        JOptionPane.showMessageDialog(Registro.this,
 			            "Registro exitoso. Tu ID es: " + cliente.getId(),

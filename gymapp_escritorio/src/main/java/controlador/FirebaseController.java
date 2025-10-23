@@ -34,6 +34,11 @@ public class FirebaseController {
 			return null;
 		}
 	}
+
+	public void guardarCliente(Cliente cliente) throws FireBaseException {
+		firebaseGestor.guardarCliente(cliente);
+		
+	}
 	
 	
 }

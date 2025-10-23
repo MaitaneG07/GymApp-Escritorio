@@ -12,5 +12,11 @@ public interface FirebaseInterface {
 	public Cliente getCliente(String nombre) throws FireBaseException;
 	
 	public Cliente login (String email, String password) throws FireBaseException;
+
+	void guardarCliente(Cliente cliente) throws FireBaseException;
+
+	String obtenerSiguienteId() throws FireBaseException;
+
+	boolean guardarUsuario(Cliente cliente) throws FireBaseException;
 	
 }
