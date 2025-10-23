@@ -11,7 +11,6 @@ import javax.swing.border.EmptyBorder;
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
 import modelo.exceptions.FireBaseException;
-import modelo.gestores.FirebaseGestor;
 import utils.Constants;
 import vista.pantallas.RegistroView;
 import vista.pantallas.WorkoutView;
@@ -24,10 +23,8 @@ import java.awt.Image;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Scanner;
 import javax.swing.JPasswordField;
 
 public class Login extends JFrame {
@@ -38,12 +35,9 @@ public class Login extends JFrame {
 	private JLabel labelUsuario;
 	private JLabel labelPassword;
 	private JTextField textFieldUsuario;
-	private JTextField textFieldPassword;
 	private JButton btnIniciarSesion;
 	private JButton btnRegistro;
 	private JLabel tituloLogin;
-	private Scanner scanner;
-	private FirebaseGestor firebaseGestor;
 	private JPasswordField passwordField;
 	private FirebaseController firebaseController;
 
@@ -52,49 +46,41 @@ public class Login extends JFrame {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
-				try {
-					Login frame = new Login();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+			try {
+				Login frame = new Login();
+				frame.setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		});
 	}
-	
-	
 
 	public Login() {
-		
-		scanner = new Scanner(System.in);
+
 		firebaseController = new FirebaseController();
-		try {
-			firebaseGestor = new FirebaseGestor();
-		} catch (FireBaseException e) {
-			e.printStackTrace();
-		}
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		labelFondo = new JLabel();
-		
-		//LOGO MAITANE
+
+		// LOGO MAITANE
 //		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
 		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-		
+
 		labelFondo.setIcon(iconoEscalado);
 		labelFondo.setBounds(0, 0, 885, 658);
 		labelFondo.setLayout(null);
 		contentPane.add(labelFondo);
-		
+
 		labelUsuario = new JLabel(Constants.USUARIO_LABEL);
 		labelFondo.add(labelUsuario);
 		labelUsuario.setForeground(new Color(0, 0, 0));
@@ -103,7 +89,7 @@ public class Login extends JFrame {
 		labelUsuario.setBounds(322, 198, 223, 49);
 		labelUsuario.setOpaque(true);
 		labelUsuario.setBackground(new Color(181, 179, 179, 150));
-		
+
 		textFieldUsuario = new JTextField();
 		textFieldUsuario.setHorizontalAlignment(SwingConstants.CENTER);
 		textFieldUsuario.setForeground(new Color(0, 0, 0));
@@ -111,56 +97,52 @@ public class Login extends JFrame {
 		textFieldUsuario.setBounds(321, 261, 225, 30);
 		labelFondo.add(textFieldUsuario);
 		textFieldUsuario.setColumns(10);
-		
+
 		btnIniciarSesion = new JButton(Constants.INICAR_SESION_BOTON);
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
+
 				realizarLogin();
 				limpiarCampos();
 			}
 
 			private void realizarLogin() {
 				String email = textFieldUsuario.getText().trim();
-			    String password = new String(passwordField.getPassword());
-			    
-			    System.out.println(email + "\n" + password);
-			    
-			    if (email.isEmpty() || password.isEmpty()) {
-			        JOptionPane.showMessageDialog(Login.this, 
-			            "Por favor, ingresa email y contraseña", 
-			            "Campos vacíos", 
-			            JOptionPane.WARNING_MESSAGE);
-			        return;
-			    }
-			    
-			    try {
-			    	Cliente cliente = firebaseController.login(email, password);
-			    	
-			    	System.out.println(cliente);
-			        
-			        if (cliente != null) {
-			           WorkoutView pantallaWorkout = new WorkoutView();
-			           pantallaWorkout.setVisible(true);
-			           dispose();
-			            
-			        } else {
-			            JOptionPane.showMessageDialog(Login.this, 
-			                "Email o contraseña incorrectos", 
-			                "Error de login", 
-			                JOptionPane.ERROR_MESSAGE);
-			        }
-			        
-			    } catch (FireBaseException e1) {
-			        e1.printStackTrace();
-			    }
+				String password = new String(passwordField.getPassword());
+
+				System.out.println(email + "\n" + password);
+
+				if (email.isEmpty() || password.isEmpty()) {
+					JOptionPane.showMessageDialog(Login.this, Constants.SIN_USUARIO_CONTRASEÑA, Constants.CAMPOS_VACIOS,
+							JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+
+				try {
+					Cliente cliente = firebaseController.login(email, password);
+
+					System.out.println(cliente);
+
+					if (cliente != null) {
+						WorkoutView pantallaWorkout = new WorkoutView();
+						pantallaWorkout.setVisible(true);
+						dispose();
+
+					} else {
+						JOptionPane.showMessageDialog(Login.this, Constants.USUARIO_CONTRASEÑA_ERROR,
+								Constants.ERROR_LOGIN, JOptionPane.ERROR_MESSAGE);
+					}
+
+				} catch (FireBaseException e1) {
+					e1.printStackTrace();
+				}
 			}
-			
+
 			private void limpiarCampos() {
-			    
-			    textFieldUsuario.setText("");
-			    passwordField.setText("");
+
+				textFieldUsuario.setText("");
+				passwordField.setText("");
 			}
 		});
 		btnIniciarSesion.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
@@ -193,7 +175,7 @@ public class Login extends JFrame {
 		btnRegistro.setContentAreaFilled(false);
 		btnRegistro.setOpaque(false);
 		labelFondo.add(btnRegistro);
-		
+
 		tituloLogin = new JLabel("LOGIN");
 		tituloLogin.setOpaque(true);
 		tituloLogin.setHorizontalAlignment(SwingConstants.CENTER);
@@ -201,7 +183,7 @@ public class Login extends JFrame {
 		tituloLogin.setBackground(new Color(255, 255, 255, 150));
 		tituloLogin.setBounds(224, 26, 432, 79);
 		labelFondo.add(tituloLogin);
-		
+
 		labelPassword = new JLabel(Constants.PASSWORD_LABEL);
 		labelFondo.add(labelPassword);
 		labelPassword.setForeground(new Color(0, 0, 0));
@@ -210,7 +192,7 @@ public class Login extends JFrame {
 		labelPassword.setBounds(322, 308, 223, 49);
 		labelPassword.setOpaque(true);
 		labelPassword.setBackground(new Color(181, 179, 179, 150));
-		
+
 		passwordField = new JPasswordField();
 		passwordField.setHorizontalAlignment(SwingConstants.CENTER);
 		passwordField.setForeground(new Color(0, 0, 0));
@@ -219,26 +201,5 @@ public class Login extends JFrame {
 		passwordField.setBounds(321, 380, 225, 30);
 		labelFondo.add(passwordField);
 
-	}
-	
-	//Para pruebas
-	private void printClientes(List<Cliente> clientes) {
-		for (Cliente cliente : clientes) {
-			printCliente(cliente);
-		}
-	}
-	//Para pruebas
-	private String getThingy(String text) {
-		System.out.print(text);
-		return scanner.nextLine().trim();
-	}
-	
-	//Para pruebas
-	private void printCliente(Cliente cliente) {
-		if (null != cliente) {
-			System.out.println(cliente.toString());
-			
-		} else
-			System.out.println("No hay documento de Cliente");
 	}
 }

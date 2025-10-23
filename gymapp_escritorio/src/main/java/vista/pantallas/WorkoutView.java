@@ -7,7 +7,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,7 +25,6 @@ import controlador.FirebaseController;
 import modelo.entity.Ejercicio;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
-import modelo.gestores.FirebaseGestor;
 import utils.Constants;
 import vista.Login;
 
@@ -51,9 +49,6 @@ public class WorkoutView extends JFrame {
 	private DefaultTableModel modeloDetallesWorkouts;
 	private JLabel tituloWorkout;
 	private FirebaseController firebaseController;
-	private Scanner scanner;
-	private FirebaseGestor firebaseGestor;
-	private JMenuItem menuNivel;
 	private JMenuItem menuPrincipiante;
 	private JMenuItem menuIntermedio;
 	private JMenuItem menuAvanzado;
@@ -62,13 +57,7 @@ public class WorkoutView extends JFrame {
 	
 	public WorkoutView() {
 		
-		scanner = new Scanner(System.in);
 		firebaseController = new FirebaseController();
-		try {
-			firebaseGestor = new FirebaseGestor();
-		} catch (FireBaseException e) {
-			e.printStackTrace();
-		}
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);

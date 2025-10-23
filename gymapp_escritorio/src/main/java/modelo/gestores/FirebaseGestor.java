@@ -2,13 +2,17 @@ package modelo.gestores;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.mindrot.jbcrypt.BCrypt;
+import java.util.UUID;
 
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.FieldPath;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -18,14 +22,22 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 
 import modelo.entity.Cliente;
+import modelo.entity.Ejercicio;
+import modelo.entity.Serie;
+import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
-import vista.pantallas.Registro;
+import utils.Constants;
 
 public class FirebaseGestor implements FirebaseInterface {
-	
+
 	private static final String CREDENTIALS = "/GymBBDD.json";
 	private static final String COLLECTION_CLIENTE = "Clientes";
-	
+	private static final String COLLECTION_GYM = "GymElorrietaBD";
+	private static final String DOCUMENTO_GYM = "gym_01";
+	private static final String COLLECTION_WORKOUT = "Workouts";
+	private static final String COLLECTION_EJERCICIO = "Ejercicios";
+	private static final String COLLECTION_SERIE = "Series";
+
 	public FirebaseGestor() throws FireBaseException {
 		try {
 			if (FirebaseApp.getApps().isEmpty()) {
@@ -56,21 +68,20 @@ public class FirebaseGestor implements FirebaseInterface {
 			Firestore dataBase = FirestoreClient.getFirestore();
 
 			// Query...
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
-					.document(DOCUMENTO_GYM)
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
 					.collection(COLLECTION_CLIENTE).get();
 
 			// Procesamos la query...
 			QuerySnapshot querySnapshot = query.get();
 			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
-			
+
 			System.out.println(clientes);
-			
+
 			for (QueryDocumentSnapshot cliente : clientes) {
 				ret = null == ret ? new ArrayList<Cliente>() : ret;
-				ret.add(new Cliente(cliente.getId(), cliente.getString("nombre"), cliente.getString("apellido1"),
-						cliente.getString("apellido2"), cliente.getString("fecha_nacimiento"),
-						cliente.getString("email"), cliente.getString("password")));
+				ret.add(new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE), cliente.getString(Constants.APELLIDO1),
+						cliente.getString(Constants.APELLIDO2), cliente.getString(Constants.FECHA_NACIMIENTO),
+						cliente.getString(Constants.EMAIL), cliente.getString(Constants.PASSWORD)));
 			}
 
 		} catch (Exception e) {
@@ -86,20 +97,16 @@ public class FirebaseGestor implements FirebaseInterface {
 
 			Firestore dataBase = FirestoreClient.getFirestore();
 
-            ApiFuture<QuerySnapshot> query = dataBase
-                .collection(COLLECTION_ROOT)
-                .document(DOCUMENT_ID)
-                .collection(COLLECTION_CLIENTE)
-                .whereEqualTo("nombre", nombre)
-                .get();
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).whereEqualTo(Constants.NOMBRE, nombre).get();
 
 			// Procesamos la query...
 			QuerySnapshot querySnapshot = query.get();
 			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
 			for (QueryDocumentSnapshot cliente : clientes) {
-				ret = new Cliente(cliente.getId(), cliente.getString("nombre"), cliente.getString("apellido1"),
-						cliente.getString("apellido2"), cliente.getString("fecha_nacimiento"),
-						cliente.getString("email"), cliente.getString("password"));
+				ret = new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE), cliente.getString(Constants.APELLIDO1),
+						cliente.getString(Constants.APELLIDO2), cliente.getString(Constants.FECHA_NACIMIENTO),
+						cliente.getString(Constants.EMAIL), cliente.getString(Constants.PASSWORD));
 				break;
 			}
 
@@ -111,347 +118,277 @@ public class FirebaseGestor implements FirebaseInterface {
 
 	@Override
 	public Cliente login(String email, String password) throws FireBaseException {
-	    Cliente ret = null;
-	    try {
-	        Firestore dataBase = FirestoreClient.getFirestore();
-	        
-            ApiFuture<QuerySnapshot> query = dataBase
-                .collection(COLLECTION_ROOT)
-                .document(DOCUMENT_ID)
-                .collection(COLLECTION_CLIENTE)
-                .whereEqualTo("email", email)
-                .get();
-	        
-	        // Procesamos la query...
-	        QuerySnapshot querySnapshot = query.get();
-	        List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
+		Cliente ret = null;
+		try {
+			Firestore dataBase = FirestoreClient.getFirestore();
 
-	        if (clientes.isEmpty()) {
-	            System.out.println("Email no encontrado");
-	            return null;
-	        }
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).whereEqualTo(Constants.EMAIL, email).get();
 
-			// Query...
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
-					.document(DOCUMENTO_GYM)
-					.collection(COLLECTION_CLIENTE).whereEqualTo("email", email).get();
+			// Procesamos la query...
+			QuerySnapshot querySnapshot = query.get();
+			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
 
-	        String passwordStored = clienteDoc.getString("password");
+			if (clientes.isEmpty()) {
+				System.out.println("Email no encontrado");
+				return null;
+			}
 
-	        if (passwordStored == null) {
-	            System.out.println("El usuario no tiene contraseña configurada");
-	            return null;
-	        }
+			QueryDocumentSnapshot clienteDoc = clientes.get(0);
 
-	        if (password.equals(passwordStored)) {
-	            ret = new Cliente(
-	                clienteDoc.getId(),
-	                clienteDoc.getString("nombre"),
-	                clienteDoc.getString("apellido1"),
-	                clienteDoc.getString("apellido2"),
-	                clienteDoc.getString("fecha_nacimiento"),
-	                clienteDoc.getString("email"),
-	                null 
-	            );
-	            System.out.println("Login exitoso: " + ret.getNombre());
-	        } else {
-	            System.out.println("Contraseña incorrecta");
-	            return null;
-	        }
+			String passwordStored = clienteDoc.getString(Constants.PASSWORD);
 
-	    } catch (Exception e) {
-	        throw new FireBaseException("Error - " + e.getLocalizedMessage());
-	    }
-	    return ret;
-	}
-	
-	 @Override
-	    public List<Workout> getWorkouts() throws FireBaseException {
-	        List<Workout> ret = null;
+			if (passwordStored == null) {
+				System.out.println("El usuario no tiene contraseña configurada");
+				return null;
+			}
 
-	        try {
-	            Firestore dataBase = FirestoreClient.getFirestore();
+			if (password.equals(passwordStored)) {
+				ret = new Cliente(clienteDoc.getId(), clienteDoc.getString(Constants.NOMBRE), clienteDoc.getString(Constants.APELLIDO1),
+						clienteDoc.getString(Constants.APELLIDO2), clienteDoc.getString(Constants.FECHA_NACIMIENTO),
+						clienteDoc.getString(Constants.EMAIL), null);
+				System.out.println("Login exitoso: " + ret.getNombre());
+			} else {
+				System.out.println("Contraseña incorrecta");
+				return null;
+			}
 
-	            ApiFuture<QuerySnapshot> query = dataBase
-	                .collection(COLLECTION_ROOT)
-	                .document(DOCUMENT_ID)
-	                .collection(COLLECTION_WORKOUT)
-	                .get();
-
-	            QuerySnapshot querySnapshot = query.get();
-
-	            if (querySnapshot.isEmpty()) {
-	                return null;
-	            }
-
-	            List<QueryDocumentSnapshot> workouts = querySnapshot.getDocuments();
-
-	            for (QueryDocumentSnapshot workoutDoc : workouts) {
-	                ret = ret == null ? new ArrayList<Workout>() : ret;
-	                
-	                ApiFuture<QuerySnapshot> ejerciciosQuery = 
-	                    workoutDoc.getReference().collection(COLLECTION_EJERCICIO).get();
-
-	                QuerySnapshot ejerciciosSnapshot = ejerciciosQuery.get();
-	                List<Ejercicio> ejercicios = new ArrayList<>();
-	                
-	                for (QueryDocumentSnapshot ejercicioDoc : ejerciciosSnapshot) {
-
-	                    ApiFuture<QuerySnapshot> seriesQuery = 
-	                        ejercicioDoc.getReference().collection(COLLECTION_SERIE).get();
-
-	                    QuerySnapshot seriesSnapshot = seriesQuery.get();
-	                    List<Serie> series = new ArrayList<>();
-
-	                    for (QueryDocumentSnapshot serieDoc : seriesSnapshot) {
-	                        Serie serie = new Serie(
-	                            serieDoc.getId(),
-	                            serieDoc.getString("nombre"),
-	                            serieDoc.getString("tiempo_asignado"),
-	                            serieDoc.getString("tiempo_descanso"),
-	                            serieDoc.getBoolean("completado")
-	                        );
-	                        series.add(serie);
-	                    }
-
-	                    Ejercicio ejercicio = new Ejercicio(
-	                        ejercicioDoc.getId(),
-	                        ejercicioDoc.getString("nombre"),
-	                        ejercicioDoc.getString("descripcion"),
-	                        ejercicioDoc.getBoolean("completado"),
-	                        series
-	                    );
-
-	                    ejercicios.add(ejercicio);
-	                }
-
-	                Workout workout = new Workout(
-	                    workoutDoc.getId(),
-	                    workoutDoc.getString("nombre"),
-	                    workoutDoc.getString("nivel"),
-	                    workoutDoc.getString("video"),
-	                    workoutDoc.getBoolean("completado"),
-	                    ejercicios
-	                );
-
-	                ret.add(workout);
-	            }
-	            
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            throw new FireBaseException("Error - " + e.getLocalizedMessage());
-	        }
-
-	        return ret;
-	    }
-	 
-	 @Override
-	 public List<Ejercicio> obtenerEjerciciosPorWorkout(String idWorkout) throws FireBaseException {
-		    List<Ejercicio> listaEjercicios = new ArrayList<>();
-
-		    try {
-		        Firestore dataBase = FirestoreClient.getFirestore();
-		        
-	            ApiFuture<QuerySnapshot> query = dataBase
-	                .collection(COLLECTION_ROOT)
-	                .document(DOCUMENT_ID)
-	                .collection(COLLECTION_WORKOUT)
-	                .document(idWorkout)
-	                .collection(COLLECTION_EJERCICIO)
-	                .get();
-		        
-		        // Procesamos la query...
-		        QuerySnapshot querySnapshot = query.get();
-		        List<QueryDocumentSnapshot> ejercicios = querySnapshot.getDocuments();
-
-		        if (ejercicios.isEmpty()) {
-		            System.out.println("Ejercicios no encontrados");
-		            return null;
-		        }
-
-		        for (QueryDocumentSnapshot ejercicioDoc : ejercicios) {
-		        	ApiFuture<QuerySnapshot> seriesQuery = 
-	                        ejercicioDoc.getReference().collection(COLLECTION_SERIE).get();
-
-	                    QuerySnapshot seriesSnapshot = seriesQuery.get();
-	                    List<Serie> series = new ArrayList<>();
-
-	                    for (QueryDocumentSnapshot serieDoc : seriesSnapshot) {
-	                        Serie serie = new Serie(
-	                            serieDoc.getId(),
-	                            serieDoc.getString("nombre"),
-	                            serieDoc.getString("tiempo_asignado"),
-	                            serieDoc.getString("tiempo_descanso"),
-	                            serieDoc.getBoolean("completado")
-	                        );
-	                        series.add(serie);
-	                    }
-
-	                    Ejercicio ejercicio = new Ejercicio(
-	                        ejercicioDoc.getId(),
-	                        ejercicioDoc.getString("nombre"),
-	                        ejercicioDoc.getString("descripcion"),
-	                        ejercicioDoc.getBoolean("completado"),
-	                        series
-	                    );
-	                    
-	                    listaEjercicios.add(ejercicio);
-		        }
-
-		    } catch (Exception e) {
-		        throw new FireBaseException("Error - " + e.getLocalizedMessage());
-		    }
-
-		    return listaEjercicios;
+		} catch (Exception e) {
+			throw new FireBaseException("Error - " + e.getLocalizedMessage());
 		}
 		return ret;
 	}
-	
+
+	@Override
+	public List<Workout> getWorkouts() throws FireBaseException {
+		List<Workout> ret = null;
+
+		try {
+			Firestore dataBase = FirestoreClient.getFirestore();
+
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+					.collection(COLLECTION_WORKOUT).get();
+
+			QuerySnapshot querySnapshot = query.get();
+
+			if (querySnapshot.isEmpty()) {
+				return null;
+			}
+
+			List<QueryDocumentSnapshot> workouts = querySnapshot.getDocuments();
+
+			for (QueryDocumentSnapshot workoutDoc : workouts) {
+				ret = ret == null ? new ArrayList<Workout>() : ret;
+
+				ApiFuture<QuerySnapshot> ejerciciosQuery = workoutDoc.getReference().collection(COLLECTION_EJERCICIO)
+						.get();
+
+				QuerySnapshot ejerciciosSnapshot = ejerciciosQuery.get();
+				List<Ejercicio> ejercicios = new ArrayList<>();
+
+				for (QueryDocumentSnapshot ejercicioDoc : ejerciciosSnapshot) {
+
+					ApiFuture<QuerySnapshot> seriesQuery = ejercicioDoc.getReference().collection(COLLECTION_SERIE)
+							.get();
+
+					QuerySnapshot seriesSnapshot = seriesQuery.get();
+					List<Serie> series = new ArrayList<>();
+
+					for (QueryDocumentSnapshot serieDoc : seriesSnapshot) {
+						Serie serie = new Serie(serieDoc.getId(), serieDoc.getString(Constants.NOMBRE),
+								serieDoc.getString(Constants.TIEMPO_ASIGNADO), serieDoc.getString(Constants.TIEMPO_DESCANSO),
+								serieDoc.getBoolean(Constants.COMPLETADO));
+						series.add(serie);
+					}
+
+					Ejercicio ejercicio = new Ejercicio(ejercicioDoc.getId(), ejercicioDoc.getString(Constants.NOMBRE),
+							ejercicioDoc.getString(Constants.DESCRIPCION), ejercicioDoc.getBoolean(Constants.COMPLETADO), series);
+
+					ejercicios.add(ejercicio);
+				}
+
+				Workout workout = new Workout(workoutDoc.getId(), workoutDoc.getString(Constants.NOMBRE),
+						workoutDoc.getString(Constants.NIVEL), workoutDoc.getString(Constants.VIDEO),
+						workoutDoc.getBoolean(Constants.COMPLETADO), ejercicios);
+
+				ret.add(workout);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new FireBaseException("Error - " + e.getLocalizedMessage());
+		}
+
+		return ret;
+	}
+
+	@Override
+	public List<Ejercicio> obtenerEjerciciosPorWorkout(String idWorkout) throws FireBaseException {
+		List<Ejercicio> listaEjercicios = new ArrayList<>();
+
+		try {
+			Firestore dataBase = FirestoreClient.getFirestore();
+
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+					.collection(COLLECTION_WORKOUT).document(idWorkout).collection(COLLECTION_EJERCICIO).get();
+
+			QuerySnapshot querySnapshot = query.get();
+			List<QueryDocumentSnapshot> ejercicios = querySnapshot.getDocuments();
+
+			if (ejercicios.isEmpty()) {
+				System.out.println("Ejercicios no encontrados");
+				return null;
+			}
+
+			for (QueryDocumentSnapshot ejercicioDoc : ejercicios) {
+				ApiFuture<QuerySnapshot> seriesQuery = ejercicioDoc.getReference().collection(COLLECTION_SERIE).get();
+
+				QuerySnapshot seriesSnapshot = seriesQuery.get();
+				List<Serie> series = new ArrayList<>();
+
+				for (QueryDocumentSnapshot serieDoc : seriesSnapshot) {
+					Serie serie = new Serie(serieDoc.getId(), serieDoc.getString(Constants.NOMBRE),
+							serieDoc.getString(Constants.TIEMPO_ASIGNADO), serieDoc.getString(Constants.TIEMPO_DESCANSO),
+							serieDoc.getBoolean(Constants.COMPLETADO));
+					series.add(serie);
+				}
+
+				Ejercicio ejercicio = new Ejercicio(ejercicioDoc.getId(), ejercicioDoc.getString(Constants.NOMBRE),
+						ejercicioDoc.getString(Constants.DESCRIPCION), ejercicioDoc.getBoolean(Constants.COMPLETADO), series);
+
+				listaEjercicios.add(ejercicio);
+			}
+
+		} catch (Exception e) {
+			throw new FireBaseException("Error - " + e.getLocalizedMessage());
+		}
+
+		return listaEjercicios;
+	}
+
 	@Override
 	public boolean guardarUsuario(Cliente cliente) throws FireBaseException {
-        try {
-        	
-        	Firestore dataBase = FirestoreClient.getFirestore();
-        	
-            // Generar ID si no tiene
-            if (cliente.getId() == null || cliente.getId().isEmpty()) {
-            	cliente.setId(UUID.randomUUID().toString());
-            }
-            
-            // Crear mapa con los datos
-            Map<String, Object> usuarioData = new HashMap<>();
-            usuarioData.put("nombre", cliente.getNombre());
-            usuarioData.put("apellido1", cliente.getApellido1());
-            usuarioData.put("apellido2", cliente.getApellido2());
-            usuarioData.put("fechaNacimiento", cliente.getFechaNacimiento());
-            usuarioData.put("email", cliente.getEmail());
-            usuarioData.put("password", cliente.getPassword());
-            
-            // Guardar en Firestore
-            dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM).collection(COLLECTION_CLIENTE).document(cliente.getId()).set(usuarioData).get();
-            
-            return true;
-        } catch (Exception e) {
-        	throw new FireBaseException("Error - " + e.getLocalizedMessage());
-            
-        }
-    
-	
+		try {
+
+			Firestore dataBase = FirestoreClient.getFirestore();
+
+			if (cliente.getId() == null || cliente.getId().isEmpty()) {
+				cliente.setId(UUID.randomUUID().toString());
+			}
+
+			Map<String, Object> usuarioData = new HashMap<>();
+			usuarioData.put(Constants.NOMBRE, cliente.getNombre());
+			usuarioData.put(Constants.APELLIDO1, cliente.getApellido1());
+			usuarioData.put(Constants.APELLIDO2, cliente.getApellido2());
+			usuarioData.put(Constants.FECHA_NACIMIENTO, cliente.getFechaNacimiento());
+			usuarioData.put(Constants.EMAIL, cliente.getEmail());
+			usuarioData.put(Constants.PASSWORD, cliente.getPassword());
+
+			dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM).collection(COLLECTION_CLIENTE)
+					.document(cliente.getId()).set(usuarioData).get();
+
+			return true;
+		} catch (Exception e) {
+			throw new FireBaseException("Error - " + e.getLocalizedMessage());
+
+		}
+
 	}
-	
+
 	@Override
 	public String obtenerSiguienteId() throws FireBaseException {
-	    try {
-	        Firestore dataBase = FirestoreClient.getFirestore();
+		try {
+			Firestore dataBase = FirestoreClient.getFirestore();
 
-	        ApiFuture<QuerySnapshot> future = dataBase.collection(COLLECTION_GYM)
-	                .document(DOCUMENTO_GYM)
-	                .collection(COLLECTION_CLIENTE)
-	                .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
-	                .limit(1)
-	                .get();
+			ApiFuture<QuerySnapshot> future = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).orderBy(FieldPath.documentId(), Query.Direction.DESCENDING).limit(1)
+					.get();
 
-	        List<QueryDocumentSnapshot> documentos = future.get().getDocuments();
+			List<QueryDocumentSnapshot> documentos = future.get().getDocuments();
 
-	        if (documentos.isEmpty()) {
-	            // Si no hay documentos, empieza con C01
-	            return "C1";
-	        } else {
-	            // Tomamos el ID del documento (el nombre del documento, no un campo "id")
-	            String ultimoId = documentos.get(0).getId(); // <- aquí usamos getId()
-	            String soloLetras = ultimoId.replaceAll("\\d+", "");
-	            String soloNumeros = ultimoId.replaceAll("\\D+", "");
+			if (documentos.isEmpty()) {
+				return "C1";
+			} else {
+				String ultimoId = documentos.get(0).getId();
+				String soloLetras = ultimoId.replaceAll("\\d+", "");
+				String soloNumeros = ultimoId.replaceAll("\\D+", "");
 
-	            int incrementarNumero = Integer.parseInt(soloNumeros) + 1;
+				int incrementarNumero = Integer.parseInt(soloNumeros) + 1;
 
-	            // Formateamos con dos dígitos, por ejemplo C01, C02, C10
-	            return soloLetras + incrementarNumero;
-	        }
-	    } catch (Exception e) {
-	        throw new FireBaseException("Error - " + e.getLocalizedMessage());
-	    
-	    }
+				return soloLetras + incrementarNumero;
+			}
+		} catch (Exception e) {
+			throw new FireBaseException("Error - " + e.getLocalizedMessage());
+
+		}
 	}
-
 
 	@Override
 	public void guardarCliente(Cliente cliente) throws FireBaseException {
-	    try {
-	    	Firestore dataBase = FirestoreClient.getFirestore();
-	   
-	    	dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
-	    	.collection(COLLECTION_CLIENTE)
-	    	.document(cliente.getId()).set(cliente).get();
-	    } catch (Exception e) {
-	    	throw new FireBaseException("Error - " + e.getLocalizedMessage());
-	    }
+		try {
+			Firestore dataBase = FirestoreClient.getFirestore();
+
+			dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM).collection(COLLECTION_CLIENTE)
+					.document(cliente.getId()).set(cliente).get();
+		} catch (Exception e) {
+			throw new FireBaseException("Error - " + e.getLocalizedMessage());
+		}
 	}
 
-	 public Workout obtenerWorkoutPorId(String idWorkout) throws FireBaseException {
-		    Workout workout = null;
+	@Override
+	public Workout obtenerWorkoutPorId(String idWorkout) throws FireBaseException {
+		Workout workout = null;
 
-		    try {
-		        Firestore db = FirestoreClient.getFirestore();
+		try {
+			Firestore db = FirestoreClient.getFirestore();
 
-		        DocumentReference workoutRef = db
-		            .collection(COLLECTION_ROOT)      
-		            .document(DOCUMENT_ID)           
-		            .collection(COLLECTION_WORKOUT)   
-		            .document(idWorkout);
+			DocumentReference workoutRef = db.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+					.collection(COLLECTION_WORKOUT).document(idWorkout);
 
-		        ApiFuture<DocumentSnapshot> future = workoutRef.get();
-		        DocumentSnapshot workoutSnap = future.get();
+			ApiFuture<DocumentSnapshot> future = workoutRef.get();
+			DocumentSnapshot workoutSnap = future.get();
 
-		        if (workoutSnap.exists()) {
-		            workout = new Workout();
-		            workout.setId(workoutSnap.getId());
-		            workout.setNombre(workoutSnap.getString("nombre"));
-		            workout.setNivel(workoutSnap.getString("nivel"));
-		            workout.setVideo(workoutSnap.getString("video"));
+			if (workoutSnap.exists()) {
+				workout = new Workout();
+				workout.setId(workoutSnap.getId());
+				workout.setNombre(workoutSnap.getString(Constants.NOMBRE));
+				workout.setNivel(workoutSnap.getString(Constants.NIVEL));
+				workout.setVideo(workoutSnap.getString(Constants.VIDEO));
 
-		            CollectionReference ejerciciosRef = workoutRef.collection(COLLECTION_EJERCICIO);
-		            ApiFuture<QuerySnapshot> queryEjercicios = ejerciciosRef.get();
-		            QuerySnapshot ejerciciosSnapshot = queryEjercicios.get();
+				CollectionReference ejerciciosRef = workoutRef.collection(COLLECTION_EJERCICIO);
+				ApiFuture<QuerySnapshot> queryEjercicios = ejerciciosRef.get();
+				QuerySnapshot ejerciciosSnapshot = queryEjercicios.get();
 
-		            List<Ejercicio> listaEjercicios = new ArrayList<>();
+				List<Ejercicio> listaEjercicios = new ArrayList<>();
 
-		            for (QueryDocumentSnapshot ejercicioDoc : ejerciciosSnapshot.getDocuments()) {
-		               
-		            	CollectionReference seriesRef = ejercicioDoc.getReference().collection(COLLECTION_SERIE);
-		                ApiFuture<QuerySnapshot> querySeries = seriesRef.get();
-		                QuerySnapshot seriesSnapshot = querySeries.get();
+				for (QueryDocumentSnapshot ejercicioDoc : ejerciciosSnapshot.getDocuments()) {
 
-		                List<Serie> series = new ArrayList<>();
-		                for (QueryDocumentSnapshot serieDoc : seriesSnapshot.getDocuments()) {
-		                    Serie serie = new Serie(
-		                        serieDoc.getId(),
-		                        serieDoc.getString("nombre"),
-		                        serieDoc.getString("tiempo_asignado"),
-		                        serieDoc.getString("tiempo_descanso"),
-		                        serieDoc.getBoolean("completado")
-		                    );
-		                    series.add(serie);
-		                }
+					CollectionReference seriesRef = ejercicioDoc.getReference().collection(COLLECTION_SERIE);
+					ApiFuture<QuerySnapshot> querySeries = seriesRef.get();
+					QuerySnapshot seriesSnapshot = querySeries.get();
 
-		                Ejercicio ejercicio = new Ejercicio(
-		                    ejercicioDoc.getId(),
-		                    ejercicioDoc.getString("nombre"),
-		                    ejercicioDoc.getString("descripcion"),
-		                    ejercicioDoc.getBoolean("completado"),
-		                    series
-		                );
+					List<Serie> series = new ArrayList<>();
+					for (QueryDocumentSnapshot serieDoc : seriesSnapshot.getDocuments()) {
+						Serie serie = new Serie(serieDoc.getId(), serieDoc.getString(Constants.NOMBRE),
+								serieDoc.getString(Constants.TIEMPO_ASIGNADO), serieDoc.getString(Constants.TIEMPO_DESCANSO),
+								serieDoc.getBoolean(Constants.COMPLETADO));
+						series.add(serie);
+					}
 
-		                listaEjercicios.add(ejercicio);
-		            }
+					Ejercicio ejercicio = new Ejercicio(ejercicioDoc.getId(), ejercicioDoc.getString(Constants.NOMBRE),
+							ejercicioDoc.getString(Constants.DESCRIPCION), ejercicioDoc.getBoolean(Constants.COMPLETADO), series);
 
-		            workout.setEjercicios(listaEjercicios);
-		        }
+					listaEjercicios.add(ejercicio);
+				}
 
-		    } catch (Exception e) {
-		        throw new FireBaseException("Error al obtener workout: " + e.getLocalizedMessage());
-		    }
+				workout.setEjercicios(listaEjercicios);
+			}
 
-		    return workout;
+		} catch (Exception e) {
+			throw new FireBaseException("Error al obtener workout: " + e.getLocalizedMessage());
 		}
+
+		return workout;
+	}
 
 }

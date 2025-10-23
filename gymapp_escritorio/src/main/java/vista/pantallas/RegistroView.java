@@ -7,8 +7,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
 import modelo.exceptions.FireBaseException;
@@ -51,7 +49,6 @@ public class RegistroView extends JFrame {
 	private FirebaseGestor firebaseGestor;
 	private FirebaseController firebaseController;
 
-
 	/**
 	 * Create the frame.
 	 */
@@ -60,32 +57,31 @@ public class RegistroView extends JFrame {
 			firebaseGestor = new FirebaseGestor();
 			firebaseController = new FirebaseController();
 		} catch (FireBaseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		lblFondoRegistro = new JLabel();
-		
-		//LOGO MAITANE
+
+		// LOGO MAITANE
 //		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
 		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
-		
+
 		Image imagenOriginal = originalIcon.getImage();
 
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-		
+
 		lblFondoRegistro.setIcon(iconoEscalado);
 		lblFondoRegistro.setBounds(0, 0, 873, 623);
 		contentPane.add(lblFondoRegistro);
-		
+
 		tituloRegistro = new JLabel(Constants.REGISTRO_LABEL);
 		tituloRegistro.setOpaque(true);
 		tituloRegistro.setBackground(new Color(255, 255, 255, 150));
@@ -93,72 +89,59 @@ public class RegistroView extends JFrame {
 		tituloRegistro.setHorizontalAlignment(SwingConstants.CENTER);
 		tituloRegistro.setBounds(218, 23, 432, 79);
 		lblFondoRegistro.add(tituloRegistro);
-		
+
 		btnRegistro = new JButton(Constants.REGISTRARME_LABEL);
 		btnRegistro.addMouseListener(new MouseAdapter() {
-			
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				realizarRegistro();
 				limpiarCampos();
-				
+
 			}
-			
+
 			private void realizarRegistro() {
-				
-				
-				
-			    String nombre = textFieldNombre.getText().trim();
-			    String apellido1 = textFieldApellidoUno.getText().trim();
-			    String apellido2 = textFieldApellidoDos.getText().trim();
-			    String fechaNacimiento = textFieldFecNac.getText().trim();
-			    String email = textFieldEmail.getText().trim();
-			    String password = new String(passwordField.getPassword()).trim();
-			    
-			    String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
 
+				String nombre = textFieldNombre.getText().trim();
+				String apellido1 = textFieldApellidoUno.getText().trim();
+				String apellido2 = textFieldApellidoDos.getText().trim();
+				String fechaNacimiento = textFieldFecNac.getText().trim();
+				String email = textFieldEmail.getText().trim();
+				String password = new String(passwordField.getPassword()).trim();
 
-			    if (nombre.isEmpty() || apellido1.isEmpty() || fechaNacimiento.isEmpty() || 
-			        email.isEmpty() || password.isEmpty()) {
-			        
-			        JOptionPane.showMessageDialog(Registro.this,
-			            "Por favor, completa todos los campos.",
-			            "Campos vacíos",
-			            JOptionPane.WARNING_MESSAGE);
-			        return;
-			    }
+				if (nombre.isEmpty() || apellido1.isEmpty() || fechaNacimiento.isEmpty() || email.isEmpty()
+						|| password.isEmpty()) {
 
-			    try {
-			        // Obtener el siguiente ID desde Firestore
-			        String siguienteId = firebaseGestor.obtenerSiguienteId(); 
-			        
-			        Cliente cliente = new Cliente();
-			        cliente.setId(String.valueOf(siguienteId));
-			        cliente.setNombre(nombre);
-			        cliente.setApellido1(apellido1);
-			        cliente.setApellido2(apellido2);
-			        cliente.setFechaNacimiento(fechaNacimiento);
-			        cliente.setEmail(email);
-			        cliente.setPassword(passwordHash);
+					JOptionPane.showMessageDialog(RegistroView.this, Constants.COMPLETAR_CAMPOS,
+							Constants.CAMPOS_VACIOS, JOptionPane.WARNING_MESSAGE);
+					return;
+				}
 
-			        firebaseController.guardarCliente(cliente);  // Este método guarda el cliente en Firestore
+				try {
+					// Obtener el siguiente ID desde Firestore
+					String siguienteId = firebaseGestor.obtenerSiguienteId();
 
-			        JOptionPane.showMessageDialog(Registro.this,
-			            "Registro exitoso. Tu ID es: " + cliente.getId(),
-			            "Éxito",
-			            JOptionPane.INFORMATION_MESSAGE);
+					Cliente cliente = new Cliente();
+					cliente.setId(String.valueOf(siguienteId));
+					cliente.setNombre(nombre);
+					cliente.setApellido1(apellido1);
+					cliente.setApellido2(apellido2);
+					cliente.setFechaNacimiento(fechaNacimiento);
+					cliente.setEmail(email);
+					cliente.setPassword(password);
 
-			        
-			    } catch (FireBaseException e) {
-			        e.printStackTrace();
-			        JOptionPane.showMessageDialog(Registro.this,
-			            "Error al registrar cliente: " + e.getMessage(),
-			            "Error",
-			            JOptionPane.ERROR_MESSAGE);
-			    }
+					firebaseController.guardarCliente(cliente);
+
+					JOptionPane.showMessageDialog(RegistroView.this, Constants.LOGIN_EXITO + cliente.getId(),
+							Constants.EXITO, JOptionPane.INFORMATION_MESSAGE);
+
+				} catch (FireBaseException e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(RegistroView.this, Constants.ERROR_REGISTRO + e.getMessage(),
+							Constants.ERROR, JOptionPane.ERROR_MESSAGE);
+				}
 			}
-			    
+
 		});
 		btnRegistro.setOpaque(true);
 		btnRegistro.setForeground(new Color(0, 0, 0));
@@ -169,7 +152,7 @@ public class RegistroView extends JFrame {
 		btnRegistro.setBackground(new Color(255, 255, 255, 150));
 		btnRegistro.setBounds(237, 534, 159, 41);
 		lblFondoRegistro.add(btnRegistro);
-		
+
 		btnVolver = new JButton(Constants.VOLVER_BOTON);
 		btnVolver.addMouseListener(new MouseAdapter() {
 			@Override
@@ -179,7 +162,7 @@ public class RegistroView extends JFrame {
 				dispose();
 			}
 		});
-		
+
 		btnVolver.setOpaque(true);
 		btnVolver.setForeground(new Color(0, 0, 0));
 		btnVolver.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
@@ -189,7 +172,7 @@ public class RegistroView extends JFrame {
 		btnVolver.setBackground(new Color(255, 255, 255, 150));
 		btnVolver.setBounds(480, 534, 159, 41);
 		lblFondoRegistro.add(btnVolver);
-		
+
 		lblFecNac = new JLabel(Constants.FECHA_NACIMIENTO_LABEL);
 		lblFondoRegistro.add(lblFecNac);
 		lblFecNac.setOpaque(true);
@@ -198,12 +181,12 @@ public class RegistroView extends JFrame {
 		lblFecNac.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblFecNac.setBackground(new Color(181, 179, 179, 150));
 		lblFecNac.setBounds(250, 442, 184, 29);
-		
+
 		textFieldFecNac = new JTextField();
 		lblFondoRegistro.add(textFieldFecNac);
 		textFieldFecNac.setColumns(10);
 		textFieldFecNac.setBounds(563, 440, 177, 30);
-		
+
 		lblNombre = new JLabel(Constants.NOMBRE_LABEL);
 		lblFondoRegistro.add(lblNombre);
 		lblNombre.setHorizontalAlignment(SwingConstants.CENTER);
@@ -212,7 +195,7 @@ public class RegistroView extends JFrame {
 		lblNombre.setBounds(246, 155, 148, 29);
 		lblNombre.setOpaque(true);
 		lblNombre.setBackground(new Color(181, 179, 179, 150));
-		
+
 		lblApellidoUno = new JLabel(Constants.APELLIDO_LABEL);
 		lblFondoRegistro.add(lblApellidoUno);
 		lblApellidoUno.setOpaque(true);
@@ -221,7 +204,7 @@ public class RegistroView extends JFrame {
 		lblApellidoUno.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblApellidoUno.setBackground(new Color(181, 179, 179, 150));
 		lblApellidoUno.setBounds(246, 210, 148, 29);
-		
+
 		lblApellidoDos = new JLabel(Constants.APELLIDO_DOS_LABEL);
 		lblFondoRegistro.add(lblApellidoDos);
 		lblApellidoDos.setOpaque(true);
@@ -230,7 +213,7 @@ public class RegistroView extends JFrame {
 		lblApellidoDos.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblApellidoDos.setBackground(new Color(181, 179, 179, 150));
 		lblApellidoDos.setBounds(246, 264, 148, 29);
-		
+
 		lblEmail = new JLabel(Constants.EMAIL_LABEL);
 		lblFondoRegistro.add(lblEmail);
 		lblEmail.setOpaque(true);
@@ -239,7 +222,7 @@ public class RegistroView extends JFrame {
 		lblEmail.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblEmail.setBackground(new Color(181, 179, 179, 150));
 		lblEmail.setBounds(247, 317, 148, 29);
-		
+
 		lblPassword = new JLabel(Constants.PASSWORD_LABEL);
 		lblFondoRegistro.add(lblPassword);
 		lblPassword.setOpaque(true);
@@ -248,41 +231,39 @@ public class RegistroView extends JFrame {
 		lblPassword.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblPassword.setBackground(new Color(181, 179, 179, 150));
 		lblPassword.setBounds(248, 370, 148, 29);
-		
+
 		textFieldNombre = new JTextField();
 		lblFondoRegistro.add(textFieldNombre);
 		textFieldNombre.setBounds(562, 154, 177, 30);
 		textFieldNombre.setColumns(10);
-		
+
 		textFieldApellidoUno = new JTextField();
 		lblFondoRegistro.add(textFieldApellidoUno);
 		textFieldApellidoUno.setColumns(10);
 		textFieldApellidoUno.setBounds(562, 210, 177, 30);
-		
+
 		textFieldApellidoDos = new JTextField();
 		lblFondoRegistro.add(textFieldApellidoDos);
 		textFieldApellidoDos.setColumns(10);
 		textFieldApellidoDos.setBounds(460, 262, 277, 30);
-		
+
 		textFieldEmail = new JTextField();
 		lblFondoRegistro.add(textFieldEmail);
 		textFieldEmail.setColumns(10);
 		textFieldEmail.setBounds(461, 317, 276, 30);
-		
+
 		passwordField = new JPasswordField();
 		lblFondoRegistro.add(passwordField);
 		passwordField.setBounds(562, 369, 177, 30);
 	}
-    
-	
+
 	private void limpiarCampos() {
-    	textFieldNombre.setText("");
-    	textFieldApellidoUno.setText("");
-    	textFieldApellidoDos.setText("");
-        textFieldFecNac.setText("");
-        textFieldEmail.setText("");
-        passwordField.setText("");
-    }
-	
+		textFieldNombre.setText("");
+		textFieldApellidoUno.setText("");
+		textFieldApellidoDos.setText("");
+		textFieldFecNac.setText("");
+		textFieldEmail.setText("");
+		passwordField.setText("");
+	}
 
 }

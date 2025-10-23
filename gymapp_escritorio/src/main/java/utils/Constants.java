@@ -1,7 +1,5 @@
 package utils;
 
-import javax.swing.Icon;
-
 public class Constants {
 	
 	private Constants() {
@@ -83,4 +81,34 @@ public class Constants {
 	public static final String NIVEL_INTERMEDIO_MENU = "Intermedio";
 	public static final String NIVEL_AVANZADO_MENU = "Avanzado";
 
+	// Errores
+	public static final String SIN_USUARIO_CONTRASEÑA = "Por favor, ingresa email y contraseña";
+	public static final String CAMPOS_VACIOS = "Campos vacíos";
+	public static final String COMPLETAR_CAMPOS = "Por favor, completa todos los campos.";
+	public static final String ERROR_LOGIN = "Error de login";
+	public static final String USUARIO_CONTRASEÑA_ERROR = "Email o contraseña incorrectos";
+	public static final String LOGIN_EXITO = "Registro exitoso. Tu ID es: ";
+	public static final String EXITO = "Éxito";
+	public static final String ERROR_REGISTRO = "Error al registrar cliente: ";
+	public static final String ERROR = "Error";
+	
+	// Campos Clientes
+	public static final String NOMBRE = "nombre";
+	public static final String APELLIDO1 = "apellido1";
+	public static final String APELLIDO2 = "apellido2";
+	public static final String FECHA_NACIMIENTO = "fecha_nacimiento";
+	public static final String EMAIL = "email";
+	public static final String PASSWORD = "password";
+	
+	// Campos Ejercicios
+	public static final String DESCRIPCION = "descripcion";
+	
+	// Campos Workouts
+	public static final String NIVEL = "nivel";
+	public static final String VIDEO = "video";
+	
+	// Campos Series
+	public static final String TIEMPO_ASIGNADO = "tiempo_asignado";
+	public static final String TIEMPO_DESCANSO = "tiempo_descanso";
+	public static final String COMPLETADO = "completado";
 }
