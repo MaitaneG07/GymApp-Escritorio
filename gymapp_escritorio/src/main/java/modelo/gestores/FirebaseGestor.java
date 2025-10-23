@@ -3,13 +3,14 @@ package modelo.gestores;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
@@ -17,21 +18,14 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 
 import modelo.entity.Cliente;
-import modelo.entity.Workout;
-import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
 import modelo.exceptions.FireBaseException;
+import vista.pantallas.Registro;
 
 public class FirebaseGestor implements FirebaseInterface {
-
+	
 	private static final String CREDENTIALS = "/GymBBDD.json";
-	private static final String COLLECTION_ROOT = "GymElorrietaBD";
-	private static final String DOCUMENT_ID = "gym_01";
 	private static final String COLLECTION_CLIENTE = "Clientes";
-	private static final String COLLECTION_WORKOUT = "Workouts";
-	private static final String COLLECTION_EJERCICIO = "Ejercicios";
-	private static final String COLLECTION_SERIE = "Series";
-
+	
 	public FirebaseGestor() throws FireBaseException {
 		try {
 			if (FirebaseApp.getApps().isEmpty()) {
@@ -62,7 +56,9 @@ public class FirebaseGestor implements FirebaseInterface {
 			Firestore dataBase = FirestoreClient.getFirestore();
 
 			// Query...
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_CLIENTE).get();
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+					.document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).get();
 
 			// Procesamos la query...
 			QuerySnapshot querySnapshot = query.get();
@@ -135,7 +131,10 @@ public class FirebaseGestor implements FirebaseInterface {
 	            return null;
 	        }
 
-	        QueryDocumentSnapshot clienteDoc = clientes.get(0);
+			// Query...
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+					.document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).whereEqualTo("email", email).get();
 
 	        String passwordStored = clienteDoc.getString("password");
 
@@ -305,6 +304,88 @@ public class FirebaseGestor implements FirebaseInterface {
 
 		    return listaEjercicios;
 		}
+		return ret;
+	}
+	
+	@Override
+	public boolean guardarUsuario(Cliente cliente) throws FireBaseException {
+        try {
+        	
+        	Firestore dataBase = FirestoreClient.getFirestore();
+        	
+            // Generar ID si no tiene
+            if (cliente.getId() == null || cliente.getId().isEmpty()) {
+            	cliente.setId(UUID.randomUUID().toString());
+            }
+            
+            // Crear mapa con los datos
+            Map<String, Object> usuarioData = new HashMap<>();
+            usuarioData.put("nombre", cliente.getNombre());
+            usuarioData.put("apellido1", cliente.getApellido1());
+            usuarioData.put("apellido2", cliente.getApellido2());
+            usuarioData.put("fechaNacimiento", cliente.getFechaNacimiento());
+            usuarioData.put("email", cliente.getEmail());
+            usuarioData.put("password", cliente.getPassword());
+            
+            // Guardar en Firestore
+            dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM).collection(COLLECTION_CLIENTE).document(cliente.getId()).set(usuarioData).get();
+            
+            return true;
+        } catch (Exception e) {
+        	throw new FireBaseException("Error - " + e.getLocalizedMessage());
+            
+        }
+    
+	
+	}
+	
+	@Override
+	public String obtenerSiguienteId() throws FireBaseException {
+	    try {
+	        Firestore dataBase = FirestoreClient.getFirestore();
+
+	        ApiFuture<QuerySnapshot> future = dataBase.collection(COLLECTION_GYM)
+	                .document(DOCUMENTO_GYM)
+	                .collection(COLLECTION_CLIENTE)
+	                .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
+	                .limit(1)
+	                .get();
+
+	        List<QueryDocumentSnapshot> documentos = future.get().getDocuments();
+
+	        if (documentos.isEmpty()) {
+	            // Si no hay documentos, empieza con C01
+	            return "C1";
+	        } else {
+	            // Tomamos el ID del documento (el nombre del documento, no un campo "id")
+	            String ultimoId = documentos.get(0).getId(); // <- aquí usamos getId()
+	            String soloLetras = ultimoId.replaceAll("\\d+", "");
+	            String soloNumeros = ultimoId.replaceAll("\\D+", "");
+
+	            int incrementarNumero = Integer.parseInt(soloNumeros) + 1;
+
+	            // Formateamos con dos dígitos, por ejemplo C01, C02, C10
+	            return soloLetras + incrementarNumero;
+	        }
+	    } catch (Exception e) {
+	        throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    
+	    }
+	}
+
+
+	@Override
+	public void guardarCliente(Cliente cliente) throws FireBaseException {
+	    try {
+	    	Firestore dataBase = FirestoreClient.getFirestore();
+	   
+	    	dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+	    	.collection(COLLECTION_CLIENTE)
+	    	.document(cliente.getId()).set(cliente).get();
+	    } catch (Exception e) {
+	    	throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    }
+	}
 
 	 public Workout obtenerWorkoutPorId(String idWorkout) throws FireBaseException {
 		    Workout workout = null;

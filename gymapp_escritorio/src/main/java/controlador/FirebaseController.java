@@ -46,4 +46,11 @@ public class FirebaseController {
 		
 	    return firebaseGestor.obtenerWorkoutPorId(idWorkout);
 	}
+
+	public void guardarCliente(Cliente cliente) throws FireBaseException {
+		firebaseGestor.guardarCliente(cliente);
+		
+	}
+	
+	
 }

@@ -21,5 +21,11 @@ public interface FirebaseInterface {
 
 	Workout obtenerWorkoutPorId(String idWorkout) throws FireBaseException;
 
+
+	void guardarCliente(Cliente cliente) throws FireBaseException;
+
+	String obtenerSiguienteId() throws FireBaseException;
+
+	boolean guardarUsuario(Cliente cliente) throws FireBaseException;
 	
 }

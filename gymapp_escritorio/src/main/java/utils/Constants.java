@@ -7,6 +7,8 @@ public class Constants {
 	private Constants() {
 	}
 
+	
+	
 	// Tipo de letra
 	public static final String FONT_FAMILY = "Arial";
 
@@ -23,8 +25,9 @@ public class Constants {
 	public static final String LOGO_CLARO_CASA = "C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
 
 	// URL Logo Giselle
-	public static final String LOGO_CLASE = "C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\\\logoLight.jpg";
+	public static final String LOGO_CLASE = "C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
 	public static final String LOGO_CASA = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
+	public static final String FONDO_CLASE = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\fondo.jpg";
 	
 	
 	

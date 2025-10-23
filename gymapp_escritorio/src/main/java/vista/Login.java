@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.awt.Image;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Scanner;
@@ -58,6 +60,8 @@ public class Login extends JFrame {
 			}
 		});
 	}
+	
+	
 
 	public Login() {
 		
@@ -215,5 +219,26 @@ public class Login extends JFrame {
 		passwordField.setBounds(321, 380, 225, 30);
 		labelFondo.add(passwordField);
 
+	}
+	
+	//Para pruebas
+	private void printClientes(List<Cliente> clientes) {
+		for (Cliente cliente : clientes) {
+			printCliente(cliente);
+		}
+	}
+	//Para pruebas
+	private String getThingy(String text) {
+		System.out.print(text);
+		return scanner.nextLine().trim();
+	}
+	
+	//Para pruebas
+	private void printCliente(Cliente cliente) {
+		if (null != cliente) {
+			System.out.println(cliente.toString());
+			
+		} else
+			System.out.println("No hay documento de Cliente");
 	}
 }
