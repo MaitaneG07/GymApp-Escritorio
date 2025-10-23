@@ -15,21 +15,18 @@ public class Serie implements Serializable {
 	private String tiempoDuracion;
 	private String tiempoDescanso;
 	private boolean completado;
-	private Ejercicio ejercicio;
 	
 	public Serie() {
 		super();
 	}
 
-	public Serie(String id, String nombre, String tiempoDuracion, String tiempoDescanso, boolean completado,
-			Ejercicio ejercicio) {
+	public Serie(String id, String nombre, String tiempoDuracion, String tiempoDescanso, boolean completado) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.tiempoDuracion = tiempoDuracion;
 		this.tiempoDescanso = tiempoDescanso;
 		this.completado = completado;
-		this.ejercicio = ejercicio;
 	}
 
 	public String getId() {
@@ -72,17 +69,9 @@ public class Serie implements Serializable {
 		this.completado = completado;
 	}
 
-	public Ejercicio getEjercicio() {
-		return ejercicio;
-	}
-
-	public void setEjercicio(Ejercicio ejercicio) {
-		this.ejercicio = ejercicio;
-	}
-
 	@Override
 	public int hashCode() {
-		return Objects.hash(completado, ejercicio, id, nombre, tiempoDuracion, tiempoDescanso);
+		return Objects.hash(completado, id, nombre, tiempoDuracion, tiempoDescanso);
 	}
 
 	@Override
@@ -94,7 +83,7 @@ public class Serie implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Serie other = (Serie) obj;
-		return completado == other.completado && Objects.equals(ejercicio, other.ejercicio) && id == other.id
+		return completado == other.completado && id == other.id
 				&& Objects.equals(nombre, other.nombre) && Objects.equals(tiempoDuracion, other.tiempoDuracion)
 				&& Objects.equals(tiempoDescanso, other.tiempoDescanso);
 	}
@@ -102,7 +91,7 @@ public class Serie implements Serializable {
 	@Override
 	public String toString() {
 		return id + ", " + nombre + ", " + tiempoDuracion + ", " + tiempoDescanso
-				+ ", " + completado + ", " + ejercicio;
+				+ ", " + completado;
 	}
 	
 	

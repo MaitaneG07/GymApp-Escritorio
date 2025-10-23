@@ -1,6 +1,9 @@
 package controlador;
 
+import java.util.List;
+
 import modelo.entity.Cliente;
+import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 import modelo.gestores.FirebaseGestor;
 
@@ -33,5 +36,14 @@ public class FirebaseController {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public List<Workout> workout() throws FireBaseException {
+		return firebaseGestor.getWorkouts();
+	}
+
+	public Workout obtenerWorkoutPorId(String idWorkout) throws FireBaseException {
+		
+	    return firebaseGestor.obtenerWorkoutPorId(idWorkout);
 	}
 }

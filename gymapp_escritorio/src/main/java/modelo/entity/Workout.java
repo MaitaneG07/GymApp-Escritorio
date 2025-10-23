@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import vista.pantallas.Ejercicio;
 
 public class Workout implements Serializable {
 
@@ -15,7 +14,7 @@ public class Workout implements Serializable {
 	
 	private String id;
 	private String nombre;
-	private String fechaInicio;
+	private String nivel;
 	private String video;
 	private boolean completado;
 	private List<Ejercicio> ejercicios;
@@ -24,15 +23,23 @@ public class Workout implements Serializable {
 		super();
 	}
 
-	public Workout(String id, String nombre, String fechaInicio, String video, boolean completado,
+	public Workout(String id, String nombre, String nivel, String video, boolean completado,
 			List<Ejercicio> ejercicios) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
-		this.fechaInicio = fechaInicio;
+		this.nivel = nivel;
 		this.video = video;
 		this.completado = completado;
 		this.ejercicios = ejercicios;
+	}
+
+	public String getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(String nivel) {
+		this.nivel = nivel;
 	}
 
 	public String getId() {
@@ -49,14 +56,6 @@ public class Workout implements Serializable {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public String getFechaInicio() {
-		return fechaInicio;
-	}
-
-	public void setFechaInicio(String fechaInicio) {
-		this.fechaInicio = fechaInicio;
 	}
 
 	public String getVideo() {
@@ -85,7 +84,7 @@ public class Workout implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(completado, ejercicios, fechaInicio, id, nombre, video);
+		return Objects.hash(completado, ejercicios, nivel, id, nombre, video);
 	}
 
 	@Override
@@ -98,14 +97,14 @@ public class Workout implements Serializable {
 			return false;
 		Workout other = (Workout) obj;
 		return completado == other.completado && Objects.equals(ejercicios, other.ejercicios)
-				&& Objects.equals(fechaInicio, other.fechaInicio) && id == other.id
-				&& Objects.equals(nombre, other.nombre) && Objects.equals(video, other.video);
+				&& id == other.id && Objects.equals(nombre, other.nombre) 
+				&& Objects.equals(video, other.video) && Objects.equals(nivel, other.nivel);
 	}
 
 	@Override
 	public String toString() {
-		return id + ", " + nombre + ", " + fechaInicio + ", " + video
-				+ ", " + completado + ", " + ejercicios;
+		return id + ", " + nombre + ", " + video
+				+ ", " + nivel + ", " + completado + ", " + ejercicios;
 	}
 	
 	

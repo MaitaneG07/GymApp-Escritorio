@@ -85,7 +85,7 @@ public class Cliente implements Serializable {
 		return password;
 	}
 
-	public void getPassword(String password) {
+	public void setPassword(String password) {
 		this.password = password;
 	}
 

@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 
 import utils.Constants;
 
-public class Resumen extends JFrame {
+public class ResumenView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -34,7 +34,7 @@ public class Resumen extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Resumen() {
+	public ResumenView() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -79,7 +79,7 @@ public class Resumen extends JFrame {
 		btnConfirmar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Workout pantallaWorkout = new Workout();
+				WorkoutView pantallaWorkout = new WorkoutView();
 				pantallaWorkout.setVisible(true);
 				dispose();
 			}

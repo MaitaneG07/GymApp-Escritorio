@@ -8,15 +8,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
 import modelo.exceptions.FireBaseException;
 import modelo.gestores.FirebaseGestor;
 import utils.Constants;
-import vista.pantallas.Registro;
-import vista.pantallas.Workout;
+import vista.pantallas.RegistroView;
+import vista.pantallas.WorkoutView;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,7 +25,6 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.Scanner;
 import javax.swing.JPasswordField;
 
@@ -62,9 +59,6 @@ public class Login extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public Login() {
 		
 		scanner = new Scanner(System.in);
@@ -72,7 +66,6 @@ public class Login extends JFrame {
 		try {
 			firebaseGestor = new FirebaseGestor();
 		} catch (FireBaseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -144,7 +137,7 @@ public class Login extends JFrame {
 			    	System.out.println(cliente);
 			        
 			        if (cliente != null) {
-			           Workout pantallaWorkout = new Workout();
+			           WorkoutView pantallaWorkout = new WorkoutView();
 			           pantallaWorkout.setVisible(true);
 			           dispose();
 			            
@@ -181,7 +174,7 @@ public class Login extends JFrame {
 		btnRegistro.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Registro panelRegistro = new Registro();
+				RegistroView panelRegistro = new RegistroView();
 				panelRegistro.setVisible(true);
 				dispose();
 			}
@@ -213,14 +206,6 @@ public class Login extends JFrame {
 		labelPassword.setBounds(322, 308, 223, 49);
 		labelPassword.setOpaque(true);
 		labelPassword.setBackground(new Color(181, 179, 179, 150));
-		
-//		textFieldPassword = new JTextField();
-//		labelFondo.add(textFieldPassword);
-//		textFieldPassword.setHorizontalAlignment(SwingConstants.CENTER);
-//		textFieldPassword.setForeground(new Color(0, 0, 0));
-//		textFieldPassword.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 11));
-//		textFieldPassword.setColumns(10);
-//		textFieldPassword.setBounds(321, 380, 225, 30);
 		
 		passwordField = new JPasswordField();
 		passwordField.setHorizontalAlignment(SwingConstants.CENTER);

@@ -18,7 +18,7 @@ import javax.swing.border.EmptyBorder;
 
 import utils.Constants;
 
-public class Perfil extends JFrame {
+public class PerfilView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -42,7 +42,7 @@ public class Perfil extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Perfil() {
+	public PerfilView() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -89,7 +89,7 @@ public class Perfil extends JFrame {
 		btnVolver.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Workout pantallaWorkout = new Workout();
+				WorkoutView pantallaWorkout = new WorkoutView();
 				pantallaWorkout.setVisible(true);
 				dispose();
 			}

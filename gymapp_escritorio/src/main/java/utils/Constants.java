@@ -1,5 +1,7 @@
 package utils;
 
+import javax.swing.Icon;
+
 public class Constants {
 	
 	private Constants() {
@@ -44,6 +46,8 @@ public class Constants {
 	// Nombres de las columnas
 	public static final String COLUMNA_NOMBRE_WORKOUT = NOMBRE_LABEL;
 	public static final String COLUMNA_NOMBRE_EJERCICIO = "NOMBRE EJERCICIO";
+	public static final String COLUMNA_ID_EJERCICIO = "ID";
+	public static final String COLUMNA_ID_WORKOUT = COLUMNA_ID_EJERCICIO;
 	public static final String COLUMNA_NIVEL_WORKOUT = "NIVEL";
 	public static final String COLUMNA_EJERCICIOS = "EJERCICIOS";
 	public static final String COLUMNA_VIDEO = "VIDEO";
@@ -72,5 +76,8 @@ public class Constants {
 	public static final String CONSULTAR_HISTORICO_MENU = "Consultar histórico";
 	public static final String CERRAR_SESION_MENU = "Cerrar sesión";
 	public static final String GESTIONAR_PERFIL_MENU = "Gestionar perfil";
+	public static final String NIVEL_PRINCIPIANTE_MENU = "Principiante";
+	public static final String NIVEL_INTERMEDIO_MENU = "Intermedio";
+	public static final String NIVEL_AVANZADO_MENU = "Avanzado";
 
 }
