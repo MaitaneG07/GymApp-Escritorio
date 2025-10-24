@@ -32,7 +32,16 @@ public class HistoricoView extends JFrame {
 	private JTable tableHistoricos;
 	private JButton btnAtras;
 	private DefaultTableModel modeloTabla;
-	private JScrollPane scrollPane;
+	private JScrollPane scrollPane;	
+	private String idCliente;
+	private String nivel;
+	
+	public void setIdCliente(String idCliente, String nivel) {
+		this.idCliente = idCliente;
+		this.nivel = nivel;
+		System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
+		System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
+	}
 
 	/**
 	 * Create the frame.

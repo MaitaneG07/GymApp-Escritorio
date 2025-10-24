@@ -38,11 +38,25 @@ public class PerfilView extends JFrame {
 	private JTextField textFieldNombre;
 	private JTextField textFieldFecNac;
 	private JLabel lblFondoPerfil;
+	private String idCliente;
+	private String nivel;
+	
+	public void setIdCliente(String idCliente, String nivel) {
+		this.idCliente = idCliente;
+		this.nivel = nivel;
+		System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
+		System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
+	}
 
 	/**
 	 * Create the frame.
 	 */
-	public PerfilView() {
+	public PerfilView(String idCliente, String nivel) {
+		
+		this.idCliente = idCliente;
+		this.nivel = nivel;
+		
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -89,7 +103,7 @@ public class PerfilView extends JFrame {
 		btnVolver.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				WorkoutView pantallaWorkout = new WorkoutView();
+				WorkoutView pantallaWorkout = new WorkoutView(idCliente, nivel);
 				pantallaWorkout.setVisible(true);
 				dispose();
 			}

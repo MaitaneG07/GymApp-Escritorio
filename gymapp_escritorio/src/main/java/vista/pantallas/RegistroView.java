@@ -129,6 +129,7 @@ public class RegistroView extends JFrame {
 					cliente.setFechaNacimiento(fechaNacimiento);
 					cliente.setEmail(email);
 					cliente.setPassword(password);
+					cliente.setNivel("Principiante");
 
 					firebaseController.guardarCliente(cliente);
 

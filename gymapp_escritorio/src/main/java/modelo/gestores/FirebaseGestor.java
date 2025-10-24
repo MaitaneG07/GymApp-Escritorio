@@ -75,13 +75,11 @@ public class FirebaseGestor implements FirebaseInterface {
 			QuerySnapshot querySnapshot = query.get();
 			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
 
-			System.out.println(clientes);
-
 			for (QueryDocumentSnapshot cliente : clientes) {
 				ret = null == ret ? new ArrayList<Cliente>() : ret;
 				ret.add(new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE), cliente.getString(Constants.APELLIDO1),
 						cliente.getString(Constants.APELLIDO2), cliente.getString(Constants.FECHA_NACIMIENTO),
-						cliente.getString(Constants.EMAIL), cliente.getString(Constants.PASSWORD)));
+						cliente.getString(Constants.EMAIL), cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL)));
 			}
 
 		} catch (Exception e) {
@@ -106,7 +104,7 @@ public class FirebaseGestor implements FirebaseInterface {
 			for (QueryDocumentSnapshot cliente : clientes) {
 				ret = new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE), cliente.getString(Constants.APELLIDO1),
 						cliente.getString(Constants.APELLIDO2), cliente.getString(Constants.FECHA_NACIMIENTO),
-						cliente.getString(Constants.EMAIL), cliente.getString(Constants.PASSWORD));
+						cliente.getString(Constants.EMAIL), cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL));
 				break;
 			}
 
@@ -146,7 +144,7 @@ public class FirebaseGestor implements FirebaseInterface {
 			if (password.equals(passwordStored)) {
 				ret = new Cliente(clienteDoc.getId(), clienteDoc.getString(Constants.NOMBRE), clienteDoc.getString(Constants.APELLIDO1),
 						clienteDoc.getString(Constants.APELLIDO2), clienteDoc.getString(Constants.FECHA_NACIMIENTO),
-						clienteDoc.getString(Constants.EMAIL), null);
+						clienteDoc.getString(Constants.EMAIL), clienteDoc.getString(Constants.NIVEL), null);
 				System.out.println("Login exitoso: " + ret.getNombre());
 			} else {
 				System.out.println("Contraseña incorrecta");

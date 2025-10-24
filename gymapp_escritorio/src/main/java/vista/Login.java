@@ -10,7 +10,9 @@ import javax.swing.border.EmptyBorder;
 
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
+import modelo.exceptions.FileException;
 import modelo.exceptions.FireBaseException;
+import modelo.ficheros.Backup;
 import utils.Constants;
 import vista.pantallas.RegistroView;
 import vista.pantallas.WorkoutView;
@@ -40,6 +42,7 @@ public class Login extends JFrame {
 	private JLabel tituloLogin;
 	private JPasswordField passwordField;
 	private FirebaseController firebaseController;
+	private Backup backup;
 
 	/**
 	 * Launch the application.
@@ -58,6 +61,7 @@ public class Login extends JFrame {
 	public Login() {
 
 		firebaseController = new FirebaseController();
+		backup = new Backup();
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
@@ -119,23 +123,60 @@ public class Login extends JFrame {
 					return;
 				}
 
+				boolean online = utils.Network.isInternetAvailable();
+				Cliente cliente = null;
+
 				try {
-					Cliente cliente = firebaseController.login(email, password);
+					if (online) {
+
+						cliente = firebaseController.login(email, password);
+
+						if (cliente != null) {
+							try {
+								modelo.ficheros.Backup.writeBinaryFile(cliente);
+							} catch (FileException e) {
+								e.printStackTrace();
+							}
+						}
+					} else {
+						Cliente backupCliente = null;
+						try {
+							backupCliente = modelo.ficheros.Backup.readBinaryFile();
+							System.out.println("Nombre: " + backupCliente.getNombre());
+							System.out.println("Email: " + backupCliente.getEmail());
+							System.out.println("Nivel: " + backupCliente.getNivel());
+						} catch (FileException e) {
+							e.printStackTrace();
+						}
+
+						if (backupCliente != null && backupCliente.getEmail().equalsIgnoreCase(email)
+								&& backupCliente.getPassword().equals(password)) {
+							cliente = backupCliente;
+							System.out.println("Login offline con backup local");
+						} else {
+							JOptionPane.showMessageDialog(Login.this,
+									"No se pudo iniciar sesión sin conexión (usuario/contraseña no coinciden).",
+									"Error offline", JOptionPane.WARNING_MESSAGE);
+						}
+					}
 
 					System.out.println(cliente);
 
 					if (cliente != null) {
-						WorkoutView pantallaWorkout = new WorkoutView();
+						WorkoutView pantallaWorkout = new WorkoutView(password, password);
+						pantallaWorkout.setIdCliente(cliente.getId(), cliente.getNivel());
 						pantallaWorkout.setVisible(true);
 						dispose();
 
-					} else {
+					} else if (online) {
 						JOptionPane.showMessageDialog(Login.this, Constants.USUARIO_CONTRASEÑA_ERROR,
 								Constants.ERROR_LOGIN, JOptionPane.ERROR_MESSAGE);
 					}
 
 				} catch (FireBaseException e1) {
 					e1.printStackTrace();
+					JOptionPane.showMessageDialog(Login.this, "Error de conexión con Firebase.", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 

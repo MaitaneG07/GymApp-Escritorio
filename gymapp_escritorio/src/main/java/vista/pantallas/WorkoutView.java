@@ -53,9 +53,21 @@ public class WorkoutView extends JFrame {
 	private JMenuItem menuIntermedio;
 	private JMenuItem menuAvanzado;
 	private JButton btnNivel;
+	private String idCliente;
+	private String nivel;
 	
 	
-	public WorkoutView() {
+	public void setIdCliente(String idCliente, String nivel) {
+		this.idCliente = idCliente;
+		this.nivel = nivel;
+			System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
+			System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
+	}
+	
+	public WorkoutView(String idCliente, String nivel) {
+		
+		this.idCliente = idCliente;
+		this.nivel = nivel;
 		
 		firebaseController = new FirebaseController();
 		
@@ -92,7 +104,7 @@ public class WorkoutView extends JFrame {
 		popupMenuPerfil.add(menuGestionPerfil);
 		menuGestionPerfil.addActionListener(e -> {
 			
-			PerfilView pantallaPerfil = new PerfilView();
+			PerfilView pantallaPerfil = new PerfilView(idCliente, nivel);
 			pantallaPerfil.setVisible(true);
 			dispose();
 		});
@@ -207,7 +219,7 @@ public class WorkoutView extends JFrame {
 		btnSeleccionar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				EjercicioView pantallaEjercicio = new EjercicioView();
+				EjercicioView pantallaEjercicio = new EjercicioView(idCliente, nivel);
 				pantallaEjercicio.setVisible(true);
 				dispose();
 			}
