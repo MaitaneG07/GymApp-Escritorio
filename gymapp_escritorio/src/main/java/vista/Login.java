@@ -29,6 +29,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JPasswordField;
 
+/**
+ * Vista de inicio de sesión de la aplicación.
+ * 
+ * Esta clase proporciona la interfaz de login permitiendo a los usuarios
+ * autenticarse mediante email y contraseña. Soporta modo online (Firebase)
+ * y modo offline (backup local). Si el login es exitoso, guarda un backup
+ * local del cliente para permitir acceso sin conexión.
+ */
 public class Login extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -45,7 +53,9 @@ public class Login extends JFrame {
 	private Backup backup;
 
 	/**
-	 * Launch the application.
+	 * Punto de entrada de la aplicación.
+	 * 
+	 * @param args Argumentos de línea de comandos (no utilizados)
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
@@ -58,6 +68,12 @@ public class Login extends JFrame {
 		});
 	}
 
+	/**
+	 * Constructor de la vista de login.
+	 * 
+	 * Inicializa todos los componentes visuales, configura los listeners
+	 * y establece las conexiones con Firebase y el sistema de backup.
+	 */
 	public Login() {
 
 		firebaseController = new FirebaseController();
@@ -111,6 +127,16 @@ public class Login extends JFrame {
 				limpiarCampos();
 			}
 
+			/**
+			 * Realiza el proceso de autenticación del usuario.
+			 * 
+			 * Intenta autenticar al usuario usando Firebase si hay conexión a internet.
+			 * Si no hay conexión, intenta usar el backup local guardado previamente.
+			 * Si el login es exitoso, guarda o actualiza el backup local y redirige
+			 * a la vista de Workouts.
+			 * 
+			 * Valida que los campos no estén vacíos antes de proceder.
+			 */
 			private void realizarLogin() {
 				String email = textFieldUsuario.getText().trim();
 				String password = new String(passwordField.getPassword());
@@ -163,7 +189,7 @@ public class Login extends JFrame {
 					System.out.println(cliente);
 
 					if (cliente != null) {
-						WorkoutView pantallaWorkout = new WorkoutView(password, password);
+						WorkoutView pantallaWorkout = new WorkoutView(cliente.getId(), cliente.getNivel());
 						pantallaWorkout.setIdCliente(cliente.getId(), cliente.getNivel());
 						pantallaWorkout.setVisible(true);
 						dispose();
@@ -180,6 +206,9 @@ public class Login extends JFrame {
 				}
 			}
 
+			/**
+			 * Limpia los campos de email y contraseña.
+			 */
 			private void limpiarCampos() {
 
 				textFieldUsuario.setText("");

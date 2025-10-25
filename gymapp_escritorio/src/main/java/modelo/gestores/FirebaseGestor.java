@@ -28,6 +28,25 @@ import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 import utils.Constants;
 
+/**
+ * Gestor de operaciones con Firebase Firestore.
+ * 
+ * Esta clase implementa todas las operaciones CRUD necesarias para interactuar
+ * con la base de datos Firebase Firestore. Gestiona la inicialización de Firebase,
+ * autenticación, y operaciones sobre las colecciones de Clientes, Workouts,
+ * Ejercicios y Series.
+ * 
+ * Estructura de la base de datos:
+ * - GymElorrietaBD
+ *   - gym_01
+ *     - Clientes
+ *     - Workouts
+ *       - {idWorkout}
+ *         - Ejercicios
+ *           - {idEjercicio}
+ *             - Series
+ * 
+ */
 public class FirebaseGestor implements FirebaseInterface {
 
 	private static final String CREDENTIALS = "/GymBBDD.json";
@@ -38,6 +57,16 @@ public class FirebaseGestor implements FirebaseInterface {
 	private static final String COLLECTION_EJERCICIO = "Ejercicios";
 	private static final String COLLECTION_SERIE = "Series";
 
+	/**
+	 * Constructor del gestor de Firebase.
+	 * 
+	 * Inicializa la conexión con Firebase Firestore usando el archivo de
+	 * credenciales. Si Firebase ya está inicializado, reutiliza la conexión
+	 * existente. Valida que el archivo de credenciales exista antes de proceder.
+	 * 
+	 * @throws FireBaseException si no se encuentra el archivo de credenciales
+	 *         o si hay error al inicializar Firebase
+	 */
 	public FirebaseGestor() throws FireBaseException {
 		try {
 			if (FirebaseApp.getApps().isEmpty()) {
@@ -59,6 +88,16 @@ public class FirebaseGestor implements FirebaseInterface {
 		}
 	}
 
+	/**
+	 * Obtiene todos los clientes registrados en Firebase.
+	 * 
+	 * Consulta la colección de clientes y devuelve una lista con todos
+	 * los datos completos de cada cliente incluyendo: id, nombre, apellidos,
+	 * fecha de nacimiento, email, contraseña y nivel.
+	 * 
+	 * @return Lista de clientes o null si no hay clientes registrados
+	 * @throws FireBaseException si hay error al obtener los datos
+	 */
 	@Override
 	public List<Cliente> getClientes() throws FireBaseException {
 		List<Cliente> ret = null;
@@ -77,9 +116,10 @@ public class FirebaseGestor implements FirebaseInterface {
 
 			for (QueryDocumentSnapshot cliente : clientes) {
 				ret = null == ret ? new ArrayList<Cliente>() : ret;
-				ret.add(new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE), cliente.getString(Constants.APELLIDO1),
-						cliente.getString(Constants.APELLIDO2), cliente.getString(Constants.FECHA_NACIMIENTO),
-						cliente.getString(Constants.EMAIL), cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL)));
+				ret.add(new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE),
+						cliente.getString(Constants.APELLIDO1), cliente.getString(Constants.APELLIDO2),
+						cliente.getString(Constants.FECHA_NACIMIENTO), cliente.getString(Constants.EMAIL),
+						cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL)));
 			}
 
 		} catch (Exception e) {
@@ -88,6 +128,16 @@ public class FirebaseGestor implements FirebaseInterface {
 		return ret;
 	}
 
+	/**
+	 * Busca y obtiene un cliente por su nombre.
+	 * 
+	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer
+	 * cliente que coincida con el nombre especificado.
+	 * 
+	 * @param nombre Nombre del cliente a buscar
+	 * @return Cliente encontrado con todos sus datos, o null si no existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
 	@Override
 	public Cliente getCliente(String nombre) throws FireBaseException {
 		Cliente ret = null;
@@ -102,9 +152,10 @@ public class FirebaseGestor implements FirebaseInterface {
 			QuerySnapshot querySnapshot = query.get();
 			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
 			for (QueryDocumentSnapshot cliente : clientes) {
-				ret = new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE), cliente.getString(Constants.APELLIDO1),
-						cliente.getString(Constants.APELLIDO2), cliente.getString(Constants.FECHA_NACIMIENTO),
-						cliente.getString(Constants.EMAIL), cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL));
+				ret = new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE),
+						cliente.getString(Constants.APELLIDO1), cliente.getString(Constants.APELLIDO2),
+						cliente.getString(Constants.FECHA_NACIMIENTO), cliente.getString(Constants.EMAIL),
+						cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL));
 				break;
 			}
 
@@ -114,6 +165,19 @@ public class FirebaseGestor implements FirebaseInterface {
 		return ret;
 	}
 
+	/**
+	 * Autentica a un cliente mediante email y contraseña.
+	 * 
+	 * Busca el cliente por email en Firebase y verifica que la contraseña
+	 * coincida. Si la autenticación es exitosa, devuelve el objeto Cliente
+	 * pero sin incluir la contraseña (se pasa null por seguridad).
+	 * 
+	 * @param email Email del cliente a autenticar
+	 * @param password Contraseña del cliente
+	 * @return Cliente autenticado sin contraseña, o null si las credenciales
+	 *         son incorrectas o el usuario no existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
 	@Override
 	public Cliente login(String email, String password) throws FireBaseException {
 		Cliente ret = null;
@@ -142,9 +206,10 @@ public class FirebaseGestor implements FirebaseInterface {
 			}
 
 			if (password.equals(passwordStored)) {
-				ret = new Cliente(clienteDoc.getId(), clienteDoc.getString(Constants.NOMBRE), clienteDoc.getString(Constants.APELLIDO1),
-						clienteDoc.getString(Constants.APELLIDO2), clienteDoc.getString(Constants.FECHA_NACIMIENTO),
-						clienteDoc.getString(Constants.EMAIL), clienteDoc.getString(Constants.NIVEL), null);
+				ret = new Cliente(clienteDoc.getId(), clienteDoc.getString(Constants.NOMBRE),
+						clienteDoc.getString(Constants.APELLIDO1), clienteDoc.getString(Constants.APELLIDO2),
+						clienteDoc.getString(Constants.FECHA_NACIMIENTO), clienteDoc.getString(Constants.EMAIL), null,
+						clienteDoc.getString(Constants.NIVEL));
 				System.out.println("Login exitoso: " + ret.getNombre());
 			} else {
 				System.out.println("Contraseña incorrecta");
@@ -157,6 +222,16 @@ public class FirebaseGestor implements FirebaseInterface {
 		return ret;
 	}
 
+	/**
+	 * Obtiene todos los workouts con su información completa.
+	 * 
+	 * Consulta todos los workouts y carga recursivamente todos sus ejercicios
+	 * y series asociadas. Construye una estructura completa de objetos anidados:
+	 * Workout -> Lista de Ejercicios -> Lista de Series.
+	 * 
+	 * @return Lista de workouts con ejercicios y series, o null si no hay workouts
+	 * @throws FireBaseException si hay error al obtener los datos
+	 */
 	@Override
 	public List<Workout> getWorkouts() throws FireBaseException {
 		List<Workout> ret = null;
@@ -194,13 +269,15 @@ public class FirebaseGestor implements FirebaseInterface {
 
 					for (QueryDocumentSnapshot serieDoc : seriesSnapshot) {
 						Serie serie = new Serie(serieDoc.getId(), serieDoc.getString(Constants.NOMBRE),
-								serieDoc.getString(Constants.TIEMPO_ASIGNADO), serieDoc.getString(Constants.TIEMPO_DESCANSO),
+								serieDoc.getString(Constants.TIEMPO_ASIGNADO),
+								serieDoc.getString(Constants.TIEMPO_DESCANSO),
 								serieDoc.getBoolean(Constants.COMPLETADO));
 						series.add(serie);
 					}
 
 					Ejercicio ejercicio = new Ejercicio(ejercicioDoc.getId(), ejercicioDoc.getString(Constants.NOMBRE),
-							ejercicioDoc.getString(Constants.DESCRIPCION), ejercicioDoc.getBoolean(Constants.COMPLETADO), series);
+							ejercicioDoc.getString(Constants.DESCRIPCION),
+							ejercicioDoc.getBoolean(Constants.COMPLETADO), series);
 
 					ejercicios.add(ejercicio);
 				}
@@ -220,6 +297,16 @@ public class FirebaseGestor implements FirebaseInterface {
 		return ret;
 	}
 
+	/**
+	 * Obtiene los ejercicios de un workout específico con sus series.
+	 * 
+	 * Consulta la subcolección de ejercicios de un workout y carga todas
+	 * las series asociadas a cada ejercicio.
+	 * 
+	 * @param idWorkout ID del workout del cual obtener los ejercicios
+	 * @return Lista de ejercicios con sus series, o null si no hay ejercicios
+	 * @throws FireBaseException si hay error al obtener los datos
+	 */
 	@Override
 	public List<Ejercicio> obtenerEjerciciosPorWorkout(String idWorkout) throws FireBaseException {
 		List<Ejercicio> listaEjercicios = new ArrayList<>();
@@ -246,13 +333,14 @@ public class FirebaseGestor implements FirebaseInterface {
 
 				for (QueryDocumentSnapshot serieDoc : seriesSnapshot) {
 					Serie serie = new Serie(serieDoc.getId(), serieDoc.getString(Constants.NOMBRE),
-							serieDoc.getString(Constants.TIEMPO_ASIGNADO), serieDoc.getString(Constants.TIEMPO_DESCANSO),
-							serieDoc.getBoolean(Constants.COMPLETADO));
+							serieDoc.getString(Constants.TIEMPO_ASIGNADO),
+							serieDoc.getString(Constants.TIEMPO_DESCANSO), serieDoc.getBoolean(Constants.COMPLETADO));
 					series.add(serie);
 				}
 
 				Ejercicio ejercicio = new Ejercicio(ejercicioDoc.getId(), ejercicioDoc.getString(Constants.NOMBRE),
-						ejercicioDoc.getString(Constants.DESCRIPCION), ejercicioDoc.getBoolean(Constants.COMPLETADO), series);
+						ejercicioDoc.getString(Constants.DESCRIPCION), ejercicioDoc.getBoolean(Constants.COMPLETADO),
+						series);
 
 				listaEjercicios.add(ejercicio);
 			}
@@ -264,6 +352,17 @@ public class FirebaseGestor implements FirebaseInterface {
 		return listaEjercicios;
 	}
 
+	/**
+	 * Guarda o actualiza un usuario en Firebase con validación de ID.
+	 * 
+	 * Si el cliente no tiene ID o está vacío, genera uno automáticamente
+	 * usando UUID. Crea un Map con los campos específicos del cliente y
+	 * los guarda en Firebase. Este método NO guarda el campo 'nivel'.
+	 * 
+	 * @param cliente Cliente con los datos a guardar
+	 * @return true si se guardó correctamente
+	 * @throws FireBaseException si hay error al guardar
+	 */
 	@Override
 	public boolean guardarUsuario(Cliente cliente) throws FireBaseException {
 		try {
@@ -293,6 +392,17 @@ public class FirebaseGestor implements FirebaseInterface {
 
 	}
 
+	/**
+	 * Obtiene el siguiente ID secuencial disponible para un nuevo cliente.
+	 * 
+	 * Consulta el último cliente registrado ordenando por ID en orden
+	 * descendente, extrae el número del ID y lo incrementa en 1.
+	 * Formato del ID: "C" + número (por ejemplo: C1, C2, C3, etc.)
+	 * Si no hay clientes registrados, devuelve "C1".
+	 * 
+	 * @return Siguiente ID disponible en formato String (ej: "C5")
+	 * @throws FireBaseException si hay error al consultar los IDs
+	 */
 	@Override
 	public String obtenerSiguienteId() throws FireBaseException {
 		try {
@@ -321,6 +431,17 @@ public class FirebaseGestor implements FirebaseInterface {
 		}
 	}
 
+	/**
+	 * Guarda o actualiza un cliente completo en Firebase.
+	 * 
+	 * Utiliza el método set() de Firestore para guardar el objeto
+	 * completo Cliente. Si el documento ya existe, lo sobrescribe.
+	 * A diferencia de guardarUsuario(), este método guarda todos
+	 * los campos del objeto Cliente incluyendo el nivel.
+	 * 
+	 * @param cliente Cliente completo a guardar
+	 * @throws FireBaseException si hay error al guardar
+	 */
 	@Override
 	public void guardarCliente(Cliente cliente) throws FireBaseException {
 		try {
@@ -333,6 +454,17 @@ public class FirebaseGestor implements FirebaseInterface {
 		}
 	}
 
+	/**
+	 * Obtiene un workout específico por su ID con toda su información.
+	 * 
+	 * Busca el workout en Firebase y carga recursivamente todos sus
+	 * ejercicios y las series de cada ejercicio. Construye un objeto
+	 * Workout completo con toda su estructura anidada.
+	 * 
+	 * @param idWorkout ID del workout a obtener
+	 * @return Workout completo con ejercicios y series, o null si no existe
+	 * @throws FireBaseException si hay error al obtener los datos
+	 */
 	@Override
 	public Workout obtenerWorkoutPorId(String idWorkout) throws FireBaseException {
 		Workout workout = null;
@@ -368,13 +500,15 @@ public class FirebaseGestor implements FirebaseInterface {
 					List<Serie> series = new ArrayList<>();
 					for (QueryDocumentSnapshot serieDoc : seriesSnapshot.getDocuments()) {
 						Serie serie = new Serie(serieDoc.getId(), serieDoc.getString(Constants.NOMBRE),
-								serieDoc.getString(Constants.TIEMPO_ASIGNADO), serieDoc.getString(Constants.TIEMPO_DESCANSO),
+								serieDoc.getString(Constants.TIEMPO_ASIGNADO),
+								serieDoc.getString(Constants.TIEMPO_DESCANSO),
 								serieDoc.getBoolean(Constants.COMPLETADO));
 						series.add(serie);
 					}
 
 					Ejercicio ejercicio = new Ejercicio(ejercicioDoc.getId(), ejercicioDoc.getString(Constants.NOMBRE),
-							ejercicioDoc.getString(Constants.DESCRIPCION), ejercicioDoc.getBoolean(Constants.COMPLETADO), series);
+							ejercicioDoc.getString(Constants.DESCRIPCION),
+							ejercicioDoc.getBoolean(Constants.COMPLETADO), series);
 
 					listaEjercicios.add(ejercicio);
 				}
@@ -387,6 +521,33 @@ public class FirebaseGestor implements FirebaseInterface {
 		}
 
 		return workout;
+	}
+	
+	/**
+	 * Verifica si existe un cliente con el email especificado en Firebase.
+	 * 
+	 * @param email Email a verificar
+	 * @return true si el email ya existe, false si no existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	@Override
+	public boolean existeEmailCliente(String email) throws FireBaseException {
+	    try {
+	        Firestore dataBase = FirestoreClient.getFirestore();
+
+	        ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+	                .document(DOCUMENTO_GYM)
+	                .collection(COLLECTION_CLIENTE)
+	                .whereEqualTo(Constants.EMAIL, email)
+	                .get();
+
+	        QuerySnapshot querySnapshot = query.get();
+	        
+	        return !querySnapshot.isEmpty();
+
+	    } catch (Exception e) {
+	        throw new FireBaseException("Error al verificar email: " + e.getLocalizedMessage());
+	    }
 	}
 
 }

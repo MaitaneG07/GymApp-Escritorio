@@ -1,6 +1,7 @@
 package vista.pantallas;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -13,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -28,7 +30,16 @@ import modelo.exceptions.FireBaseException;
 import utils.Constants;
 import vista.Login;
 
-
+/**
+ * Vista principal de gestión de Workouts.
+ * 
+ * Esta clase permite visualizar, filtrar y seleccionar workouts según el nivel del cliente.
+ * Implementa un sistema de control de acceso basado en niveles jerárquicos:
+ * - Principiante: Acceso solo a workouts de nivel Principiante
+ * - Intermedio: Acceso a workouts de nivel Principiante e Intermedio
+ * - Avanzado: Acceso a todos los workouts (Principiante, Intermedio y Avanzado)
+ * 
+ */
 public class WorkoutView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -55,29 +66,47 @@ public class WorkoutView extends JFrame {
 	private JButton btnNivel;
 	private String idCliente;
 	private String nivel;
-	
-	
+	private Component lblNivelCliente;
+	private JMenuItem menuTodos;
+	private String idWorkoutSeleccionado = null;
+
+	/**
+	 * Establece el ID del cliente y su nivel.
+	 * 
+	 * @param idCliente ID único del cliente
+	 * @param nivel Nivel de experiencia del cliente
+	 */
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
 		this.nivel = nivel;
-			System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
-			System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
+		System.out.println("Seteando ID Cliente: " + idCliente);
+		System.out.println("Seteando Nivel Cliente: " + nivel);
 	}
-	
+
+	/**
+	 * Constructor de la vista de Workouts.
+	 * 
+	 * Inicializa todos los componentes visuales, configura los listeners
+	 * y carga los workouts desde Firebase. Implementa el control de acceso
+	 * basado en el nivel del cliente.
+	 * 
+	 * @param idCliente ID único del cliente autenticado
+	 * @param nivel Nivel de experiencia del cliente (Principiante, Intermedio o Avanzado)
+	 */
 	public WorkoutView(String idCliente, String nivel) {
-		
+
 		this.idCliente = idCliente;
 		this.nivel = nivel;
-		
+
 		firebaseController = new FirebaseController();
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		tituloWorkout = new JLabel(Constants.WORKOUT_LABEL);
 		tituloWorkout.setOpaque(true);
 		tituloWorkout.setBackground(new Color(0, 0, 0, 0));
@@ -87,7 +116,7 @@ public class WorkoutView extends JFrame {
 		contentPane.add(tituloWorkout);
 
 		btnPerfil = new JButton();
-		//LOGO MAITANE
+		// LOGO MAITANE
 		// ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA));
 		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
 		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
@@ -103,7 +132,7 @@ public class WorkoutView extends JFrame {
 		menuGestionPerfil = new JMenuItem(Constants.GESTIONAR_PERFIL_MENU);
 		popupMenuPerfil.add(menuGestionPerfil);
 		menuGestionPerfil.addActionListener(e -> {
-			
+
 			PerfilView pantallaPerfil = new PerfilView(idCliente, nivel);
 			pantallaPerfil.setVisible(true);
 			dispose();
@@ -131,7 +160,7 @@ public class WorkoutView extends JFrame {
 			popupMenuPerfil.show(btnPerfil, 0, btnPerfil.getHeight());
 
 		});
-		
+
 		btnNivel = new JButton();
 		btnNivel.setBounds(761, 11, 102, 40);
 		btnNivel.setFocusPainted(false);
@@ -140,16 +169,31 @@ public class WorkoutView extends JFrame {
 		contentPane.add(btnNivel);
 
 		popupMenuNivel = new JPopupMenu();
-		
+
 		menuPrincipiante = new JMenuItem(Constants.NIVEL_PRINCIPIANTE_MENU);
 		popupMenuNivel.add(menuPrincipiante);
+		menuPrincipiante.addActionListener(e -> {
+			actualizarTablaWorkouts(modeloWorkouts, Constants.NIVEL_PRINCIPIANTE_MENU);
+		});
 
 		menuIntermedio = new JMenuItem(Constants.NIVEL_INTERMEDIO_MENU);
 		popupMenuNivel.add(menuIntermedio);
+		menuIntermedio.addActionListener(e -> {
+			actualizarTablaWorkouts(modeloWorkouts, Constants.NIVEL_INTERMEDIO_MENU);
+		});
 
 		menuAvanzado = new JMenuItem(Constants.NIVEL_AVANZADO_MENU);
 		popupMenuNivel.add(menuAvanzado);
-		
+		menuAvanzado.addActionListener(e -> {
+			actualizarTablaWorkouts(modeloWorkouts, Constants.NIVEL_AVANZADO_MENU);
+		});
+
+		menuTodos = new JMenuItem(Constants.TODOS_NIVELES_MENU);
+		popupMenuNivel.add(menuTodos);
+		menuTodos.addActionListener(e -> {
+			actualizarTablaWorkouts(modeloWorkouts, null);
+		});
+
 		btnNivel.addActionListener(e -> {
 			popupMenuNivel.show(btnNivel, 0, btnNivel.getHeight());
 
@@ -159,12 +203,12 @@ public class WorkoutView extends JFrame {
 		scrollPaneWorkouts.setBounds(162, 131, 574, 149);
 		contentPane.add(scrollPaneWorkouts);
 
-		modeloWorkouts = new DefaultTableModel(){
+		modeloWorkouts = new DefaultTableModel() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; 
+				return false;
 			}
 		};
 		modeloWorkouts.addColumn(Constants.COLUMNA_ID_WORKOUT);
@@ -178,28 +222,75 @@ public class WorkoutView extends JFrame {
 		tablaWorkouts.getColumnModel().getColumn(0).setMinWidth(0);
 		tablaWorkouts.getColumnModel().getColumn(0).setMaxWidth(0);
 		tablaWorkouts.getColumnModel().getColumn(0).setWidth(0);
-		
 
-		// Agregar MouseListener para detectar el doble clic y obtener el id_viaje
+		// Agregar MouseListener para detectar el doble clic y obtener el id
 		tablaWorkouts.addMouseListener(new MouseAdapter() {
 			@Override
-		    public void mouseClicked(MouseEvent e) {
-		        if (e.getClickCount() == 2 && tablaWorkouts.getSelectedRow() != -1) {
-		            int selectedRow = tablaWorkouts.getSelectedRow();
-		            String idWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 0);
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2 && tablaWorkouts.getSelectedRow() != -1) {
+					int selectedRow = tablaWorkouts.getSelectedRow();
+					String idWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 0);
+					String nivelWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 2);
 
-		            System.out.println("ID Workout seleccionado: " + idWorkout);
-		            actualizarTablaDetallesWorkout(modeloDetallesWorkouts, idWorkout);
-		        }
-		    }
+					System.out.println("ID Workout seleccionado: " + idWorkout);
+					System.out.println("Nivel Workout seleccionado: " + nivelWorkout);
+					System.out.println("Nivel Cliente: " + nivel);
+					
+					if (!puedeAccederAlWorkout(nivel, nivelWorkout)) {
+						JOptionPane.showMessageDialog(WorkoutView.this, Constants.SIN_NIVEL, Constants.ACCESO_DENEGADO,
+								JOptionPane.WARNING_MESSAGE);
+
+						btnSeleccionar.setEnabled(false);
+						idWorkoutSeleccionado = null;
+					} else {
+						actualizarTablaDetallesWorkout(modeloDetallesWorkouts, idWorkout);
+						btnSeleccionar.setEnabled(true);
+						idWorkoutSeleccionado = idWorkout;
+					}
+				}
+			}
 		});
+
+		// Renderer personalizado para colorear filas según accesibilidad
+		tablaWorkouts.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
+
+				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+				String nivelWorkout = (String) table.getValueAt(row, 2);
+
+				if (!puedeAccederAlWorkout(nivel, nivelWorkout)) {
+					// Workout no accesible - gris claro
+					c.setBackground(isSelected ? new Color(200, 200, 200) : new Color(240, 240, 240));
+					c.setForeground(Color.GRAY);
+				} else {
+					// Workout accesible - colores normales
+					c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
+					c.setForeground(isSelected ? table.getSelectionForeground() : Color.BLACK);
+				}
+
+				return c;
+			}
+		});
+
 		scrollPaneWorkouts.setViewportView(tablaWorkouts);
 
 		scrollPaneDetallesWorkout = new JScrollPane();
 		scrollPaneDetallesWorkout.setBounds(162, 351, 574, 149);
 		contentPane.add(scrollPaneDetallesWorkout);
 
-		modeloDetallesWorkouts = new DefaultTableModel();
+		modeloDetallesWorkouts = new DefaultTableModel(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_ID_EJERCICIO);
 		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_NOMBRE_EJERCICIO);
 		modeloDetallesWorkouts.addColumn(Constants.COLUMNA_DESCRIPCION);
@@ -210,18 +301,19 @@ public class WorkoutView extends JFrame {
 		tablaDetallesWorkout.getColumnModel().getColumn(0).setMaxWidth(0);
 		tablaDetallesWorkout.getColumnModel().getColumn(0).setWidth(0);
 		scrollPaneDetallesWorkout.setViewportView(tablaDetallesWorkout);
-		
-		
-		actualizarTablaWorkouts(modeloWorkouts);
 
-		
+		actualizarTablaWorkouts(modeloWorkouts, null);
+
 		btnSeleccionar = new JButton(Constants.SELECCIONAR_BOTON);
+		btnSeleccionar.setEnabled(false);
 		btnSeleccionar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				EjercicioView pantallaEjercicio = new EjercicioView(idCliente, nivel);
-				pantallaEjercicio.setVisible(true);
-				dispose();
+				if (idWorkoutSeleccionado != null && btnSeleccionar.isEnabled()) {
+					EjercicioView pantallaEjercicio = new EjercicioView(idCliente, nivel);
+					pantallaEjercicio.setVisible(true);
+					dispose();
+				}
 			}
 		});
 		btnSeleccionar.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
@@ -238,10 +330,58 @@ public class WorkoutView extends JFrame {
 		btnFiltrarPorNivel.setBorderPainted(false);
 		btnFiltrarPorNivel.setBounds(761, 11, 102, 40);
 		contentPane.add(btnFiltrarPorNivel);
-		
+
+		lblNivelCliente = new JLabel(Constants.NIVEL_USUARIO + this.nivel);
+		lblNivelCliente.setBounds(10, 537, 231, 73);
+		lblNivelCliente.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 14));
+		contentPane.add(lblNivelCliente);
+
 	}
 	
-	public void actualizarTablaWorkouts(DefaultTableModel modeloWorkouts) {
+	/**
+	 * Compara si el cliente puede acceder a un workout según su nivel
+	 * @param nivelCliente El nivel del cliente
+	 * @param nivelWorkout El nivel del workout
+	 * @return true si puede acceder, false si no
+	 */
+	private boolean puedeAccederAlWorkout(String nivelCliente, String nivelWorkout) {
+		
+		int nivelClienteValor = obtenerValorNivel(nivelCliente);
+		int nivelWorkoutValor = obtenerValorNivel(nivelWorkout);
+		
+		return nivelClienteValor >= nivelWorkoutValor;
+	}
+
+	/**
+	 * Convierte el nombre del nivel a un valor numérico para comparar
+	 * @param nivel Nombre del nivel
+	 * @return Valor numérico (1=Principiante, 2=Intermedio, 3=Avanzado)
+	 */
+	private int obtenerValorNivel(String nivel) {
+		if (nivel == null) return 0;
+		
+		switch (nivel.toLowerCase()) {
+			case "principiante":
+				return 1;
+			case "intermedio":
+				return 2;
+			case "avanzado":
+				return 3;
+			default:
+				return 0;
+		}
+	}
+
+	/**
+	 * Actualiza la tabla de workouts aplicando un filtro por nivel (opcional).
+	 * 
+	 * Este método obtiene todos los workouts desde Firebase y los filtra según
+	 * el nivel especificado. Si el filtro es null o vacío, muestra todos los workouts.
+	 * 
+	 * @param modeloWorkouts Modelo de la tabla donde se mostrarán los workouts
+	 * @param nivelFiltro Nivel por el que filtrar (Principiante, Intermedio, Avanzado) o null para mostrar todos
+	 */
+	public void actualizarTablaWorkouts(DefaultTableModel modeloWorkouts, String nivelFiltro) {
 		modeloWorkouts.setRowCount(0);
 		List<Workout> listaWorkouts = null;
 		try {
@@ -249,45 +389,49 @@ public class WorkoutView extends JFrame {
 		} catch (FireBaseException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (listaWorkouts == null || listaWorkouts.isEmpty()) {
 			listaWorkouts = new ArrayList<>();
 		}
-		
+
 		for (Workout workout : listaWorkouts) {
-			modeloWorkouts.addRow(new Object[] {
-					workout.getId(), workout.getNombre(), workout.getNivel(), 
-					workout.getVideo(), workout.getEjercicios().size()
-			});
+			if (nivelFiltro == null || nivelFiltro.isEmpty() || workout.getNivel().equalsIgnoreCase(nivelFiltro)) {
+				modeloWorkouts.addRow(new Object[] { workout.getId(), workout.getNombre(), workout.getNivel(),
+						workout.getVideo(), workout.getEjercicios().size() });
+			}
 		}
-		
+
 		tablaWorkouts.revalidate();
 		tablaWorkouts.repaint();
 	}
-	
+
+	/**
+	 * Actualiza la tabla de detalles mostrando los ejercicios de un workout específico.
+	 * 
+	 * Obtiene el workout completo desde Firebase utilizando su ID y muestra
+	 * todos sus ejercicios asociados en la tabla de detalles.
+	 * 
+	 * @param modeloDetallesWorkouts Modelo de la tabla donde se mostrarán los ejercicios
+	 * @param idWorkout ID del workout del cual se mostrarán los ejercicios
+	 */
 	public void actualizarTablaDetallesWorkout(DefaultTableModel modeloDetallesWorkouts, String idWorkout) {
-	    modeloDetallesWorkouts.setRowCount(0); 
+		modeloDetallesWorkouts.setRowCount(0);
 
-	    List<Ejercicio> listaEjercicios = new ArrayList<>();
+		List<Ejercicio> listaEjercicios = new ArrayList<>();
 
-	    Workout workoutSeleccionado = null;
+		Workout workoutSeleccionado = null;
 		try {
 			workoutSeleccionado = firebaseController.obtenerWorkoutPorId(idWorkout);
 		} catch (FireBaseException e) {
 			e.printStackTrace();
 		}
 		if (workoutSeleccionado != null) {
-		    listaEjercicios = workoutSeleccionado.getEjercicios();
+			listaEjercicios = workoutSeleccionado.getEjercicios();
 		}
 
-	    for (Ejercicio ejercicio : listaEjercicios) {
-	        modeloDetallesWorkouts.addRow(new Object[] {
-	            ejercicio.getId(),
-	            ejercicio.getNombre(),
-	            ejercicio.getDescripcion(),
-	            ejercicio.getSeries().size()
-	        });
-	    }
+		for (Ejercicio ejercicio : listaEjercicios) {
+			modeloDetallesWorkouts.addRow(new Object[] { ejercicio.getId(), ejercicio.getNombre(),
+					ejercicio.getDescripcion(), ejercicio.getSeries().size() });
+		}
 	}
-
 }

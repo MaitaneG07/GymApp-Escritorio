@@ -43,6 +43,7 @@ public class Constants {
 	public static final String PERFIL_LABEL = "PERFIL";
 	public static final String RESUMEN_LABEL = "RESUMEN";
 	public static final String WORKOUT_LABEL = "WORKOUTS";
+	public static final String NIVEL_USUARIO = "Tu nivel actual es: ";
 	
 	// Nombres de las columnas
 	public static final String COLUMNA_NOMBRE_WORKOUT = NOMBRE_LABEL;
@@ -80,6 +81,7 @@ public class Constants {
 	public static final String NIVEL_PRINCIPIANTE_MENU = "Principiante";
 	public static final String NIVEL_INTERMEDIO_MENU = "Intermedio";
 	public static final String NIVEL_AVANZADO_MENU = "Avanzado";
+	public static final String TODOS_NIVELES_MENU = "Todos los niveles";
 
 	// Errores
 	public static final String SIN_USUARIO_CONTRASEÑA = "Por favor, ingresa email y contraseña";
@@ -91,6 +93,10 @@ public class Constants {
 	public static final String EXITO = "Éxito";
 	public static final String ERROR_REGISTRO = "Error al registrar cliente: ";
 	public static final String ERROR = "Error";
+	public static final String SIN_NIVEL = "No tiene el nivel para acceder a este workout";
+	public static final String ACCESO_DENEGADO = "Acceso denegado";
+	public static final String EMAIL_EXISTENTE = "El email ya existe en la bbdd";
+	public static final String EMAIL_DUPLICADO = "Email duplicado";
 	
 	// Campos Clientes
 	public static final String NOMBRE = "nombre";

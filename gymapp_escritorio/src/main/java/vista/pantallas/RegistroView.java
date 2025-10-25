@@ -26,6 +26,14 @@ import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Vista de registro de nuevos clientes.
+ * 
+ * Esta clase proporciona una interfaz gráfica para que nuevos usuarios puedan
+ * registrarse en el sistema. Incluye validación de campos obligatorios y
+ * verificación de emails duplicados. Los nuevos usuarios se crean automáticamente
+ * con nivel "Principiante".
+ */
 public class RegistroView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -50,7 +58,10 @@ public class RegistroView extends JFrame {
 	private FirebaseController firebaseController;
 
 	/**
-	 * Create the frame.
+	 * Constructor de la vista de registro.
+	 * 
+	 * Inicializa todos los componentes visuales, configura los listeners
+	 * y establece las conexiones con Firebase para el registro de usuarios.
 	 */
 	public RegistroView() {
 		try {
@@ -100,6 +111,15 @@ public class RegistroView extends JFrame {
 
 			}
 
+			/**
+			 * Realiza el proceso de registro de un nuevo cliente.
+			 * 
+			 * Valida que todos los campos obligatorios estén completos, verifica
+			 * que el email no esté duplicado en la base de datos, y si todo es
+			 * correcto, crea el nuevo cliente con nivel "Principiante" por defecto.
+			 * 
+			 * Muestra mensajes de error o éxito según corresponda.
+			 */
 			private void realizarRegistro() {
 
 				String nombre = textFieldNombre.getText().trim();
@@ -118,8 +138,16 @@ public class RegistroView extends JFrame {
 				}
 
 				try {
-					// Obtener el siguiente ID desde Firestore
-					String siguienteId = firebaseGestor.obtenerSiguienteId();
+					
+					if (firebaseController.existeEmail(email)) {
+			            JOptionPane.showMessageDialog(RegistroView.this, 
+			                Constants.EMAIL_EXISTENTE,
+			                Constants.EMAIL_DUPLICADO, 
+			                JOptionPane.WARNING_MESSAGE);
+			            return; 
+			        }
+					
+					String siguienteId = firebaseController.obtenerSiguienteId();
 
 					Cliente cliente = new Cliente();
 					cliente.setId(String.valueOf(siguienteId));
@@ -129,7 +157,7 @@ public class RegistroView extends JFrame {
 					cliente.setFechaNacimiento(fechaNacimiento);
 					cliente.setEmail(email);
 					cliente.setPassword(password);
-					cliente.setNivel("Principiante");
+					cliente.setNivel(Constants.NIVEL_PRINCIPIANTE_MENU);
 
 					firebaseController.guardarCliente(cliente);
 
@@ -258,6 +286,12 @@ public class RegistroView extends JFrame {
 		passwordField.setBounds(562, 369, 177, 30);
 	}
 
+	/**
+	 * Limpia todos los campos del formulario de registro.
+	 * 
+	 * Este método restablece todos los campos de texto y contraseña
+	 * a su estado inicial vacío.
+	 */
 	private void limpiarCampos() {
 		textFieldNombre.setText("");
 		textFieldApellidoUno.setText("");

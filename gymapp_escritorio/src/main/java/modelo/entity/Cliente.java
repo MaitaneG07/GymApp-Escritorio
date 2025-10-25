@@ -23,7 +23,7 @@ public class Cliente implements Serializable {
 		super();
 	}
 
-	public Cliente(String id, String nombre, String apellido1, String apellido2, String fechaNacimiento, String email, String nivel, String password) {
+	public Cliente(String id, String nombre, String apellido1, String apellido2, String fechaNacimiento, String email, String password, String nivel) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
