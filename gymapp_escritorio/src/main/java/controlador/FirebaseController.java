@@ -3,6 +3,8 @@ package controlador;
 import java.util.List;
 
 import modelo.entity.Cliente;
+import modelo.entity.Ejercicio;
+import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 import modelo.gestores.FirebaseGestor;
@@ -115,6 +117,20 @@ public class FirebaseController {
 	 */
 	public String obtenerSiguienteId() throws FireBaseException {
 		return firebaseGestor.obtenerSiguienteId();
+	}
+
+	/**
+	 * Obtiene todos los clientes registrados en Firebase.
+	 * 
+	 * Consulta la colección de clientes y devuelve una lista con todos
+	 * los datos completos de cada cliente incluyendo: id, nombre, apellidos,
+	 * fecha de nacimiento, email, contraseña y nivel.
+	 * 
+	 * @return Lista de clientes o null si no hay clientes registrados
+	 * @throws FireBaseException si hay error al obtener los datos
+	 */
+	public List<Cliente> getClientes() throws FireBaseException {
+		return firebaseGestor.getClientes();
 	}
 	
 }

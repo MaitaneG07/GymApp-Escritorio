@@ -10,6 +10,9 @@ import javax.swing.border.EmptyBorder;
 
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
+import modelo.entity.Ejercicio;
+import modelo.entity.Serie;
+import modelo.entity.Workout;
 import modelo.exceptions.FileException;
 import modelo.exceptions.FireBaseException;
 import modelo.ficheros.Backup;
@@ -27,15 +30,18 @@ import javax.swing.JButton;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JPasswordField;
 
 /**
  * Vista de inicio de sesión de la aplicación.
  * 
  * Esta clase proporciona la interfaz de login permitiendo a los usuarios
- * autenticarse mediante email y contraseña. Soporta modo online (Firebase)
- * y modo offline (backup local). Si el login es exitoso, guarda un backup
- * local del cliente para permitir acceso sin conexión.
+ * autenticarse mediante email y contraseña. Soporta modo online (Firebase) y
+ * modo offline (backup local). Si el login es exitoso, guarda un backup local
+ * del cliente para permitir acceso sin conexión.
  */
 public class Login extends JFrame {
 
@@ -71,8 +77,8 @@ public class Login extends JFrame {
 	/**
 	 * Constructor de la vista de login.
 	 * 
-	 * Inicializa todos los componentes visuales, configura los listeners
-	 * y establece las conexiones con Firebase y el sistema de backup.
+	 * Inicializa todos los componentes visuales, configura los listeners y
+	 * establece las conexiones con Firebase y el sistema de backup.
 	 */
 	public Login() {
 
@@ -130,10 +136,10 @@ public class Login extends JFrame {
 			/**
 			 * Realiza el proceso de autenticación del usuario.
 			 * 
-			 * Intenta autenticar al usuario usando Firebase si hay conexión a internet.
-			 * Si no hay conexión, intenta usar el backup local guardado previamente.
-			 * Si el login es exitoso, guarda o actualiza el backup local y redirige
-			 * a la vista de Workouts.
+			 * Intenta autenticar al usuario usando Firebase si hay conexión a internet. Si
+			 * no hay conexión, intenta usar el backup local guardado previamente. Si el
+			 * login es exitoso, guarda o actualiza el backup local y redirige a la vista de
+			 * Workouts.
 			 * 
 			 * Valida que los campos no estén vacíos antes de proceder.
 			 */
@@ -150,53 +156,60 @@ public class Login extends JFrame {
 				}
 
 				boolean online = utils.Network.isInternetAvailable();
-				Cliente cliente = null;
+				Cliente clienteAutenticado = null;
+				List<Cliente> clientes = null;
+				List<Workout> workouts = null;
+				List<Ejercicio> ejercicios = null;
+				List<Serie> series = null;
 
 				try {
 					if (online) {
 
-						cliente = firebaseController.login(email, password);
+						clientes = firebaseController.getClientes();
+						workouts = firebaseController.workout();
 
-						if (cliente != null) {
+						if (clientes != null && workouts != null) {
 							try {
-								modelo.ficheros.Backup.writeBinaryFile(cliente);
+								modelo.ficheros.Backup.writeBinaryFile(clientes, workouts);
 							} catch (FileException e) {
 								e.printStackTrace();
 							}
-						}
-					} else {
-						Cliente backupCliente = null;
-						try {
-							backupCliente = modelo.ficheros.Backup.readBinaryFile();
-							System.out.println("Nombre: " + backupCliente.getNombre());
-							System.out.println("Email: " + backupCliente.getEmail());
-							System.out.println("Nivel: " + backupCliente.getNivel());
-						} catch (FileException e) {
-							e.printStackTrace();
+
+							clienteAutenticado = buscarCliente(clientes, email, password);
 						}
 
-						if (backupCliente != null && backupCliente.getEmail().equalsIgnoreCase(email)
-								&& backupCliente.getPassword().equals(password)) {
-							cliente = backupCliente;
-							System.out.println("Login offline con backup local");
-						} else {
-							JOptionPane.showMessageDialog(Login.this,
-									"No se pudo iniciar sesión sin conexión (usuario/contraseña no coinciden).",
-									"Error offline", JOptionPane.WARNING_MESSAGE);
+						if (clienteAutenticado == null) {
+							JOptionPane.showMessageDialog(Login.this, Constants.USUARIO_CONTRASEÑA_ERROR,
+									Constants.ERROR_LOGIN, JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+					} else {
+						List<Cliente> clientesBackup = new ArrayList<>();
+						List<Workout> workoutsBackup = new ArrayList<>();
+						try {
+							modelo.ficheros.Backup.readBinaryFile(clientesBackup, workoutsBackup);
+							clienteAutenticado = buscarCliente(clientesBackup, email, password);
+							if (clienteAutenticado == null) {
+								JOptionPane.showMessageDialog(Login.this,
+										"No se pudo iniciar sesión sin conexión (usuario/contraseña no coinciden).",
+										"Error offline", JOptionPane.WARNING_MESSAGE);
+								return;
+							} else {
+								System.out.println("Login offline con backup local");
+							}
+						} catch (FileException e) {
+							e.printStackTrace();
+							return;
 						}
 					}
 
-					System.out.println(cliente);
-
-					if (cliente != null) {
-						WorkoutView pantallaWorkout = new WorkoutView(cliente.getId(), cliente.getNivel());
-						pantallaWorkout.setIdCliente(cliente.getId(), cliente.getNivel());
+					if (clienteAutenticado != null) {
+						System.out.println("Login exitoso: " + clienteAutenticado.getNombre());
+						WorkoutView pantallaWorkout = new WorkoutView(clienteAutenticado.getId(),
+								clienteAutenticado.getNivel());
+						pantallaWorkout.setIdCliente(clienteAutenticado.getId(), clienteAutenticado.getNivel());
 						pantallaWorkout.setVisible(true);
 						dispose();
-
-					} else if (online) {
-						JOptionPane.showMessageDialog(Login.this, Constants.USUARIO_CONTRASEÑA_ERROR,
-								Constants.ERROR_LOGIN, JOptionPane.ERROR_MESSAGE);
 					}
 
 				} catch (FireBaseException e1) {
@@ -204,6 +217,15 @@ public class Login extends JFrame {
 					JOptionPane.showMessageDialog(Login.this, "Error de conexión con Firebase.", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				}
+			}
+
+			private Cliente buscarCliente(List<Cliente> clientes, String email, String password) {
+				for (Cliente cliente : clientes) {
+					if (cliente.getEmail().equalsIgnoreCase(email) && cliente.getPassword().equals(password)) {
+						return cliente;
+					}
+				}
+				return null;
 			}
 
 			/**

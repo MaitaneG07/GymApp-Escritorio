@@ -549,5 +549,4 @@ public class FirebaseGestor implements FirebaseInterface {
 	        throw new FireBaseException("Error al verificar email: " + e.getLocalizedMessage());
 	    }
 	}
-
 }
