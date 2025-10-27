@@ -20,7 +20,7 @@ import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-public class Ejercicio extends JFrame {
+public class EjercicioView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -33,11 +33,25 @@ public class Ejercicio extends JFrame {
 	private JScrollPane scrollPane;
 	private JLabel lblFotoEjercicio;
 	private JButton btnPerfil;
+	private String idCliente;
+	private String nivel;
+	
+	public void setIdCliente(String idCliente, String nivel) {
+		this.idCliente = idCliente;
+		this.nivel = nivel;
+		System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
+		System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
+	}
 
 	/**
 	 * Create the frame.
 	 */
-	public Ejercicio() {
+	public EjercicioView(String idCliente, String nivel) {
+		
+		this.idCliente = idCliente;
+		this.nivel = nivel;
+		
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -69,7 +83,7 @@ public class Ejercicio extends JFrame {
 		btnSalir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Workout panelWorkout = new Workout();
+				WorkoutView panelWorkout = new WorkoutView(idCliente, nivel);
 				panelWorkout.setVisible(true);
 				dispose();
 			}

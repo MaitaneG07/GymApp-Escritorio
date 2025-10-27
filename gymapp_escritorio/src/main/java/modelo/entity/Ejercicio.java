@@ -16,21 +16,18 @@ public class Ejercicio implements Serializable {
 	private String descripcion;
 	private boolean completado;
 	private List<Serie> series;
-	private Workout workout;
 	
 	public Ejercicio() {
 		super();
 	}
 
-	public Ejercicio(String id, String nombre, String descripcion, boolean completado, List<Serie> series,
-			Workout workout) {
+	public Ejercicio(String id, String nombre, String descripcion, boolean completado, List<Serie> series) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.completado = completado;
 		this.series = series;
-		this.workout = workout;
 	}
 	
 	
@@ -75,17 +72,9 @@ public class Ejercicio implements Serializable {
 		this.series = series;
 	}
 
-	public Workout getWorkout() {
-		return workout;
-	}
-
-	public void setWorkout(Workout workout) {
-		this.workout = workout;
-	}
-
 	@Override
 	public int hashCode() {
-		return Objects.hash(completado, descripcion, id, nombre, workout);
+		return Objects.hash(completado, descripcion, id, nombre);
 	}
 
 	@Override
@@ -98,13 +87,13 @@ public class Ejercicio implements Serializable {
 			return false;
 		Ejercicio other = (Ejercicio) obj;
 		return completado == other.completado && Objects.equals(descripcion, other.descripcion) && id == other.id
-				&& Objects.equals(nombre, other.nombre) && Objects.equals(workout, other.workout);
+				&& Objects.equals(nombre, other.nombre);
 	}
 
 	@Override
 	public String toString() {
 		return id + ", " + nombre + ", " + descripcion + ", "
-				+ completado + ", " + workout;
+				+ completado;
 	}
 	
 	

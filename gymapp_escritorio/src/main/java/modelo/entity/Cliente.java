@@ -17,12 +17,13 @@ public class Cliente implements Serializable {
 	private String fechaNacimiento;
 	private String email;
 	private String password;
+	private String nivel;
 	
 	public Cliente() {
 		super();
 	}
 
-	public Cliente(String id, String nombre, String password, String apellido1, String apellido2, String fechaNacimiento, String email) {
+	public Cliente(String id, String nombre, String apellido1, String apellido2, String fechaNacimiento, String email, String password, String nivel) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -31,6 +32,7 @@ public class Cliente implements Serializable {
 		this.fechaNacimiento = fechaNacimiento;
 		this.email = email;
 		this.password = password;
+		this.nivel = nivel;
 	}
 
 	public String getId() {
@@ -43,6 +45,14 @@ public class Cliente implements Serializable {
 
 	public String getNombre() {
 		return nombre;
+	}
+
+	public String getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(String nivel) {
+		this.nivel = nivel;
 	}
 
 	public void setNombre(String nombre) {
@@ -92,7 +102,7 @@ public class Cliente implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(apellido1, apellido2, email, fechaNacimiento, id, nombre);
+		return Objects.hash(apellido1, apellido2, email, fechaNacimiento, id, nombre, nivel);
 	}
 
 	@Override
@@ -107,12 +117,12 @@ public class Cliente implements Serializable {
 		return Objects.equals(apellido1, other.apellido1) && Objects.equals(apellido2, other.apellido2)
 				&& Objects.equals(email, other.email) && Objects.equals(password, other.password)
 				&& Objects.equals(fechaNacimiento, other.fechaNacimiento) && id == other.id
-				&& Objects.equals(nombre, other.nombre);
+				&& Objects.equals(nombre, other.nombre) && Objects.equals(nivel, other.nivel);
 	}
 
 	@Override
 	public String toString() {
 		return id + ", " + nombre + ", " + apellido1 + ", " + apellido2
-				+ ", " + fechaNacimiento + ", " + email + ", " + password ;
+				+ ", " + fechaNacimiento + ", " + email + ", " + password + ", " + nivel ;
 	}
 }
