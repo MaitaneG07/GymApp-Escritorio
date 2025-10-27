@@ -1,3 +1,5 @@
 # Ignorar credenciales de Firebase
+/src/main/resources/GymBBDD.json
 gymapp_escritorio/src/main/resources/gym-elorrieta-firebase-firebase-adminsdk-fbsvc-675f98e815.json
+
 
