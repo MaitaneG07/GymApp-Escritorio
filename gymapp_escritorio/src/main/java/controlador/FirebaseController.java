@@ -3,8 +3,6 @@ package controlador;
 import java.util.List;
 
 import modelo.entity.Cliente;
-import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 import modelo.gestores.FirebaseGestor;

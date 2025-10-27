@@ -2,10 +2,12 @@ package vista.pantallas;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -223,11 +225,11 @@ public class WorkoutView extends JFrame {
 		tablaWorkouts.getColumnModel().getColumn(0).setMaxWidth(0);
 		tablaWorkouts.getColumnModel().getColumn(0).setWidth(0);
 
-		// Agregar MouseListener para detectar el doble clic y obtener el id
+		// Agregar MouseListener para detectar el un clic y obtener el id
 		tablaWorkouts.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && tablaWorkouts.getSelectedRow() != -1) {
+				if (e.getClickCount() == 1 && tablaWorkouts.getSelectedRow() != -1) {
 					int selectedRow = tablaWorkouts.getSelectedRow();
 					String idWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 0);
 					String nivelWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 2);
@@ -246,6 +248,27 @@ public class WorkoutView extends JFrame {
 						actualizarTablaDetallesWorkout(modeloDetallesWorkouts, idWorkout);
 						btnSeleccionar.setEnabled(true);
 						idWorkoutSeleccionado = idWorkout;
+					}
+				}
+			}
+		});
+		
+		// Con doble click obtenemos el video y lo mostramos
+		tablaWorkouts.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2 && tablaWorkouts.getSelectedRow() != -1) {
+					int selectedRow = tablaWorkouts.getSelectedRow();
+					String video = (String) tablaWorkouts.getValueAt(selectedRow, 3);
+					
+					try {
+					    if (Desktop.isDesktopSupported()) {
+					        Desktop.getDesktop().browse(new URI(video));
+					    } else {
+					        JOptionPane.showMessageDialog(null, "El sistema no soporta abrir enlaces automáticamente.");
+					    }
+					} catch (Exception ex) {
+					    JOptionPane.showMessageDialog(null, "Error al abrir el video: " + ex.getMessage());
 					}
 				}
 			}

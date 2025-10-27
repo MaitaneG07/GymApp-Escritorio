@@ -10,8 +10,6 @@ import javax.swing.border.EmptyBorder;
 
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
-import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FileException;
 import modelo.exceptions.FireBaseException;
@@ -159,8 +157,6 @@ public class Login extends JFrame {
 				Cliente clienteAutenticado = null;
 				List<Cliente> clientes = null;
 				List<Workout> workouts = null;
-				List<Ejercicio> ejercicios = null;
-				List<Serie> series = null;
 
 				try {
 					if (online) {
