@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import controlador.CronometroLogica;
 
 public class EjercicioView extends JFrame {
 
@@ -35,6 +37,7 @@ public class EjercicioView extends JFrame {
 	private JButton btnPerfil;
 	private String idCliente;
 	private String nivel;
+	private CronometroLogica cronometro;
 	
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
@@ -73,9 +76,9 @@ public class EjercicioView extends JFrame {
 		contentPane.add(btnPerfil);
 		
 		
-		lblCronometro = new JLabel("Aqui va el cronometro");
-		lblCronometro.setFont(new Font(Constants.FONT_FAMILY, Font.PLAIN, 15));
-		lblCronometro.setBounds(331, 426, 177, 74);
+		lblCronometro = new JLabel("00:00:00", SwingConstants.CENTER);
+		lblCronometro.setFont(new Font("Tahoma", Font.BOLD, 48));
+		lblCronometro.setBounds(256, 426, 327, 74);
 		contentPane.add(lblCronometro);
 		
 		JButton btnSalir = new JButton(Constants.SALIR_BOTON);
@@ -92,23 +95,36 @@ public class EjercicioView extends JFrame {
 		contentPane.add(btnSalir);
 		
 		btnCronometro = new JButton(Constants.INICIAR_BOTON);
+		btnCronometro.setForeground(new Color(255, 255, 255));
+		btnCronometro.setOpaque(true);           
+		btnCronometro.setContentAreaFilled(true);
+		btnCronometro.setBorderPainted(false);
+		btnCronometro.setFocusPainted(false); 
+		btnCronometro.setBackground( new Color(0, 128, 0));
 		 String frase1 = Constants.INICIAR_BOTON;
 	        String frase2 = Constants.PARAR_BOTON;
 	        
 	        final boolean[] esFrase1 = {true};
 		
-		btnCronometro.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-		        
-		        if (esFrase1[0]) {
-		        	btnCronometro.setText(frase2);
-                } else {
-                	btnCronometro.setText(frase1);
-                }
-                esFrase1[0] = !esFrase1[0]; // Cambia el estado para la próxima vez
-            }
-		});
-		btnCronometro.setBounds(341, 520, 133, 58);
+	        cronometro = new CronometroLogica(() ->
+	            lblCronometro.setText(cronometro.obtenerTiempoFormateado())
+	        );
+
+	        btnCronometro.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	
+	                if (!cronometro.estaCorriendo()) {
+	                    cronometro.iniciar();
+	                    btnCronometro.setText(Constants.PAUSAR_BOTON);
+	                    btnCronometro.setBackground( new Color(139, 0, 0));
+	                } else {
+	                    cronometro.pausarReanudar();
+	                    btnCronometro.setText(Constants.INICIAR_BOTON);
+	                    btnCronometro.setBackground( new Color(0, 128, 0));
+	                }
+	            }
+	        });
+		btnCronometro.setBounds(360, 520, 133, 58);
 		contentPane.add(btnCronometro);
 		
 		lblDescripcion = new JLabel("Descripcion del ejercicio");

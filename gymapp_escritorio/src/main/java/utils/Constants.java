@@ -65,6 +65,7 @@ public class Constants {
 	// Nombre de los botones
 	public static final String VOLVER_BOTON = "VOLVER";
 	public static final String INICIAR_BOTON = "INICIAR";
+	public static final String PAUSAR_BOTON = "PAUSAR";
 	public static final String PARAR_BOTON = "PARAR";
 	public static final String SALIR_BOTON = "SALIR";
 	public static final String INICAR_SESION_BOTON = "INICIAR SESIÓN";
