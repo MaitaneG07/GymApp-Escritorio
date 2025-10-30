@@ -333,7 +333,13 @@ public class WorkoutView extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (idWorkoutSeleccionado != null && btnSeleccionar.isEnabled()) {
-					EjercicioView pantallaEjercicio = new EjercicioView(idCliente, nivel);
+					EjercicioView pantallaEjercicio = null;
+					try {
+						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado);
+					} catch (FireBaseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					pantallaEjercicio.setVisible(true);
 					dispose();
 				}
