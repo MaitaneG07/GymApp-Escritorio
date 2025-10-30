@@ -145,18 +145,18 @@ public class EjercicioView extends JFrame {
 		contentPane.add(btnCronometro);
 
 		lblNombreEjercicio = new JLabel(obtenerDatoEjercicioSeleccionado("nombre"), SwingConstants.CENTER);
-		lblNombreEjercicio.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 20));
-		lblNombreEjercicio.setBounds(304, 38, 244, 28);
+		lblNombreEjercicio.setFont(new Font("Arial", Font.BOLD, 30));
+		lblNombreEjercicio.setBounds(243, 11, 368, 55);
 		contentPane.add(lblNombreEjercicio);
 
 		lblFotoEjercicio = new JLabel("");
 		lblFotoEjercicio.setIcon(new ImageIcon(
 				"C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\remo.jpg"));
-		lblFotoEjercicio.setBounds(565, 97, 201, 163);
+		lblFotoEjercicio.setBounds(695, 110, 150, 159);
 		contentPane.add(lblFotoEjercicio);
 
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(339, 256, 434, 183);
+		scrollPane.setBounds(332, 299, 513, 183);
 		contentPane.add(scrollPane);
 
 		tablaDetallesSeries = new DefaultTableModel();
@@ -190,10 +190,17 @@ public class EjercicioView extends JFrame {
 		contentPane.add(lblCuentaDescanso);
 		
 		JTextArea textADescripcion = new JTextArea();
-		textADescripcion.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		textADescripcion.setFont(new Font("Tahoma", Font.BOLD, 16));
 		textADescripcion.setText(obtenerDatoEjercicioSeleccionado("Descripcion"));
-		textADescripcion.setBounds(339, 97, 434, 123);
+		textADescripcion.setBounds(332, 110, 347, 159);
 		contentPane.add(textADescripcion);
+		//estas dos siguientes lineas son para que no se corte el texto si la frase es larga
+		textADescripcion.setLineWrap(true);
+		textADescripcion.setWrapStyleWord(true);
+		//un scroll
+		JScrollPane scrollDescripcion = new JScrollPane(textADescripcion);
+		scrollDescripcion.setBounds(332, 110, 347, 159);
+		contentPane.add(scrollDescripcion);
 
 	}
 	
