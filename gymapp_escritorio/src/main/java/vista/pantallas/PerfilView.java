@@ -38,7 +38,9 @@ public class PerfilView extends JFrame {
 	private JTextField textFieldNombre;
 	private JTextField textFieldFecNac;
 	private JLabel lblFondoPerfil;
+	@SuppressWarnings("unused")
 	private String idCliente;
+	@SuppressWarnings("unused")
 	private String nivel;
 	
 	public void setIdCliente(String idCliente, String nivel) {

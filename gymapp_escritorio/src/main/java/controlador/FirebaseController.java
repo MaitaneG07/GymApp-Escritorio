@@ -3,11 +3,10 @@ package controlador;
 import java.util.List;
 
 import modelo.entity.Cliente;
-import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 import modelo.gestores.FirebaseGestor;
+import modelo.entity.Historico;
 
 /**
  * Controlador de operaciones con Firebase.
@@ -131,6 +130,10 @@ public class FirebaseController {
 	 */
 	public List<Cliente> getClientes() throws FireBaseException {
 		return firebaseGestor.getClientes();
+	}
+
+	public List<Historico> historicos(String idCLiente) throws FireBaseException {
+		return firebaseGestor.getHistoricos(idCLiente);
 	}
 	
 }

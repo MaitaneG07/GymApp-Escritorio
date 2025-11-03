@@ -4,7 +4,7 @@ import java.util.List;
 
 import modelo.entity.Cliente;
 import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
+import modelo.entity.Historico;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 
@@ -118,5 +118,10 @@ public interface FirebaseInterface {
 	 * @throws FireBaseException si hay error en la consulta
 	 */
 	boolean existeEmailCliente(String email) throws FireBaseException;
+
+
+	List<Historico> getHistoricos(String idCliente) throws FireBaseException;
+
+
 
 }

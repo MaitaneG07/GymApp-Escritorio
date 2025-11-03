@@ -64,6 +64,7 @@ public class WorkoutView extends JFrame {
 	private JMenuItem menuIntermedio;
 	private JMenuItem menuAvanzado;
 	private JButton btnNivel;
+	@SuppressWarnings("unused")
 	private String idCliente;
 	private String nivel;
 	private Component lblNivelCliente;
@@ -142,7 +143,7 @@ public class WorkoutView extends JFrame {
 		popupMenuPerfil.add(menuHistorico);
 		menuHistorico.addActionListener(e -> {
 
-			HistoricoView pantallaHistorico = new HistoricoView();
+			HistoricoView pantallaHistorico = new HistoricoView(idCliente, nivel);
 			pantallaHistorico.setVisible(true);
 			dispose();
 		});
@@ -227,7 +228,7 @@ public class WorkoutView extends JFrame {
 		tablaWorkouts.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && tablaWorkouts.getSelectedRow() != -1) {
+				if (e.getClickCount() == 1 && tablaWorkouts.getSelectedRow() != -1) {
 					int selectedRow = tablaWorkouts.getSelectedRow();
 					String idWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 0);
 					String nivelWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 2);
@@ -403,6 +404,7 @@ public class WorkoutView extends JFrame {
 
 		tablaWorkouts.revalidate();
 		tablaWorkouts.repaint();
+		
 	}
 
 	/**

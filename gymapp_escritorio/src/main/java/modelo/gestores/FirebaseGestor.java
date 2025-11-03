@@ -23,6 +23,7 @@ import com.google.firebase.cloud.FirestoreClient;
 
 import modelo.entity.Cliente;
 import modelo.entity.Ejercicio;
+import modelo.entity.Historico;
 import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
@@ -56,6 +57,7 @@ public class FirebaseGestor implements FirebaseInterface {
 	private static final String COLLECTION_WORKOUT = "Workouts";
 	private static final String COLLECTION_EJERCICIO = "Ejercicios";
 	private static final String COLLECTION_SERIE = "Series";
+	private static final String COLLECTION_HISTORICO = "Historico";
 
 	/**
 	 * Constructor del gestor de Firebase.
@@ -548,5 +550,40 @@ public class FirebaseGestor implements FirebaseInterface {
 	    } catch (Exception e) {
 	        throw new FireBaseException("Error al verificar email: " + e.getLocalizedMessage());
 	    }
+	}
+
+	@Override
+	public List<Historico> getHistoricos(String idCliente) throws FireBaseException {
+	    List<Historico> ret = new ArrayList<>();
+
+	    try {
+	        Firestore dataBase = FirestoreClient.getFirestore();
+
+	        ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+	                .document(DOCUMENTO_GYM)
+	                .collection(COLLECTION_CLIENTE)
+	                .document(idCliente)
+	                .collection(COLLECTION_HISTORICO)
+	                .get();
+
+	        QuerySnapshot querySnapshot = query.get();
+	        List<QueryDocumentSnapshot> historicos = querySnapshot.getDocuments();
+
+	        for (QueryDocumentSnapshot historico : historicos) {
+	            ret.add(new Historico(
+	                historico.getId(), 
+	                historico.getString(Constants.NOMBRE),
+	                historico.getString(Constants.NIVEL), 
+	                historico.getString(Constants.TIEMPO_TOTAL),
+	                historico.getString(Constants.TIEMPO_PREVISTO), 
+	                historico.getString(Constants.FECHA_INICIO),
+	                historico.getString(Constants.PORCENTAJE)
+	            ));
+	        }
+
+	    } catch (Exception e) {
+	        throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    }
+	    return ret;
 	}
 }

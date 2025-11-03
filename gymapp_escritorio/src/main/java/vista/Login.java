@@ -56,6 +56,7 @@ public class Login extends JFrame {
 	private JLabel tituloLogin;
 	private JPasswordField passwordField;
 	private FirebaseController firebaseController;
+	@SuppressWarnings("unused")
 	private Backup backup;
 
 	/**
@@ -159,7 +160,9 @@ public class Login extends JFrame {
 				Cliente clienteAutenticado = null;
 				List<Cliente> clientes = null;
 				List<Workout> workouts = null;
+				@SuppressWarnings("unused")
 				List<Ejercicio> ejercicios = null;
+				@SuppressWarnings("unused")
 				List<Serie> series = null;
 
 				try {

@@ -112,6 +112,10 @@ public class Constants {
 	// Campos Workouts
 	public static final String NIVEL = "nivel";
 	public static final String VIDEO = "video";
+	public static final String TIEMPO_TOTAL = "tiempo_total";
+	public static final String TIEMPO_PREVISTO = "tiempo_previsto";
+	public static final String FECHA_INICIO = "fecha_inicio";
+	public static final String PORCENTAJE = "porcentaje";
 	
 	// Campos Series
 	public static final String TIEMPO_ASIGNADO = "tiempo_asignado";
