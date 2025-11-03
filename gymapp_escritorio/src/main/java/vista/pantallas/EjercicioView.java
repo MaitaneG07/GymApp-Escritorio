@@ -228,6 +228,48 @@ public class EjercicioView extends JFrame {
 
 			}
 		}
+		
+		// Para cambiar el color de la fila segun este completado o no
+		tableSeries.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+		    @Override
+		    public java.awt.Component getTableCellRendererComponent(
+		            javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+		        java.awt.Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+		        try {
+		            String nombreSerie = (String) table.getValueAt(row, 0);
+
+		            boolean completado = false;
+		            for (Ejercicio ejercicio : ejerciciosWorkoutSeleccionado) {
+		                for (Serie serie : ejercicio.getSeries()) {
+		                    if (serie.getNombre().equals(nombreSerie)) {
+		                        completado = serie.isCompletado();
+		                        break;
+		                    }
+		                }
+		            }
+
+		            if (completado) {
+		                cell.setBackground(new java.awt.Color(144, 238, 144));
+		                cell.setForeground(Color.BLACK);
+		            } else {
+		                cell.setBackground(new java.awt.Color(255, 160, 160));
+		                cell.setForeground(Color.BLACK);
+		            }
+
+		            if (isSelected) {
+		                cell.setBackground(cell.getBackground().darker());
+		            }
+
+		        } catch (Exception e) {
+		            cell.setBackground(Color.WHITE);
+		            cell.setForeground(Color.BLACK);
+		        }
+
+		        return cell;
+		    }
+		});
 
 		JLabel lblEjercicio = new JLabel("Duración serie:");
 		lblEjercicio.setBounds(44, 271, 107, 14);
