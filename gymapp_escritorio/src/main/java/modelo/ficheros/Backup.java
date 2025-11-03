@@ -10,8 +10,6 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import modelo.entity.Cliente;
-import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FileException;
 
@@ -36,7 +34,7 @@ public class Backup {
 			}
 
 			for (Workout workout : workouts) {
-				objectOutputStream.writeObject(workouts);
+				objectOutputStream.writeObject(workout);
 			}
 
 			System.out.println("Backup guardado en " + BACKUP_FILE);
