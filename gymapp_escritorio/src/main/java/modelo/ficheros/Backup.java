@@ -60,7 +60,8 @@ public class Backup {
 	/**
 	 * Lee el archivo binario y devuelve el Cliente guardado.
 	 */
-	public static void readBinaryFile(List<Cliente> clientes, List<Workout> workouts) throws FileException {
+	public static void readBinaryFile(List<Cliente> clientes, List<Workout> workouts)
+			throws FileException {
 		File file = new File(BACKUP_FILE);
 		FileInputStream inputStream = null;
 		ObjectInputStream objectInputStream = null;
@@ -86,7 +87,7 @@ public class Backup {
 						clientes.add((Cliente) obj);
 					} else if (obj instanceof Workout) {
 						workouts.add((Workout) obj);
-					}
+					} 
 				}
 			} catch (EOFException e) {
 			}

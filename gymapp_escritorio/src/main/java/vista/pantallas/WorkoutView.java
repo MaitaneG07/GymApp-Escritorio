@@ -26,8 +26,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import controlador.FirebaseController;
+import modelo.entity.Cliente;
 import modelo.entity.Ejercicio;
 import modelo.entity.Workout;
+import modelo.exceptions.FileException;
 import modelo.exceptions.FireBaseException;
 import utils.Constants;
 import vista.Login;
@@ -35,11 +37,11 @@ import vista.Login;
 /**
  * Vista principal de gestión de Workouts.
  * 
- * Esta clase permite visualizar, filtrar y seleccionar workouts según el nivel del cliente.
- * Implementa un sistema de control de acceso basado en niveles jerárquicos:
- * - Principiante: Acceso solo a workouts de nivel Principiante
- * - Intermedio: Acceso a workouts de nivel Principiante e Intermedio
- * - Avanzado: Acceso a todos los workouts (Principiante, Intermedio y Avanzado)
+ * Esta clase permite visualizar, filtrar y seleccionar workouts según el nivel
+ * del cliente. Implementa un sistema de control de acceso basado en niveles
+ * jerárquicos: - Principiante: Acceso solo a workouts de nivel Principiante -
+ * Intermedio: Acceso a workouts de nivel Principiante e Intermedio - Avanzado:
+ * Acceso a todos los workouts (Principiante, Intermedio y Avanzado)
  * 
  */
 public class WorkoutView extends JFrame {
@@ -72,12 +74,15 @@ public class WorkoutView extends JFrame {
 	private Component lblNivelCliente;
 	private JMenuItem menuTodos;
 	private String idWorkoutSeleccionado = null;
+	private boolean online = utils.Network.isInternetAvailable();
+	private List<Cliente> clientesBackup = new ArrayList<>();
+	private List<Workout> workoutsBackup = new ArrayList<>();
 
 	/**
 	 * Establece el ID del cliente y su nivel.
 	 * 
 	 * @param idCliente ID único del cliente
-	 * @param nivel Nivel de experiencia del cliente
+	 * @param nivel     Nivel de experiencia del cliente
 	 */
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
@@ -89,12 +94,13 @@ public class WorkoutView extends JFrame {
 	/**
 	 * Constructor de la vista de Workouts.
 	 * 
-	 * Inicializa todos los componentes visuales, configura los listeners
-	 * y carga los workouts desde Firebase. Implementa el control de acceso
-	 * basado en el nivel del cliente.
+	 * Inicializa todos los componentes visuales, configura los listeners y carga
+	 * los workouts desde Firebase. Implementa el control de acceso basado en el
+	 * nivel del cliente.
 	 * 
 	 * @param idCliente ID único del cliente autenticado
-	 * @param nivel Nivel de experiencia del cliente (Principiante, Intermedio o Avanzado)
+	 * @param nivel     Nivel de experiencia del cliente (Principiante, Intermedio o
+	 *                  Avanzado)
 	 */
 	public WorkoutView(String idCliente, String nivel) {
 
@@ -238,7 +244,7 @@ public class WorkoutView extends JFrame {
 					System.out.println("ID Workout seleccionado: " + idWorkout);
 					System.out.println("Nivel Workout seleccionado: " + nivelWorkout);
 					System.out.println("Nivel Cliente: " + nivel);
-					
+
 					if (!puedeAccederAlWorkout(nivel, nivelWorkout)) {
 						JOptionPane.showMessageDialog(WorkoutView.this, Constants.SIN_NIVEL, Constants.ACCESO_DENEGADO,
 								JOptionPane.WARNING_MESSAGE);
@@ -253,7 +259,7 @@ public class WorkoutView extends JFrame {
 				}
 			}
 		});
-		
+
 		// Con doble click obtenemos el video y lo mostramos
 		tablaWorkouts.addMouseListener(new MouseAdapter() {
 			@Override
@@ -261,15 +267,15 @@ public class WorkoutView extends JFrame {
 				if (e.getClickCount() == 2 && tablaWorkouts.getSelectedRow() != -1) {
 					int selectedRow = tablaWorkouts.getSelectedRow();
 					String video = (String) tablaWorkouts.getValueAt(selectedRow, 3);
-					
+
 					try {
-					    if (Desktop.isDesktopSupported()) {
-					        Desktop.getDesktop().browse(new URI(video));
-					    } else {
-					        JOptionPane.showMessageDialog(null, "El sistema no soporta abrir enlaces automáticamente.");
-					    }
+						if (Desktop.isDesktopSupported()) {
+							Desktop.getDesktop().browse(new URI(video));
+						} else {
+							JOptionPane.showMessageDialog(null, "El sistema no soporta abrir enlaces automáticamente.");
+						}
 					} catch (Exception ex) {
-					    JOptionPane.showMessageDialog(null, "Error al abrir el video: " + ex.getMessage());
+						JOptionPane.showMessageDialog(null, "Error al abrir el video: " + ex.getMessage());
 					}
 				}
 			}
@@ -307,7 +313,7 @@ public class WorkoutView extends JFrame {
 		scrollPaneDetallesWorkout.setBounds(162, 351, 574, 149);
 		contentPane.add(scrollPaneDetallesWorkout);
 
-		modeloDetallesWorkouts = new DefaultTableModel(){
+		modeloDetallesWorkouts = new DefaultTableModel() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -361,102 +367,157 @@ public class WorkoutView extends JFrame {
 		contentPane.add(lblNivelCliente);
 
 	}
-	
+
 	/**
 	 * Compara si el cliente puede acceder a un workout según su nivel
+	 * 
 	 * @param nivelCliente El nivel del cliente
 	 * @param nivelWorkout El nivel del workout
 	 * @return true si puede acceder, false si no
 	 */
 	private boolean puedeAccederAlWorkout(String nivelCliente, String nivelWorkout) {
-		
+
 		int nivelClienteValor = obtenerValorNivel(nivelCliente);
 		int nivelWorkoutValor = obtenerValorNivel(nivelWorkout);
-		
+
 		return nivelClienteValor >= nivelWorkoutValor;
 	}
 
 	/**
 	 * Convierte el nombre del nivel a un valor numérico para comparar
+	 * 
 	 * @param nivel Nombre del nivel
 	 * @return Valor numérico (1=Principiante, 2=Intermedio, 3=Avanzado)
 	 */
 	private int obtenerValorNivel(String nivel) {
-		if (nivel == null) return 0;
-		
+		if (nivel == null)
+			return 0;
+
 		switch (nivel.toLowerCase()) {
-			case "principiante":
-				return 1;
-			case "intermedio":
-				return 2;
-			case "avanzado":
-				return 3;
-			default:
-				return 0;
+		case "principiante":
+			return 1;
+		case "intermedio":
+			return 2;
+		case "avanzado":
+			return 3;
+		default:
+			return 0;
 		}
 	}
 
 	/**
 	 * Actualiza la tabla de workouts aplicando un filtro por nivel (opcional).
 	 * 
-	 * Este método obtiene todos los workouts desde Firebase y los filtra según
-	 * el nivel especificado. Si el filtro es null o vacío, muestra todos los workouts.
+	 * Este método obtiene todos los workouts desde Firebase y los filtra según el
+	 * nivel especificado. Si el filtro es null o vacío, muestra todos los workouts.
 	 * 
 	 * @param modeloWorkouts Modelo de la tabla donde se mostrarán los workouts
-	 * @param nivelFiltro Nivel por el que filtrar (Principiante, Intermedio, Avanzado) o null para mostrar todos
+	 * @param nivelFiltro    Nivel por el que filtrar (Principiante, Intermedio,
+	 *                       Avanzado) o null para mostrar todos
 	 */
 	public void actualizarTablaWorkouts(DefaultTableModel modeloWorkouts, String nivelFiltro) {
 		modeloWorkouts.setRowCount(0);
 		List<Workout> listaWorkouts = null;
+
 		try {
-			listaWorkouts = firebaseController.workout();
-		} catch (FireBaseException e) {
-			e.printStackTrace();
-		}
+			if (online) {
+				listaWorkouts = firebaseController.workout();
 
-		if (listaWorkouts == null || listaWorkouts.isEmpty()) {
-			listaWorkouts = new ArrayList<>();
-		}
+				if (listaWorkouts != null) {
+					try {
+						for (Workout workout : listaWorkouts) {
+							if (nivelFiltro == null || nivelFiltro.isEmpty()
+									|| workout.getNivel().equalsIgnoreCase(nivelFiltro)) {
+								modeloWorkouts.addRow(new Object[] { workout.getId(), workout.getNombre(),
+										workout.getNivel(), workout.getVideo(), workout.getEjercicios().size() });
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 
-		for (Workout workout : listaWorkouts) {
-			if (nivelFiltro == null || nivelFiltro.isEmpty() || workout.getNivel().equalsIgnoreCase(nivelFiltro)) {
-				modeloWorkouts.addRow(new Object[] { workout.getId(), workout.getNombre(), workout.getNivel(),
-						workout.getVideo(), workout.getEjercicios().size() });
+			} else {
+				try {
+					modelo.ficheros.Backup.readBinaryFile(clientesBackup, workoutsBackup);
+					for (Workout workout : workoutsBackup) {
+						if (nivelFiltro == null || nivelFiltro.isEmpty()
+								|| workout.getNivel().equalsIgnoreCase(nivelFiltro)) {
+							modeloWorkouts.addRow(new Object[] { workout.getId(), workout.getNombre(),
+									workout.getNivel(), workout.getVideo(), workout.getEjercicios().size() });
+						}
+					}
+
+				} catch (FileException e) {
+					e.printStackTrace();
+					return;
+				}
 			}
+
+		} catch (
+
+		FireBaseException e) {
+			e.printStackTrace();
 		}
 
 		tablaWorkouts.revalidate();
 		tablaWorkouts.repaint();
-		
 	}
 
 	/**
-	 * Actualiza la tabla de detalles mostrando los ejercicios de un workout específico.
+	 * Actualiza la tabla de detalles mostrando los ejercicios de un workout
+	 * específico.
 	 * 
-	 * Obtiene el workout completo desde Firebase utilizando su ID y muestra
-	 * todos sus ejercicios asociados en la tabla de detalles.
+	 * Obtiene el workout completo desde Firebase utilizando su ID y muestra todos
+	 * sus ejercicios asociados en la tabla de detalles.
 	 * 
-	 * @param modeloDetallesWorkouts Modelo de la tabla donde se mostrarán los ejercicios
-	 * @param idWorkout ID del workout del cual se mostrarán los ejercicios
+	 * @param modeloDetallesWorkouts Modelo de la tabla donde se mostrarán los
+	 *                               ejercicios
+	 * @param idWorkout              ID del workout del cual se mostrarán los
+	 *                               ejercicios
 	 */
 	public void actualizarTablaDetallesWorkout(DefaultTableModel modeloDetallesWorkouts, String idWorkout) {
 		modeloDetallesWorkouts.setRowCount(0);
-
 		List<Ejercicio> listaEjercicios = new ArrayList<>();
-
 		Workout workoutSeleccionado = null;
+
 		try {
-			workoutSeleccionado = firebaseController.obtenerWorkoutPorId(idWorkout);
+			if (online) {
+				workoutSeleccionado = firebaseController.obtenerWorkoutPorId(idWorkout);
+
+				if (workoutSeleccionado != null) {
+					listaEjercicios = workoutSeleccionado.getEjercicios();
+				}
+
+				for (Ejercicio ejercicio : listaEjercicios) {
+					modeloDetallesWorkouts.addRow(new Object[] { ejercicio.getId(), ejercicio.getNombre(),
+							ejercicio.getDescripcion(), ejercicio.getSeries().size() });
+				}
+			} else {
+				try {
+					modelo.ficheros.Backup.readBinaryFile(clientesBackup, workoutsBackup);
+					for (Workout workout : workoutsBackup) {
+						if (workout.getId().equals(idWorkout)) {
+							listaEjercicios = workout.getEjercicios();
+
+						}
+					}
+
+					for (Ejercicio ejercicio : listaEjercicios) {
+						modeloDetallesWorkouts.addRow(new Object[] { ejercicio.getId(), ejercicio.getNombre(),
+								ejercicio.getDescripcion(), ejercicio.getSeries().size() });
+					}
+				} catch (FileException e) {
+					e.printStackTrace();
+					return;
+				}
+			}
 		} catch (FireBaseException e) {
 			e.printStackTrace();
-		}
-		if (workoutSeleccionado != null) {
-			listaEjercicios = workoutSeleccionado.getEjercicios();
+
 		}
 
-		for (Ejercicio ejercicio : listaEjercicios) {
-			modeloDetallesWorkouts.addRow(new Object[] { ejercicio.getId(), ejercicio.getNombre(),
-					ejercicio.getDescripcion(), ejercicio.getSeries().size() });
-		}
+		tablaDetallesWorkout.revalidate();
+		tablaDetallesWorkout.repaint();
 	}
 }

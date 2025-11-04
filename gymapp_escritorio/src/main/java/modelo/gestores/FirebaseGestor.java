@@ -91,80 +91,143 @@ public class FirebaseGestor implements FirebaseInterface {
 	}
 
 	/**
-	 * Obtiene todos los clientes registrados en Firebase.
+	 * Obtiene todos los clientes registrados en Firebase con sus históricos.
 	 * 
 	 * Consulta la colección de clientes y devuelve una lista con todos
 	 * los datos completos de cada cliente incluyendo: id, nombre, apellidos,
-	 * fecha de nacimiento, email, contraseña y nivel.
+	 * fecha de nacimiento, email, contraseña, nivel y su lista de históricos.
 	 * 
-	 * @return Lista de clientes o null si no hay clientes registrados
+	 * @return Lista de clientes con sus históricos o null si no hay clientes registrados
 	 * @throws FireBaseException si hay error al obtener los datos
 	 */
 	@Override
 	public List<Cliente> getClientes() throws FireBaseException {
-		List<Cliente> ret = null;
+	    List<Cliente> ret = null;
 
-		try {
+	    try {
+	        Firestore dataBase = FirestoreClient.getFirestore();
 
-			Firestore dataBase = FirestoreClient.getFirestore();
+	        // Query para obtener clientes
+	        ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+	                .document(DOCUMENTO_GYM)
+	                .collection(COLLECTION_CLIENTE)
+	                .get();
 
-			// Query...
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
-					.collection(COLLECTION_CLIENTE).get();
+	        // Procesamos la query
+	        QuerySnapshot querySnapshot = query.get();
+	        List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
 
-			// Procesamos la query...
-			QuerySnapshot querySnapshot = query.get();
-			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
+	        for (QueryDocumentSnapshot cliente : clientes) {
+	            ret = null == ret ? new ArrayList<Cliente>() : ret;
+	            
+	            // Obtener históricos del cliente de forma anidada
+	            ApiFuture<QuerySnapshot> historicosQuery = cliente.getReference()
+	                    .collection(COLLECTION_HISTORICO)
+	                    .get();
+	            
+	            QuerySnapshot historicosSnapshot = historicosQuery.get();
+	            List<Historico> historicos = new ArrayList<>();
+	            
+	            for (QueryDocumentSnapshot historicoDoc : historicosSnapshot) {
+	                Historico historico = new Historico(
+	                    historicoDoc.getId(),
+	                    historicoDoc.getString(Constants.NOMBRE),
+	                    historicoDoc.getString(Constants.NIVEL),
+	                    historicoDoc.getString(Constants.TIEMPO_TOTAL),
+	                    historicoDoc.getString(Constants.TIEMPO_PREVISTO),
+	                    historicoDoc.getString(Constants.FECHA_INICIO),
+	                    historicoDoc.getString(Constants.PORCENTAJE)
+	                );
+	                historicos.add(historico);
+	            }
+	            
+	            ret.add(new Cliente(
+	                cliente.getId(), 
+	                cliente.getString(Constants.NOMBRE),
+	                cliente.getString(Constants.APELLIDO1), 
+	                cliente.getString(Constants.APELLIDO2),
+	                cliente.getString(Constants.FECHA_NACIMIENTO), 
+	                cliente.getString(Constants.EMAIL),
+	                cliente.getString(Constants.PASSWORD), 
+	                cliente.getString(Constants.NIVEL),
+	                historicos
+	            ));
+	        }
 
-			for (QueryDocumentSnapshot cliente : clientes) {
-				ret = null == ret ? new ArrayList<Cliente>() : ret;
-				ret.add(new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE),
-						cliente.getString(Constants.APELLIDO1), cliente.getString(Constants.APELLIDO2),
-						cliente.getString(Constants.FECHA_NACIMIENTO), cliente.getString(Constants.EMAIL),
-						cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL)));
-			}
-
-		} catch (Exception e) {
-			throw new FireBaseException("Error - " + e.getLocalizedMessage());
-		}
-		return ret;
+	    } catch (Exception e) {
+	        throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    }
+	    return ret;
 	}
 
+
 	/**
-	 * Busca y obtiene un cliente por su nombre.
+	 * Busca y obtiene un cliente por su nombre con sus históricos.
 	 * 
 	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer
-	 * cliente que coincida con el nombre especificado.
+	 * cliente que coincida con el nombre especificado, incluyendo su
+	 * lista completa de históricos.
 	 * 
 	 * @param nombre Nombre del cliente a buscar
-	 * @return Cliente encontrado con todos sus datos, o null si no existe
+	 * @return Cliente encontrado con todos sus datos e históricos, o null si no existe
 	 * @throws FireBaseException si hay error en la consulta
 	 */
 	@Override
 	public Cliente getCliente(String nombre) throws FireBaseException {
-		Cliente ret = null;
-		try {
+	    Cliente ret = null;
+	    try {
+	        Firestore dataBase = FirestoreClient.getFirestore();
 
-			Firestore dataBase = FirestoreClient.getFirestore();
+	        ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+	                .document(DOCUMENTO_GYM)
+	                .collection(COLLECTION_CLIENTE)
+	                .whereEqualTo(Constants.NOMBRE, nombre)
+	                .get();
 
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
-					.collection(COLLECTION_CLIENTE).whereEqualTo(Constants.NOMBRE, nombre).get();
+	        // Procesamos la query
+	        QuerySnapshot querySnapshot = query.get();
+	        List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
+	        
+	        for (QueryDocumentSnapshot cliente : clientes) {
+	            // Obtener históricos del cliente de forma anidada
+	            ApiFuture<QuerySnapshot> historicosQuery = cliente.getReference()
+	                    .collection(COLLECTION_HISTORICO)
+	                    .get();
+	            
+	            QuerySnapshot historicosSnapshot = historicosQuery.get();
+	            List<Historico> historicos = new ArrayList<>();
+	            
+	            for (QueryDocumentSnapshot historicoDoc : historicosSnapshot) {
+	                Historico historico = new Historico(
+	                    historicoDoc.getId(),
+	                    historicoDoc.getString(Constants.NOMBRE),
+	                    historicoDoc.getString(Constants.NIVEL),
+	                    historicoDoc.getString(Constants.TIEMPO_TOTAL),
+	                    historicoDoc.getString(Constants.TIEMPO_PREVISTO),
+	                    historicoDoc.getString(Constants.FECHA_INICIO),
+	                    historicoDoc.getString(Constants.PORCENTAJE)
+	                );
+	                historicos.add(historico);
+	            }
+	            
+	            ret = new Cliente(
+	                cliente.getId(), 
+	                cliente.getString(Constants.NOMBRE),
+	                cliente.getString(Constants.APELLIDO1), 
+	                cliente.getString(Constants.APELLIDO2),
+	                cliente.getString(Constants.FECHA_NACIMIENTO), 
+	                cliente.getString(Constants.EMAIL),
+	                cliente.getString(Constants.PASSWORD), 
+	                cliente.getString(Constants.NIVEL),
+	                historicos
+	            );
+	            break;
+	        }
 
-			// Procesamos la query...
-			QuerySnapshot querySnapshot = query.get();
-			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
-			for (QueryDocumentSnapshot cliente : clientes) {
-				ret = new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE),
-						cliente.getString(Constants.APELLIDO1), cliente.getString(Constants.APELLIDO2),
-						cliente.getString(Constants.FECHA_NACIMIENTO), cliente.getString(Constants.EMAIL),
-						cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL));
-				break;
-			}
-
-		} catch (Exception e) {
-			throw new FireBaseException("Error - " + e.getLocalizedMessage());
-		}
-		return ret;
+	    } catch (Exception e) {
+	        throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    }
+	    return ret;
 	}
 
 	/**
@@ -172,56 +235,87 @@ public class FirebaseGestor implements FirebaseInterface {
 	 * 
 	 * Busca el cliente por email en Firebase y verifica que la contraseña
 	 * coincida. Si la autenticación es exitosa, devuelve el objeto Cliente
-	 * pero sin incluir la contraseña (se pasa null por seguridad).
+	 * completo con sus históricos pero sin incluir la contraseña (se pasa null por seguridad).
 	 * 
 	 * @param email Email del cliente a autenticar
 	 * @param password Contraseña del cliente
-	 * @return Cliente autenticado sin contraseña, o null si las credenciales
+	 * @return Cliente autenticado sin contraseña pero con históricos, o null si las credenciales
 	 *         son incorrectas o el usuario no existe
 	 * @throws FireBaseException si hay error en la consulta
 	 */
 	@Override
 	public Cliente login(String email, String password) throws FireBaseException {
-		Cliente ret = null;
-		try {
-			Firestore dataBase = FirestoreClient.getFirestore();
+	    Cliente ret = null;
+	    try {
+	        Firestore dataBase = FirestoreClient.getFirestore();
 
-			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
-					.collection(COLLECTION_CLIENTE).whereEqualTo(Constants.EMAIL, email).get();
+	        ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+	                .document(DOCUMENTO_GYM)
+	                .collection(COLLECTION_CLIENTE)
+	                .whereEqualTo(Constants.EMAIL, email)
+	                .get();
 
-			// Procesamos la query...
-			QuerySnapshot querySnapshot = query.get();
-			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
+	        // Procesamos la query
+	        QuerySnapshot querySnapshot = query.get();
+	        List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
 
-			if (clientes.isEmpty()) {
-				System.out.println("Email no encontrado");
-				return null;
-			}
+	        if (clientes.isEmpty()) {
+	            System.out.println("Email no encontrado");
+	            return null;
+	        }
 
-			QueryDocumentSnapshot clienteDoc = clientes.get(0);
+	        QueryDocumentSnapshot clienteDoc = clientes.get(0);
 
-			String passwordStored = clienteDoc.getString(Constants.PASSWORD);
+	        String passwordStored = clienteDoc.getString(Constants.PASSWORD);
 
-			if (passwordStored == null) {
-				System.out.println("El usuario no tiene contraseña configurada");
-				return null;
-			}
+	        if (passwordStored == null) {
+	            System.out.println("El usuario no tiene contraseña configurada");
+	            return null;
+	        }
 
-			if (password.equals(passwordStored)) {
-				ret = new Cliente(clienteDoc.getId(), clienteDoc.getString(Constants.NOMBRE),
-						clienteDoc.getString(Constants.APELLIDO1), clienteDoc.getString(Constants.APELLIDO2),
-						clienteDoc.getString(Constants.FECHA_NACIMIENTO), clienteDoc.getString(Constants.EMAIL), null,
-						clienteDoc.getString(Constants.NIVEL));
-				System.out.println("Login exitoso: " + ret.getNombre());
-			} else {
-				System.out.println("Contraseña incorrecta");
-				return null;
-			}
+	        if (password.equals(passwordStored)) {
+	            // Obtener históricos del cliente de forma anidada
+	            ApiFuture<QuerySnapshot> historicosQuery = clienteDoc.getReference()
+	                    .collection(COLLECTION_HISTORICO)
+	                    .get();
+	            
+	            QuerySnapshot historicosSnapshot = historicosQuery.get();
+	            List<Historico> historicos = new ArrayList<>();
+	            
+	            for (QueryDocumentSnapshot historicoDoc : historicosSnapshot) {
+	                Historico historico = new Historico(
+	                    historicoDoc.getId(),
+	                    historicoDoc.getString(Constants.NOMBRE),
+	                    historicoDoc.getString(Constants.NIVEL),
+	                    historicoDoc.getString(Constants.TIEMPO_TOTAL),
+	                    historicoDoc.getString(Constants.TIEMPO_PREVISTO),
+	                    historicoDoc.getString(Constants.FECHA_INICIO),
+	                    historicoDoc.getString(Constants.PORCENTAJE)
+	                );
+	                historicos.add(historico);
+	            }
+	            
+	            ret = new Cliente(
+	                clienteDoc.getId(), 
+	                clienteDoc.getString(Constants.NOMBRE),
+	                clienteDoc.getString(Constants.APELLIDO1), 
+	                clienteDoc.getString(Constants.APELLIDO2),
+	                clienteDoc.getString(Constants.FECHA_NACIMIENTO), 
+	                clienteDoc.getString(Constants.EMAIL), 
+	                null, // Password no se devuelve por seguridad
+	                clienteDoc.getString(Constants.NIVEL),
+	                historicos
+	            );
+	            System.out.println("Login exitoso: " + ret.getNombre());
+	        } else {
+	            System.out.println("Contraseña incorrecta");
+	            return null;
+	        }
 
-		} catch (Exception e) {
-			throw new FireBaseException("Error - " + e.getLocalizedMessage());
-		}
-		return ret;
+	    } catch (Exception e) {
+	        throw new FireBaseException("Error - " + e.getLocalizedMessage());
+	    }
+	    return ret;
 	}
 
 	/**

@@ -15,10 +15,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import controlador.FirebaseController;
+import modelo.entity.Cliente;
 import modelo.entity.Historico;
+import modelo.entity.Workout;
+import modelo.exceptions.FileException;
 import modelo.exceptions.FireBaseException;
 import utils.Constants;
-import vista.Login;
 
 import javax.swing.JButton;
 import javax.swing.JTable;
@@ -41,6 +43,9 @@ public class HistoricoView extends JFrame {
 	@SuppressWarnings("unused")
 	private String idCliente;
 	private FirebaseController firebaseController;
+	private boolean online = utils.Network.isInternetAvailable();
+	private List<Cliente> clientesBackup = new ArrayList<>();
+	private List<Workout> workoutsBackup = new ArrayList<>();
 
 	public void setIdCliente(String idCliente) {
 		this.idCliente = idCliente;
@@ -85,8 +90,8 @@ public class HistoricoView extends JFrame {
 		btnAtras.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Login pantallaLogin = new Login();
-				pantallaLogin.setVisible(true);
+				WorkoutView pantallaWorkout = new WorkoutView(idCliente, nivel);
+				pantallaWorkout.setVisible(true);
 				dispose();
 			}
 		});
@@ -148,21 +153,42 @@ public class HistoricoView extends JFrame {
 	private void actualizarTableHistoricos(DefaultTableModel modeloTabla, String idCliente) {
 		modeloTabla.setRowCount(0);
 		List<Historico> listaHistoricos = null;
+		
 		try {
-			listaHistoricos = firebaseController.historicos(idCliente);
+			if (online) {
+				listaHistoricos = firebaseController.historicos(idCliente);
+				
+				if (listaHistoricos == null || listaHistoricos.isEmpty()) {
+					listaHistoricos = new ArrayList<>();
+				}
+				
+				for (Historico historico : listaHistoricos) {
+					modeloTabla.addRow(new Object[] { historico.getId(), historico.getNombre(), historico.getNivel(),
+							historico.getTiempoTotal(), historico.getTiempoPrevisto(), historico.getFecha(), historico.getEjerciciosCompletados()});
+					
+				}
+			} else {
+				try {
+					modelo.ficheros.Backup.readBinaryFile(clientesBackup, workoutsBackup);
+					for (Cliente cliente : clientesBackup) {
+						if (cliente.getId().equals(idCliente)) {
+							listaHistoricos = cliente.getHistoricos();
+						}
+					}
+					
+					for (Historico historico : listaHistoricos) {
+						modeloTabla.addRow(new Object[] { historico.getId(), historico.getNombre(), historico.getNivel(),
+								historico.getTiempoTotal(), historico.getTiempoPrevisto(), historico.getFecha(), historico.getEjerciciosCompletados()});
+						
+					}
+					
+				} catch (FileException e) {
+					e.printStackTrace();
+					return;
+				}
+			}
 		} catch (FireBaseException e) {
 			e.printStackTrace();
-		}
-
-		if (listaHistoricos == null || listaHistoricos.isEmpty()) {
-			listaHistoricos = new ArrayList<>();
-		}
-
-		for (Historico historico : listaHistoricos) {
-			modeloTabla.addRow(new Object[] { historico.getId(), historico.getNombre(), historico.getNivel(),
-					historico.getTiempoTotal(), historico.getTiempoPrevisto(), historico.getFecha(), historico.getEjerciciosCompletados()});
-			
-			System.out.println(historico);
 		}
 
 		tableHistoricos.revalidate();
