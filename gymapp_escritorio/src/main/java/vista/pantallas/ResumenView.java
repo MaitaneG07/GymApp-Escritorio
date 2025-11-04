@@ -30,7 +30,9 @@ public class ResumenView extends JFrame {
 	private JButton btnConfirmar;
 	private JButton btnPerfil;
 	private JLabel lblMensaje;	
+	@SuppressWarnings("unused")
 	private String idCliente;
+	@SuppressWarnings("unused")
 	private String nivel;
 	
 	public void setIdCliente(String idCliente, String nivel) {

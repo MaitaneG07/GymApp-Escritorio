@@ -54,6 +54,7 @@ public class RegistroView extends JFrame {
 	private JLabel tituloRegistro;
 	private JButton btnRegistro;
 	private JButton btnVolver;
+	@SuppressWarnings("unused")
 	private FirebaseGestor firebaseGestor;
 	private FirebaseController firebaseController;
 

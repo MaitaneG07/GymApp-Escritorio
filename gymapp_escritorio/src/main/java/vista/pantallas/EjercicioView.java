@@ -51,13 +51,18 @@ public class EjercicioView extends JFrame {
 	private JScrollPane scrollPane;
 	private JLabel lblFotoEjercicio;
 	private JButton btnPerfil;
+	@SuppressWarnings("unused")
 	private String idCliente;
+	@SuppressWarnings("unused")
 	private String nivel;
 	private String idWorkoutSeleccionado;
 	private CronometroLogica cronometro;
 	private FirebaseGestor firebaseGestor;
+	@SuppressWarnings("unused")
 	private String tiempoTotalWorkout = "00:00:00";
+	@SuppressWarnings("unused")
 	private String tiempoTotalEjercicio;
+	@SuppressWarnings("unused")
 	private String tiempoActualEjercicio;
 
 	private List<Serie> seriesActuales;
@@ -74,6 +79,7 @@ public class EjercicioView extends JFrame {
 	 * 
 	 * @throws FireBaseException
 	 */
+	@SuppressWarnings("serial")
 	public EjercicioView(String idCliente, String nivel, String idWorkoutSeleccionado) throws FireBaseException {
 
 		this.idCliente = idCliente;
@@ -142,9 +148,12 @@ public class EjercicioView extends JFrame {
 		btnCronometro.setBorderPainted(false);
 		btnCronometro.setFocusPainted(false);
 		btnCronometro.setBackground(new Color(0, 128, 0));
+		@SuppressWarnings("unused")
 		String frase1 = Constants.INICIAR_BOTON;
+		@SuppressWarnings("unused")
 		String frase2 = Constants.PARAR_BOTON;
 
+		@SuppressWarnings("unused")
 		final boolean[] esFrase1 = { true };
 
 		cronometro = new CronometroLogica(() -> lblCronometroWorkout.setText(cronometro.obtenerTiempoFormateado()));
@@ -418,8 +427,9 @@ public class EjercicioView extends JFrame {
 
 	    return null;
 	}
-
+	
 	// coge los datos recibidos del ejercicio
+	@SuppressWarnings("unused")
 	private void cargarSeriesLocal(Ejercicio ejercicio) {
 
 	    seriesActuales = new ArrayList<>();
