@@ -70,7 +70,7 @@ public class PerfilView extends JFrame {
 		
 		//LOGO MAITANE
 //		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_OSCURO_CASA);
-		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
+		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 		
 		Image imagenOriginal = originalIcon.getImage();
 
