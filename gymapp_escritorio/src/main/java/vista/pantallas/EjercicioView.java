@@ -83,6 +83,20 @@ public class EjercicioView extends JFrame {
 		List<Ejercicio> ejerciciosWorkoutSeleccionado = firebaseGestor
 				.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
 
+		Ejercicio ejercicioSeleccionado = null;
+		for (Ejercicio e : ejerciciosWorkoutSeleccionado) {
+		    if (!e.isCompletado()) {
+		        ejercicioSeleccionado = e;
+		        break;
+		    }
+		}
+
+		if (ejercicioSeleccionado != null) {
+		    cargarSeriesLocal(ejercicioSeleccionado);
+		} else {
+		    System.out.println("No hay ejercicios pendientes en este workout.");
+		}
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -153,7 +167,6 @@ public class EjercicioView extends JFrame {
 					int tiempoDescanso = Integer.parseInt(tiempoDescansoStr);
 
 					if (!cronometro.estaCorriendo()) {
-						// Cronómetro del workout
 
 						if (!mostrarCuentaAtras) {
 							mostrarCuentaAtras(obtenerDatoEjercicioSeleccionado("nombre"));
@@ -375,68 +388,36 @@ public class EjercicioView extends JFrame {
 	 * @return El valor del dato seleccionado, si estan todos completado = true devuelve null
 	 * @throws FireBaseException
 	 */
-	private String obtenerDatoPrimeraSerieNoCompletada(String dato) throws FireBaseException {
+	private String obtenerDatoPrimeraSerieNoCompletada(String dato) {
 
-		List<Ejercicio> ejerciciosWorkoutSeleccionado = firebaseGestor
-				.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
+	    if (seriesActuales == null || seriesActuales.isEmpty()) {
+	        return null;
+	    }
 
-		for (Ejercicio ejercicio : ejerciciosWorkoutSeleccionado) {
-			List<Serie> series = ejercicio.getSeries();
-			if (series != null && !series.isEmpty()) {
-				for (Serie serie : series) {
-					if (!serie.isCompletado()) {
-						if (dato.equals("id") || dato.equals("id serie")) {
-							return serie.getId();
-						} else if (dato.equals("nombre") || dato.equals("nombre serie")) {
-							return serie.getNombre();
-						} else if (dato.equals("tiempo asignado")) {
-							return serie.getTiempoDuracion();
-						} else if (dato.equals("tiempo descanso")) {
-							return serie.getTiempoDescanso();
-						} else if (dato.equals("completado") || dato.equals("completado serie")) {
-							return String.valueOf(serie.isCompletado());
-						} else {
-							return null;
-						}
-					}
-				}
-			}
-		}
+	    for (Serie serie : seriesActuales) {
+	        if (!serie.isCompletado()) {
+	            switch (dato.toLowerCase()) {
+	                case "id":
+	                case "id serie":
+	                    return serie.getId();
+	                case "nombre":
+	                case "nombre serie":
+	                    return serie.getNombre();
+	                case "tiempo asignado":
+	                    return serie.getTiempoDuracion();
+	                case "tiempo descanso":
+	                    return serie.getTiempoDescanso();
+	                case "completado":
+	                case "completado serie":
+	                    return String.valueOf(serie.isCompletado());
+	                default:
+	                    return null;
+	            }
+	        }
+	    }
 
-		return null;
+	    return null;
 	}
-
-	// cambiar por esto que lee de la serie local en vez de firebase
-//	if (seriesActuales == null || seriesActuales.isEmpty()) {
-//	return null; // no hay series cargadas
-//	}
-//
-//	for(
-//
-//	Serie serie:seriesActuales)
-//	{
-//		if (!serie.isCompletado()) {
-//			switch (dato) {
-//			case "id":
-//			case "id serie":
-//				return serie.getId();
-//			case "nombre":
-//			case "nombre serie":
-//				return serie.getNombre();
-//			case "tiempo asignado":
-//				return serie.getTiempoDuracion();
-//			case "tiempo descanso":
-//				return serie.getTiempoDescanso();
-//			case "completado":
-//			case "completado serie":
-//				return String.valueOf(serie.isCompletado());
-//			default:
-//				return null;
-//			}
-//		}
-//	}
-//
-//	return null;
 
 	// coge los datos recibidos del ejercicio
 	private void cargarSeriesLocal(Ejercicio ejercicio) {
@@ -451,6 +432,21 @@ public class EjercicioView extends JFrame {
 	        copiaSerie.setTiempoDescanso(serie.getTiempoDescanso());
 	        copiaSerie.setCompletado(serie.isCompletado());
 	        seriesActuales.add(copiaSerie);
+	    }
+	    
+	    //print para probar que carga en la lista local las series
+	    System.out.println("Series cargadas en private List<Serie> seriesActuales: " + ejercicio.getNombre());
+	    for (int i = 0; i < seriesActuales.size(); i++) {
+	        Serie s = seriesActuales.get(i);
+	        System.out.println(String.format(
+	            "   [%d] ID: %s | Nombre: %s | Duración: %s | Descanso: %s | Completado: %s",
+	            i + 1,
+	            s.getId(),
+	            s.getNombre(),
+	            s.getTiempoDuracion(),
+	            s.getTiempoDescanso(),
+	            s.isCompletado()
+	        ));
 	    }
 	}
 
