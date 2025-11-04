@@ -26,27 +26,32 @@ public class TemporizadorLogica {
 	 * @param segundos tiempo inicial del temporizador
 	 */
 	public void iniciar(int segundos) {
-		if (corriendo)
-			return;
+	    if (corriendo)
+	        return;
 
-		tiempoRestante = segundos * 1000L; // convertir a milisegundos
-		corriendo = true;
+	    tiempoRestante = segundos * 1000L;
+	    corriendo = true;
 
-		// Timer que actualiza cada 100 ms
-		timer = new Timer(100, e -> {
-			tiempoRestante -= 100;
+	    final long[] ultimaActualizacion = { System.currentTimeMillis() };
 
-			if (tiempoRestante <= 0) {
-				tiempoRestante = 0;
-				detener();
-				if (alFinalizar != null)
-					alFinalizar.run();
-			}
+	    timer = new Timer(100, e -> {
+	        long ahora = System.currentTimeMillis();
+	        long delta = ahora - ultimaActualizacion[0];
+	        ultimaActualizacion[0] = ahora;
 
-			actualizar.run();
-		});
+	        tiempoRestante -= delta;
 
-		timer.start();
+	        if (tiempoRestante <= 0) {
+	            tiempoRestante = 0;
+	            detener();
+	            if (alFinalizar != null)
+	                alFinalizar.run();
+	        }
+
+	        actualizar.run();
+	    });
+
+	    timer.start();
 	}
 
 	/**
