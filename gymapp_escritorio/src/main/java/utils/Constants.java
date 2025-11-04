@@ -12,9 +12,11 @@ public class Constants {
 
 	// URL Logo
 	public static final String LOGO_OSCURO_CLASE_Ak = "C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
-	public static final String LOGO_OSCURO_CASA_Ak = "C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
+	public static final String LOGO_OSCURO_CASA_AKIRA_PC = "D:\\Eclipse\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
+	public static final String LOGO_OSCURO_CASA_AKIRA_PORTATIL = "D:\\Eclipse\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
 	public static final String LOGO_CLARO_CLASE_Ak = "C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
-	public static final String LOGO_CLARO_CASA_Ak = "C:\\Users\\in2dm3-v\\eclipse-workspace\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
+	public static final String LOGO_CLARO_CASA_AKIRA_PC = "D:\\Eclipse\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
+	public static final String LOGO_CLARO_CASA_AKIRA_PORTATIL = "D:\\Eclipse\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
 
 	// URL Logo Maitane
 	public static final String LOGO_OSCURO_CLASE = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
@@ -23,9 +25,10 @@ public class Constants {
 	public static final String LOGO_CLARO_CASA = "C:\\Users\\Usuario\\Desktop\\GymApp\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
 
 	// URL Logo Giselle
-	public static final String LOGO_CLASE = "C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
-	public static final String LOGO_CASA = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
-	public static final String FONDO_CLASE = "C:\\Users\\in2dm3-v\\Desktop\\GymApp-Maitane\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\fondo.jpg";
+	public static final String LOGO_CLASE_ = "C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
+	public static final String FONDO_CLASE_GI = "C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\fondo.jpg";
+	public static final String LOGO_OSCURO_CLASE_GI = "C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoapp.png";
+	public static final String LOGO_CLARO_CASA_GI = "C:\\Users\\in2dm3-v\\Documents\\Reto 1\\GymApp-Escritorio\\gymapp_escritorio\\src\\main\\java\\logoLight.jpg";
 	
 	
 	
@@ -55,8 +58,8 @@ public class Constants {
 	public static final String COLUMNA_VIDEO = "VIDEO";
 	public static final String COLUMNA_DESCRIPCION = "DESCRIPCIÓN";
 	public static final String COLUMNA_SERIES = "SERIES";
-	public static final String COLUMNA_TIEMPO = "SERIES";
-	public static final String COLUMNA_DESCANSO = "SERIES";
+	public static final String COLUMNA_TIEMPO = "DURACION";
+	public static final String COLUMNA_DESCANSO = "DESCANSO";
 	public static final String TIEMPO_TOTAL_WORKOUT = "TIEMPO TOTAL";
 	public static final String TIEMPO_PREVISTO_WORKOUT= "TIEMPO PREVISTO";
 	public static final String FECHA_WORKOUT = "FECHA";
@@ -65,6 +68,7 @@ public class Constants {
 	// Nombre de los botones
 	public static final String VOLVER_BOTON = "VOLVER";
 	public static final String INICIAR_BOTON = "INICIAR";
+	public static final String PAUSAR_BOTON = "PAUSAR";
 	public static final String PARAR_BOTON = "PARAR";
 	public static final String SALIR_BOTON = "SALIR";
 	public static final String INICAR_SESION_BOTON = "INICIAR SESIÓN";
