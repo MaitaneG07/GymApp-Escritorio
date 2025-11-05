@@ -6,12 +6,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import utils.Constants;
-
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -26,6 +24,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import controlador.ControladorCronometros;
 import controlador.CronometroLogica;
 import controlador.TemporizadorLogica;
 import modelo.entity.Ejercicio;
@@ -42,7 +41,6 @@ public class EjercicioView extends JFrame {
 	private JLabel lblCronometroWorkout;
 	private JLabel lblNombreEjercicio;
 	private JLabel lblCronometroTotalEjercicio;
-	private JLabel lblTiempoTotalEjercicio;
 	private JLabel lblCuentaSerie;
 	private JLabel lblcantidadDescanso;
 	private JLabel lblCuentaDescanso;
@@ -56,47 +54,42 @@ public class EjercicioView extends JFrame {
 	private String idWorkoutSeleccionado;
 	private CronometroLogica cronometro;
 	private FirebaseGestor firebaseGestor;
-	private String tiempoTotalWorkout = "00:00:00";
-	private String tiempoTotalEjercicio;
-	private String tiempoActualEjercicio;
+	private JLabel lblDuracionEjercicio;
 
+	private final ControladorCronometros controladorMaestro = new ControladorCronometros();
+	private TemporizadorLogica temporizadorSerie;
+	private TemporizadorLogica descansoSerie;
+
+	private List<Ejercicio> ejerciciosWorkoutSeleccionado;
+	private Ejercicio ejercicioSeleccionado;
 	private List<Serie> seriesActuales;
 
-	public void setIdCliente(String idCliente, String nivel) {
-		this.idCliente = idCliente;
-		this.nivel = nivel;
-		System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
-		System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
-	}
+	private boolean cuentaAtrasMostrada = false;
 
-	/**
-	 * Create the frame.
-	 * 
-	 * @throws FireBaseException
-	 */
 	public EjercicioView(String idCliente, String nivel, String idWorkoutSeleccionado) throws FireBaseException {
 
 		this.idCliente = idCliente;
 		this.nivel = nivel;
 		this.idWorkoutSeleccionado = idWorkoutSeleccionado;
 		firebaseGestor = new FirebaseGestor();
-		List<Ejercicio> ejerciciosWorkoutSeleccionado = firebaseGestor
-				.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
 
-		Ejercicio ejercicioSeleccionado = null;
+		ejerciciosWorkoutSeleccionado = firebaseGestor.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
+
 		for (Ejercicio e : ejerciciosWorkoutSeleccionado) {
-		    if (!e.isCompletado()) {
-		        ejercicioSeleccionado = e;
-		        break;
-		    }
+			if (!e.isCompletado()) {
+				ejercicioSeleccionado = e;
+				break;
+			}
 		}
 
 		if (ejercicioSeleccionado != null) {
-		    cargarSeriesLocal(ejercicioSeleccionado);
+			cargarSeriesLocal(ejercicioSeleccionado);
 		} else {
-		    System.out.println("No hay ejercicios pendientes en este workout.");
+			seriesActuales = new ArrayList<>();
+			ejercicioSeleccionado = new Ejercicio();
+			ejercicioSeleccionado.setNombre("Fin de Workout");
 		}
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -105,10 +98,7 @@ public class EjercicioView extends JFrame {
 		contentPane.setLayout(null);
 
 		btnPerfil = new JButton();
-
-		// LOGO MAITANE
 		ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA_AKIRA_PC));
-//		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
 		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 		btnPerfil.setIcon(new ImageIcon(imgEscalada));
 		btnPerfil.setBounds(10, 11, 60, 60);
@@ -123,12 +113,20 @@ public class EjercicioView extends JFrame {
 		contentPane.add(lblCronometroWorkout);
 
 		JButton btnSalir = new JButton(Constants.SALIR_BOTON);
-		btnSalir.setBackground(new Color(255, 255, 255));
 		btnSalir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				WorkoutView panelWorkout = new WorkoutView(idCliente, nivel);
 				panelWorkout.setVisible(true);
+				dispose();
+			}
+		});
+		btnSalir.setBackground(new Color(255, 255, 255));
+		btnSalir.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				pausarTodosLosTemporizadores();
+				controladorMaestro.reanudarTodos();
 				dispose();
 			}
 		});
@@ -142,75 +140,24 @@ public class EjercicioView extends JFrame {
 		btnCronometro.setBorderPainted(false);
 		btnCronometro.setFocusPainted(false);
 		btnCronometro.setBackground(new Color(0, 128, 0));
-		String frase1 = Constants.INICIAR_BOTON;
-		String frase2 = Constants.PARAR_BOTON;
 
-		final boolean[] esFrase1 = { true };
+		cronometro = new CronometroLogica(() -> {
+			String tiempo = cronometro.obtenerTiempoFormateado();
+			lblCronometroWorkout.setText(tiempo);
+			lblCronometroTotalEjercicio.setText(tiempo);
+		}, controladorMaestro);
 
-		cronometro = new CronometroLogica(() -> lblCronometroWorkout.setText(cronometro.obtenerTiempoFormateado()));
-
-		final TemporizadorLogica[] temporizadorEjercicio = new TemporizadorLogica[1];
-		final TemporizadorLogica[] temporizadorSerie = new TemporizadorLogica[1];
-		final TemporizadorLogica[] descansoSerie = new TemporizadorLogica[1];
+		lblCronometroTotalEjercicio = new JLabel(cronometro.obtenerTiempoFormateado());
+		lblCronometroTotalEjercicio.setFont(new Font("Tahoma", Font.BOLD, 22));
+		lblCronometroTotalEjercicio.setBounds(44, 201, 180, 36);
+		contentPane.add(lblCronometroTotalEjercicio);
 
 		btnCronometro.addActionListener(new ActionListener() {
-
-			private boolean mostrarCuentaAtras = false;
-
 			public void actionPerformed(ActionEvent e) {
-
-				try {
-					String tiempoSerieStr = obtenerDatoPrimeraSerieNoCompletada("tiempo asignado");
-					int tiempoSerie = Integer.parseInt(tiempoSerieStr);
-
-					String tiempoDescansoStr = obtenerDatoPrimeraSerieNoCompletada("tiempo descanso");
-					int tiempoDescanso = Integer.parseInt(tiempoDescansoStr);
-
-					if (!cronometro.estaCorriendo()) {
-
-						if (!mostrarCuentaAtras) {
-							mostrarCuentaAtras(obtenerDatoEjercicioSeleccionado("nombre"));
-							mostrarCuentaAtras = true;
-						}
-
-						cronometro.iniciar();
-						btnCronometro.setText(Constants.PAUSAR_BOTON);
-						btnCronometro.setBackground(new Color(139, 0, 0));
-
-						// Cronómetro total del ejercicio
-						temporizadorEjercicio[0] = new TemporizadorLogica(
-								() -> lblCronometroTotalEjercicio.setText(cronometro.obtenerTiempoFormateado()), null);
-						temporizadorEjercicio[0].iniciar(tiempoSerie);
-
-						// Contador de la serie actual
-						temporizadorSerie[0] = new TemporizadorLogica(
-								() -> lblCuentaSerie.setText(temporizadorSerie[0].obtenerTiempoFormateado()), () -> {
-									// Al finalizar la serie, iniciar descanso
-									descansoSerie[0] = new TemporizadorLogica(
-											() -> lblCuentaDescanso.setText(descansoSerie[0].obtenerTiempoFormateado()),
-											null);
-									descansoSerie[0].iniciar(tiempoDescanso);
-								});
-						temporizadorSerie[0].iniciar(tiempoSerie);
-
-					} else {
-						// Pausar o reanudar todos
-						cronometro.pausarReanudar();
-						if (temporizadorEjercicio[0] != null)
-							temporizadorEjercicio[0].pausarReanudar();
-						if (temporizadorSerie[0] != null)
-							temporizadorSerie[0].pausarReanudar();
-						if (descansoSerie[0] != null)
-							descansoSerie[0].pausarReanudar();
-
-						btnCronometro.setText(Constants.INICIAR_BOTON);
-						btnCronometro.setBackground(new Color(0, 128, 0));
-					}
-				} catch (FireBaseException ex) {
-					ex.printStackTrace();
-				}
+				manejarFlujoCronometro();
 			}
 		});
+
 		btnCronometro.setBounds(360, 520, 133, 58);
 		contentPane.add(btnCronometro);
 
@@ -237,19 +184,12 @@ public class EjercicioView extends JFrame {
 		tableSeries = new JTable(tablaDetallesSeries);
 		scrollPane.setViewportView(tableSeries);
 
-		tablaDetallesSeries.setRowCount(0);
+		actualizarTablaSeries();
 
-		for (Ejercicio ejercicio : ejerciciosWorkoutSeleccionado) {
-			for (Serie serie : ejercicio.getSeries()) {
-
-				String[] fila = { serie.getNombre(), serie.getTiempoDuracion(), serie.getTiempoDescanso() };
-				tablaDetallesSeries.addRow(fila);
-
-			}
-		}
-
-		// Para cambiar el color de la fila segun este completado o no
 		tableSeries.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+
+			private static final long serialVersionUID = 6822466644230671528L;
+
 			@Override
 			public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value,
 					boolean isSelected, boolean hasFocus, int row, int column) {
@@ -258,23 +198,20 @@ public class EjercicioView extends JFrame {
 						column);
 
 				try {
-					String nombreSerie = (String) table.getValueAt(row, 0);
-
 					boolean completado = false;
-					for (Ejercicio ejercicio : ejerciciosWorkoutSeleccionado) {
-						for (Serie serie : ejercicio.getSeries()) {
-							if (serie.getNombre().equals(nombreSerie)) {
-								completado = serie.isCompletado();
-								break;
-							}
-						}
+					if (seriesActuales != null && row < seriesActuales.size()) {
+						completado = seriesActuales.get(row).isCompletado();
 					}
 
 					if (completado) {
 						cell.setBackground(new java.awt.Color(144, 238, 144));
 						cell.setForeground(Color.BLACK);
 					} else {
-						cell.setBackground(new java.awt.Color(255, 160, 160));
+						if (row == obtenerIndicePrimeraSerieNoCompletada()) {
+							cell.setBackground(new java.awt.Color(255, 255, 153));
+						} else {
+							cell.setBackground(new java.awt.Color(255, 160, 160));
+						}
 						cell.setForeground(Color.BLACK);
 					}
 
@@ -299,188 +236,342 @@ public class EjercicioView extends JFrame {
 		lblDescanso.setBounds(44, 388, 60, 14);
 		contentPane.add(lblDescanso);
 
-		lblcantidadDescanso = new JLabel(obtenerDatoPrimeraSerieNoCompletada("tiempo descanso"), SwingConstants.CENTER);
+		String duracionSerieStr = obtenerDatoPrimeraSerieNoCompletada("tiempo asignado");
+		String descansoSerieStr = obtenerDatoPrimeraSerieNoCompletada("tiempo descanso");
+
+		lblcantidadDescanso = new JLabel(descansoSerieStr, SwingConstants.CENTER);
 		lblcantidadDescanso.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblcantidadDescanso.setBounds(158, 380, 46, 26);
 		contentPane.add(lblcantidadDescanso);
 
-		lblCuentaSerie = new JLabel(
-				convertirTiempoAFromatoCronometro((obtenerDatoPrimeraSerieNoCompletada("tiempo asignado"))));
+		lblCuentaSerie = new JLabel(convertirTiempoAFromatoCronometro(duracionSerieStr));
 		lblCuentaSerie.setFont(new Font("Tahoma", Font.BOLD, 17));
 		lblCuentaSerie.setBounds(44, 296, 210, 65);
 		contentPane.add(lblCuentaSerie);
 
-		lblCuentaDescanso = new JLabel(
-				convertirTiempoAFromatoCronometro((obtenerDatoPrimeraSerieNoCompletada("tiempo descanso"))));
+		lblCuentaDescanso = new JLabel(convertirTiempoAFromatoCronometro(descansoSerieStr));
 		lblCuentaDescanso.setFont(new Font("Tahoma", Font.BOLD, 17));
 		lblCuentaDescanso.setBounds(48, 413, 206, 60);
 		contentPane.add(lblCuentaDescanso);
+		lblCuentaDescanso.setVisible(false);
 
 		JTextArea textADescripcion = new JTextArea();
 		textADescripcion.setFont(new Font("Tahoma", Font.BOLD, 16));
 		textADescripcion.setText(obtenerDatoEjercicioSeleccionado("Descripcion"));
 		textADescripcion.setBounds(0, 7, 347, 159);
 		contentPane.add(textADescripcion);
-		// estas dos siguientes lineas son para que no se corte el texto si la frase es
-		// larga
 		textADescripcion.setLineWrap(true);
 		textADescripcion.setWrapStyleWord(true);
-		// un scroll
+
 		JScrollPane scrollDescripcion = new JScrollPane(textADescripcion);
 		scrollDescripcion.setBounds(332, 110, 347, 159);
 		contentPane.add(scrollDescripcion);
 
-		JLabel lblDuracionEjercicio = new JLabel(obtenerDatoPrimeraSerieNoCompletada("tiempo asignado"),
-				SwingConstants.CENTER);
+		lblDuracionEjercicio = new JLabel(duracionSerieStr, SwingConstants.CENTER);
 		lblDuracionEjercicio.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblDuracionEjercicio.setBounds(158, 263, 46, 26);
 		contentPane.add(lblDuracionEjercicio);
 
-		lblTiempoTotalEjercicio = new JLabel("Tiempo total ejercicio:");
-		lblTiempoTotalEjercicio.setBounds(44, 168, 143, 14);
-		contentPane.add(lblTiempoTotalEjercicio);
-
-		lblCronometroTotalEjercicio = new JLabel(cronometro.obtenerTiempoFormateado());
-		lblCronometroTotalEjercicio.setFont(new Font("Tahoma", Font.BOLD, 22));
-		lblCronometroTotalEjercicio.setBounds(44, 201, 180, 36);
-		contentPane.add(lblCronometroTotalEjercicio);
-
+		JLabel lblTiempoTotalEjercicioTitulo = new JLabel("Tiempo total ejercicio:");
+		lblTiempoTotalEjercicioTitulo.setBounds(44, 168, 143, 14);
+		contentPane.add(lblTiempoTotalEjercicioTitulo);
 	}
 
-	/**
-	 * Metodo que devuelve el dato que elijas del primer ejercicio que tecla
-	 * completado = false
-	 * 
-	 * @param dato (nombre del dato que se quiere obtener)
-	 * @return El valor del dato seleccionado, si estan todos completado = true
-	 *         devuelve null
-	 * @throws FireBaseException
-	 */
-	private String obtenerDatoEjercicioSeleccionado(String dato) throws FireBaseException {
-		List<Ejercicio> ejerciciosWorkoutSeleccionado = firebaseGestor
-				.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
+	private void manejarFlujoCronometro() {
+		if (ejercicioSeleccionado == null || obtenerPrimeraSerieNoCompletada() == null) {
+			finalizarEjercicio();
+			return;
+		}
 
-		for (Ejercicio ejercicio : ejerciciosWorkoutSeleccionado) {
-			if (!ejercicio.isCompletado()) {
-				if (dato.equalsIgnoreCase("id")) {
-					return ejercicio.getId();
-				} else if (dato.equalsIgnoreCase("nombre")) {
-					return ejercicio.getNombre();
-				} else if (dato.equalsIgnoreCase("descripcion")) {
-					return ejercicio.getDescripcion();
-				} else if (dato.equalsIgnoreCase("numero de series")) {
-					return String.valueOf((ejercicio.getSeries() != null) ? ejercicio.getSeries().size() : 0);
-				} else if (dato.equalsIgnoreCase("completado")) {
-					return String.valueOf(ejercicio.isCompletado());
-				} else {
-					return null;
+		boolean estabaPausadoGlobalmente = controladorMaestro.isPausado();
+		boolean primeraEjecucion = !cronometro.estaCorriendo() && !estabaPausadoGlobalmente;
+
+		if (cronometro.estaCorriendo() && !estabaPausadoGlobalmente) {
+			controladorMaestro.pausarTodos();
+			btnCronometro.setText(Constants.INICIAR_BOTON);
+			btnCronometro.setBackground(new Color(0, 128, 0));
+
+		} else {
+			if (primeraEjecucion) {
+				mostrarCuentaAtras(() -> {
+					cronometro.iniciar();
+					iniciarSerieActual();
+					btnCronometro.setText(Constants.PAUSAR_BOTON);
+					btnCronometro.setBackground(new Color(139, 0, 0));
+				});
+
+				cuentaAtrasMostrada = true;
+
+			} else if (estabaPausadoGlobalmente) {
+				controladorMaestro.reanudarTodos();
+				btnCronometro.setText(Constants.PAUSAR_BOTON);
+				btnCronometro.setBackground(new Color(139, 0, 0));
+			}
+		}
+	}
+
+	private void iniciarSerieActual() {
+		try {
+			String tiempoSerieStr = obtenerDatoPrimeraSerieNoCompletada("tiempo asignado");
+			int tiempoSerie = Integer.parseInt(tiempoSerieStr);
+
+			if (tiempoSerie <= 0) {
+				manejarFinalizacionDescanso();
+				return;
+			}
+
+			Runnable alFinalizarSerie = () -> SwingUtilities.invokeLater(() -> {
+				iniciarDescansoActual();
+			});
+
+			temporizadorSerie = new TemporizadorLogica(
+					() -> SwingUtilities
+							.invokeLater(() -> lblCuentaSerie.setText(temporizadorSerie.obtenerTiempoFormateado())),
+					alFinalizarSerie, controladorMaestro);
+
+			temporizadorSerie.iniciar(tiempoSerie);
+
+			lblCuentaSerie.setVisible(true);
+			lblCuentaDescanso.setVisible(false);
+
+		} catch (NumberFormatException e) {
+			System.err.println("Error: El tiempo de la serie no es un número válido. " + e.getMessage());
+		}
+	}
+
+	private void iniciarDescansoActual() {
+		try {
+			String tiempoDescansoStr = obtenerDatoPrimeraSerieNoCompletada("tiempo descanso");
+			int tiempoDescanso = Integer.parseInt(tiempoDescansoStr);
+
+			if (tiempoDescanso <= 0) {
+				manejarFinalizacionDescanso();
+				return;
+			}
+
+			Runnable alFinalizarDescanso = () -> SwingUtilities.invokeLater(() -> {
+				manejarFinalizacionDescanso();
+			});
+
+			descansoSerie = new TemporizadorLogica(
+					() -> SwingUtilities
+							.invokeLater(() -> lblCuentaDescanso.setText(descansoSerie.obtenerTiempoFormateado())),
+					alFinalizarDescanso, controladorMaestro);
+
+			descansoSerie.iniciar(tiempoDescanso);
+
+			lblCuentaSerie.setVisible(false);
+			lblCuentaDescanso.setVisible(true);
+
+		} catch (NumberFormatException e) {
+			System.err.println("Error: El tiempo de descanso no es un número válido. " + e.getMessage());
+		}
+	}
+
+	private void manejarFinalizacionDescanso() {
+		Serie serieActual = obtenerPrimeraSerieNoCompletada();
+		if (serieActual != null) {
+			serieActual.setCompletado(true);
+
+			if (descansoSerie != null) {
+				descansoSerie.detener();
+				descansoSerie = null;
+			}
+			if (temporizadorSerie != null) {
+				temporizadorSerie.detener();
+				temporizadorSerie = null;
+			}
+
+			actualizarTablaSeries();
+		}
+
+		Serie siguienteSerie = obtenerPrimeraSerieNoCompletada();
+
+		if (siguienteSerie != null) {
+			actualizarUIConSiguienteSerie(siguienteSerie);
+			iniciarSerieActual();
+		} else {
+			finalizarEjercicio();
+		}
+	}
+
+	private void pausarTodosLosTemporizadores() {
+		if (cronometro != null) {
+			cronometro.detener();
+		}
+		if (temporizadorSerie != null) {
+			temporizadorSerie.detener();
+		}
+		if (descansoSerie != null) {
+			descansoSerie.detener();
+		}
+	}
+
+	private void finalizarEjercicio() {
+		pausarTodosLosTemporizadores();
+		controladorMaestro.reanudarTodos();
+
+		if (ejercicioSeleccionado != null) {
+			ejercicioSeleccionado.setCompletado(true);
+		}
+
+		btnCronometro.setText("¡COMPLETADO!");
+		btnCronometro.setBackground(new Color(34, 139, 34));
+		lblCuentaSerie.setText("00:00:00");
+		lblCuentaDescanso.setText("00:00:00");
+	}
+
+	private void actualizarUIConSiguienteSerie(Serie siguienteSerie) {
+		String duracionSerieStr = siguienteSerie.getTiempoDuracion();
+		String descansoSerieStr = siguienteSerie.getTiempoDescanso();
+
+		lblDuracionEjercicio.setText(duracionSerieStr);
+		lblcantidadDescanso.setText(descansoSerieStr);
+
+		lblCuentaSerie.setText(convertirTiempoAFromatoCronometro(duracionSerieStr));
+		lblCuentaDescanso.setText(convertirTiempoAFromatoCronometro(descansoSerieStr));
+	}
+
+	private void actualizarTablaSeries() {
+		tablaDetallesSeries.setRowCount(0);
+
+		if (ejercicioSeleccionado != null) {
+			for (Serie serie : seriesActuales) {
+				String[] fila = { serie.getNombre(), serie.getTiempoDuracion(), serie.getTiempoDescanso() };
+				tablaDetallesSeries.addRow(fila);
+			}
+		}
+		tableSeries.repaint();
+	}
+
+	private void mostrarCuentaAtras(Runnable onFinish) {
+		JDialog dialog = new JDialog(this, "Preparado...", true);
+		JLabel label = new JLabel(ejercicioSeleccionado.getNombre() + " empieza en 5", SwingConstants.CENTER);
+		label.setFont(new Font("Arial", Font.BOLD, 25));
+		dialog.getContentPane().add(label);
+		dialog.setSize(300, 200);
+		dialog.setLocationRelativeTo(this);
+
+		btnCronometro.setEnabled(false);
+
+		new Thread(() -> {
+			try {
+				for (int i = 5; i >= 1; i--) {
+					final int segundos = i;
+					SwingUtilities
+							.invokeLater(() -> label.setText(ejercicioSeleccionado.getNombre() + " en: " + segundos));
+					Thread.sleep(1000);
 				}
+				SwingUtilities.invokeLater(onFinish);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} finally {
+				SwingUtilities.invokeLater(() -> {
+					dialog.dispose();
+					btnCronometro.setEnabled(true);
+				});
+			}
+		}).start();
+
+		dialog.setVisible(true);
+	}
+
+	private Serie obtenerPrimeraSerieNoCompletada() {
+		if (seriesActuales == null || seriesActuales.isEmpty()) {
+			return null;
+		}
+
+		for (Serie serie : seriesActuales) {
+			if (!serie.isCompletado()) {
+				return serie;
 			}
 		}
 		return null;
 	}
 
-	/**
-	 * Metodo que devuelve el dato que elijas de la primera seriq eu tenga
-	 * completado en false
-	 * 
-	 * @param dato (nombre del dato que se quiere obtener)
-	 * @return El valor del dato seleccionado, si estan todos completado = true devuelve null
-	 * @throws FireBaseException
-	 */
-	private String obtenerDatoPrimeraSerieNoCompletada(String dato) {
+	private int obtenerIndicePrimeraSerieNoCompletada() {
+		if (seriesActuales == null || seriesActuales.isEmpty()) {
+			return -1;
+		}
 
-	    if (seriesActuales == null || seriesActuales.isEmpty()) {
-	        return null;
-	    }
-
-	    for (Serie serie : seriesActuales) {
-	        if (!serie.isCompletado()) {
-	            switch (dato.toLowerCase()) {
-	                case "id":
-	                case "id serie":
-	                    return serie.getId();
-	                case "nombre":
-	                case "nombre serie":
-	                    return serie.getNombre();
-	                case "tiempo asignado":
-	                    return serie.getTiempoDuracion();
-	                case "tiempo descanso":
-	                    return serie.getTiempoDescanso();
-	                case "completado":
-	                case "completado serie":
-	                    return String.valueOf(serie.isCompletado());
-	                default:
-	                    return null;
-	            }
-	        }
-	    }
-
-	    return null;
+		for (int i = 0; i < seriesActuales.size(); i++) {
+			if (!seriesActuales.get(i).isCompletado()) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
-	// coge los datos recibidos del ejercicio
+	private String obtenerDatoPrimeraSerieNoCompletada(String dato) {
+		Serie serie = obtenerPrimeraSerieNoCompletada();
+		if (serie == null) {
+			return "0";
+		}
+
+		switch (dato.toLowerCase()) {
+		case "id":
+			return serie.getId();
+		case "nombre":
+			return serie.getNombre();
+		case "tiempo asignado":
+			return serie.getTiempoDuracion();
+		case "tiempo descanso":
+			return serie.getTiempoDescanso();
+		case "completado":
+			return String.valueOf(serie.isCompletado());
+		default:
+			return null;
+		}
+	}
+
+	private String obtenerDatoEjercicioSeleccionado(String dato) throws FireBaseException {
+		if (ejercicioSeleccionado == null)
+			return null;
+
+		if (dato.equalsIgnoreCase("id")) {
+			return ejercicioSeleccionado.getId();
+		} else if (dato.equalsIgnoreCase("nombre")) {
+			return ejercicioSeleccionado.getNombre();
+		} else if (dato.equalsIgnoreCase("descripcion")) {
+			return ejercicioSeleccionado.getDescripcion();
+		} else if (dato.equalsIgnoreCase("numero de series")) {
+			return String.valueOf(
+					(ejercicioSeleccionado.getSeries() != null) ? ejercicioSeleccionado.getSeries().size() : 0);
+		} else if (dato.equalsIgnoreCase("completado")) {
+			return String.valueOf(ejercicioSeleccionado.isCompletado());
+		} else {
+			return null;
+		}
+	}
+
 	private void cargarSeriesLocal(Ejercicio ejercicio) {
 
-	    seriesActuales = new ArrayList<>();
-	    for (Serie serie : ejercicio.getSeries()) {
-	
-	        Serie copiaSerie = new Serie();
-	        copiaSerie.setId(serie.getId());
-	        copiaSerie.setNombre(serie.getNombre());
-	        copiaSerie.setTiempoDuracion(serie.getTiempoDuracion());
-	        copiaSerie.setTiempoDescanso(serie.getTiempoDescanso());
-	        copiaSerie.setCompletado(serie.isCompletado());
-	        seriesActuales.add(copiaSerie);
-	    }
-	    
-	    //print para probar que carga en la lista local las series
-	    System.out.println("Series cargadas en private List<Serie> seriesActuales: " + ejercicio.getNombre());
-	    for (int i = 0; i < seriesActuales.size(); i++) {
-	        Serie s = seriesActuales.get(i);
-	        System.out.println(String.format(
-	            "   [%d] ID: %s | Nombre: %s | Duración: %s | Descanso: %s | Completado: %s",
-	            i + 1,
-	            s.getId(),
-	            s.getNombre(),
-	            s.getTiempoDuracion(),
-	            s.getTiempoDescanso(),
-	            s.isCompletado()
-	        ));
-	    }
+		seriesActuales = new ArrayList<>();
+		if (ejercicio.getSeries() != null) {
+			for (Serie serie : ejercicio.getSeries()) {
+
+				Serie copiaSerie = new Serie();
+				copiaSerie.setId(serie.getId());
+				copiaSerie.setNombre(serie.getNombre());
+				copiaSerie.setTiempoDuracion(serie.getTiempoDuracion());
+				copiaSerie.setTiempoDescanso(serie.getTiempoDescanso());
+				copiaSerie.setCompletado(serie.isCompletado());
+				seriesActuales.add(copiaSerie);
+			}
+		}
 	}
 
 	private String convertirTiempoAFromatoCronometro(String tiempo) {
-		int segundosTotales = Integer.parseInt(tiempo);
+		try {
+			int segundosTotales = Integer.parseInt(tiempo);
 
-		int minutos = segundosTotales / 60;
-		int segundos = segundosTotales % 60;
-		int centesimas = 0;
+			int minutos = segundosTotales / 60;
+			int segundos = segundosTotales % 60;
+			int centesimas = 0;
 
-		return String.format("%02d:%02d:%02d", minutos, segundos, centesimas);
-	}
-
-	private void mostrarCuentaAtras(String nombreEjercicio) {
-	    JDialog dialog = new JDialog(this, "Preparado...", true);
-	    JLabel label = new JLabel(nombreEjercicio + " empieza en 5", SwingConstants.CENTER);
-	    label.setFont(new Font("Arial", Font.BOLD, 15));
-	    dialog.add(label);
-	    dialog.setSize(250, 150);
-	    dialog.setLocationRelativeTo(this);
-
-	    new Thread(() -> {
-	        try {
-	            for (int i = 5; i >= 1; i--) {
-	                final int segundos = i;
-	                SwingUtilities.invokeLater(() -> label.setText(nombreEjercicio + " empieza en " + segundos));
-	                Thread.sleep(1000);
-	            }
-	        } catch (InterruptedException e) {
-	            e.printStackTrace();
-	        }
-	        dialog.dispose();
-	    }).start();
-
-	    dialog.setVisible(true);
+			return String.format("%02d:%02d:%02d", minutos, segundos, centesimas);
+		} catch (NumberFormatException e) {
+			return "00:00:00";
+		}
 	}
 }

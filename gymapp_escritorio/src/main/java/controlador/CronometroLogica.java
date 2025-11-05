@@ -1,63 +1,90 @@
 package controlador;
 
-import javax.swing.Timer;
+public class CronometroLogica extends Thread {
 
-public class CronometroLogica {
-
-	private Timer timer;
+    private volatile boolean corriendo = false;
+    private volatile boolean pausado = false;
     private long tiempoInicio = 0;
     private long tiempoPausado = 0;
-    private boolean corriendo = false;
     private final Runnable actualizar;
+    private final ControladorCronometros controladorGlobal;
 
-    public CronometroLogica(Runnable actualizador) {
+    public CronometroLogica(Runnable actualizador, ControladorCronometros controladorGlobal) {
         this.actualizar = actualizador;
-
-        timer = new Timer(100, e -> actualizador.run());
+        this.controladorGlobal = controladorGlobal;
+        setDaemon(true); 
     }
 
     public void iniciar() {
         if (!corriendo) {
-            tiempoInicio = System.currentTimeMillis() - tiempoPausado;
-            timer.start();
+            tiempoPausado = 0;
+            tiempoInicio = System.currentTimeMillis();
             corriendo = true;
+            this.start();
         }
     }
 
+    /**
+     * Alterna la pausa local (si está corriendo).
+     */
     public void pausarReanudar() {
         if (corriendo) {
-            tiempoPausado = System.currentTimeMillis() - tiempoInicio;
-            timer.stop();
-            corriendo = false;
-        } else {
-            tiempoInicio = System.currentTimeMillis() - tiempoPausado;
-            timer.start();
-            corriendo = true;
+            pausado = !pausado;
+            if (pausado) {
+                tiempoPausado = System.currentTimeMillis() - tiempoInicio;
+            } else {
+                tiempoInicio = System.currentTimeMillis() - tiempoPausado;
+            }
         }
     }
-
-    public void reiniciar() {
-        timer.stop();
-        corriendo = false;
-        tiempoInicio = 0;
-        tiempoPausado = 0;
-        actualizar.run();
+    
+    /**
+     * Detiene permanentemente el cronómetro.
+     */
+    public void detener() {
+        this.corriendo = false;
+        this.interrupt(); 
     }
 
-    public boolean estaCorriendo() {
-        return corriendo;
+    @Override
+    public void run() {
+        corriendo = true;
+        while (corriendo) {
+            if (controladorGlobal != null) {
+                controladorGlobal.esperarSiPausado();
+            }
+            
+            if (!pausado) {
+                if (actualizar != null) {
+                    actualizar.run(); 
+                }
+            }
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
     }
 
     public String obtenerTiempoFormateado() {
-        long tiempoActual = corriendo
-                ? System.currentTimeMillis() - tiempoInicio
-                : tiempoPausado;
+        long tiempoActual = tiempoPausado;
+        if (corriendo && !pausado) {
+            tiempoActual = System.currentTimeMillis() - tiempoInicio;
+        }
 
-        long minutos = (tiempoActual / 1000) / 60;
-        long segundos = (tiempoActual / 1000) % 60;
-        long centesimas = (tiempoActual % 1000) / 10;
+        long totalSegundos = tiempoActual / 1000;
+        long minutos = totalSegundos / 60;
+        long segundos = totalSegundos % 60;
+        long milisegundos = (tiempoActual % 1000) / 10;
 
-        return String.format("%02d:%02d:%02d", minutos, segundos, centesimas);
+        return String.format("%02d:%02d:%02d", minutos, segundos, milisegundos);
+    }
+
+    public boolean estaCorriendo() {
+        return corriendo && !pausado;
     }
 
 }
