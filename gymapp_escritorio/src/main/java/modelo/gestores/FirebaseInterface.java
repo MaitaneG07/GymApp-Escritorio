@@ -120,7 +120,30 @@ public interface FirebaseInterface {
 	boolean existeEmailCliente(String email) throws FireBaseException;
 
 
+	/**
+	 * Obtenemos los historicos de la bbdd
+	 * 
+	 * @param idCliente ID del cliente 
+	 * @return retorna la lista de historicos de ese cliente
+	 * @throws FireBaseException si hay error en la consulta
+	 */
 	List<Historico> getHistoricos(String idCliente) throws FireBaseException;
+
+
+	/**
+	 * Guardamos en históricos el workout realizado
+	 * 
+	 * @param idCliente ID del cliente que realiza el workout
+	 * @param nombre nombre del workout
+	 * @param nivel nivel del cliente
+	 * @param tiempo_previsto tiempo previsto para la realizacion del ejercicio
+	 * @param tiempo_total tiempo total realizado para realizar ejercicio
+	 * @param fecha_inicio fecha en la que se ha empezado el ejercicio
+	 * @param porcentaje % de los ejercicios realizados
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	void guardarWorkoutHistorico(String idCliente, String nombre, String nivel, String tiempo_previsto,
+			String tiempo_total, String fecha_inicio, String porcentaje) throws FireBaseException;
 
 
 

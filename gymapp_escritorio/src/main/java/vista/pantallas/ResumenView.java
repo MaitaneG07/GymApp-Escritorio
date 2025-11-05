@@ -17,6 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import modelo.exceptions.FireBaseException;
 import utils.Constants;
 
 public class ResumenView extends JFrame {
@@ -34,6 +35,16 @@ public class ResumenView extends JFrame {
 	private String idCliente;
 	@SuppressWarnings("unused")
 	private String nivel;
+	@SuppressWarnings("unused")
+	private String nombre;
+	@SuppressWarnings("unused")
+	private String tiempo_total;
+	@SuppressWarnings("unused")
+	private String porcentaje;
+	@SuppressWarnings("unused")
+	private String idWorkoutSeleccionado;
+	@SuppressWarnings("unused")
+	private String nombreWorkoutSeleccionado;
 	
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
@@ -44,11 +55,19 @@ public class ResumenView extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @param porcentaje 
+	 * @param tiempo_total 
+	 * @param nombre 
 	 */
-	public ResumenView(String idCliente, String nivel) {
+	public ResumenView(String idCliente, String nivel, String nombre, String tiempo_total, String porcentaje, String idWorkoutSeleccionado, String nombreWorkoutSeleccionado) {
 		
 		this.idCliente = idCliente;
 		this.nivel = nivel;
+		this.nombre = nombre;
+		this.tiempo_total = tiempo_total;
+		this.porcentaje = porcentaje;
+		this.idWorkoutSeleccionado = idWorkoutSeleccionado;
+		this.nombreWorkoutSeleccionado = nombreWorkoutSeleccionado;
 		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -92,14 +111,19 @@ public class ResumenView extends JFrame {
 		scrollPaneResumen.setViewportView(tablaResumen);
 		
 		btnConfirmar = new JButton(Constants.CONFIRMAR_BOTON);
-		btnConfirmar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				WorkoutView pantallaWorkout = new WorkoutView(idCliente, nivel);
-				pantallaWorkout.setVisible(true);
-				dispose();
-			}
-		});
+//		btnConfirmar.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				EjercicioView pantallaEjercicio = null;
+//				try {
+//					pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado, nombreWorkoutSeleccionado);
+//				} catch (FireBaseException e1) {
+//					e1.printStackTrace();
+//				}
+//				pantallaEjercicio.setVisible(true);
+//				dispose();
+//			}
+//		});
 		btnConfirmar.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnConfirmar.setBounds(354, 554, 155, 40);
 		btnConfirmar.setFocusPainted(false);
@@ -113,5 +137,13 @@ public class ResumenView extends JFrame {
 		lblMensaje.setBounds(286, 368, 297, 107);
 		contentPane.add(lblMensaje);
 
+		actualizarTablaResumen(nombre, tiempo_total, porcentaje);
+		
+	}
+
+	private void actualizarTablaResumen(String nombre, String tiempo_total, String porcentaje) {
+		modeloResumen.addRow(new Object[] {
+				nombre, tiempo_total, porcentaje
+		});
 	}
 }

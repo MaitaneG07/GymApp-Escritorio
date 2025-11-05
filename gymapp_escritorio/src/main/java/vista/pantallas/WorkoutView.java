@@ -74,6 +74,7 @@ public class WorkoutView extends JFrame {
 	private Component lblNivelCliente;
 	private JMenuItem menuTodos;
 	private String idWorkoutSeleccionado = null;
+	private String nombreWorkoutSeleccionado = null;
 	private boolean online = utils.Network.isInternetAvailable();
 	private List<Cliente> clientesBackup = new ArrayList<>();
 	private List<Workout> workoutsBackup = new ArrayList<>();
@@ -239,10 +240,12 @@ public class WorkoutView extends JFrame {
 				if (e.getClickCount() == 1 && tablaWorkouts.getSelectedRow() != -1) {
 					int selectedRow = tablaWorkouts.getSelectedRow();
 					String idWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 0);
+					String nombreWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 1);
 					String nivelWorkout = (String) tablaWorkouts.getValueAt(selectedRow, 2);
 
 					System.out.println("ID Workout seleccionado: " + idWorkout);
 					System.out.println("Nivel Workout seleccionado: " + nivelWorkout);
+					System.out.println("Nivel Workout seleccionado: " + nombreWorkout);
 					System.out.println("Nivel Cliente: " + nivel);
 
 					if (!puedeAccederAlWorkout(nivel, nivelWorkout)) {
@@ -255,6 +258,7 @@ public class WorkoutView extends JFrame {
 						actualizarTablaDetallesWorkout(modeloDetallesWorkouts, idWorkout);
 						btnSeleccionar.setEnabled(true);
 						idWorkoutSeleccionado = idWorkout;
+						nombreWorkoutSeleccionado = nombreWorkout;
 					}
 				}
 			}
@@ -336,22 +340,22 @@ public class WorkoutView extends JFrame {
 
 		btnSeleccionar = new JButton(Constants.SELECCIONAR_BOTON);
 		btnSeleccionar.setEnabled(false);
-		btnSeleccionar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (idWorkoutSeleccionado != null && btnSeleccionar.isEnabled()) {
-					EjercicioView pantallaEjercicio = null;
-					try {
-						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado);
-					} catch (FireBaseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					pantallaEjercicio.setVisible(true);
-					dispose();
-				}
-			}
-		});
+//		btnSeleccionar.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				if (idWorkoutSeleccionado != null && btnSeleccionar.isEnabled()) {
+//					EjercicioView pantallaEjercicio = null;
+//					try {
+//						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado, nombreWorkoutSeleccionado);
+//					} catch (FireBaseException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//					pantallaEjercicio.setVisible(true);
+//					dispose();
+//				}
+//			}
+//		});
 		btnSeleccionar.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnSeleccionar.setBounds(360, 554, 155, 40);
 		btnSeleccionar.setFocusPainted(false);

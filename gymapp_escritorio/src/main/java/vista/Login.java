@@ -167,7 +167,7 @@ public class Login extends JFrame {
 
 						clientes = firebaseController.getClientes();
 						workouts = firebaseController.workout();
-
+						
 						if (clientes != null && workouts != null) {
 							try {
 								modelo.ficheros.Backup.writeBinaryFile(clientes, workouts);
@@ -207,6 +207,7 @@ public class Login extends JFrame {
 						System.out.println("Login exitoso: " + clienteAutenticado.getNombre());
 						WorkoutView pantallaWorkout = new WorkoutView(clienteAutenticado.getId(),
 								clienteAutenticado.getNivel());
+						
 						pantallaWorkout.setIdCliente(clienteAutenticado.getId(), clienteAutenticado.getNivel());
 						pantallaWorkout.setVisible(true);
 						dispose();

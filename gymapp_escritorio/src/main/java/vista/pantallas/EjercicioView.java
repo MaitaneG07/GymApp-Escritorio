@@ -17,6 +17,7 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -27,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import controlador.CronometroLogica;
+import controlador.FirebaseController;
 import controlador.TemporizadorLogica;
 import modelo.entity.Ejercicio;
 import modelo.entity.Serie;
@@ -56,6 +58,8 @@ public class EjercicioView extends JFrame {
 	@SuppressWarnings("unused")
 	private String nivel;
 	private String idWorkoutSeleccionado;
+	@SuppressWarnings("unused")
+	private String nombreWorkoutSeleccionado;
 	private CronometroLogica cronometro;
 	private FirebaseGestor firebaseGestor;
 	@SuppressWarnings("unused")
@@ -64,8 +68,12 @@ public class EjercicioView extends JFrame {
 	private String tiempoTotalEjercicio;
 	@SuppressWarnings("unused")
 	private String tiempoActualEjercicio;
-
 	private List<Serie> seriesActuales;
+	private JLabel lblDuracionEjercicio;
+	private FirebaseController firebaseController;
+	private int indiceEjercicioActual = 0;
+	private List<Ejercicio> ejerciciosWorkoutSeleccionado;
+	protected double porcentajeCompletado;
 
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
@@ -80,29 +88,42 @@ public class EjercicioView extends JFrame {
 	 * @throws FireBaseException
 	 */
 	@SuppressWarnings("serial")
-	public EjercicioView(String idCliente, String nivel, String idWorkoutSeleccionado) throws FireBaseException {
+	public EjercicioView(String idCliente, String nivel, String idWorkoutSeleccionado, String nombreWorkoutSeleccionado,
+			List<Ejercicio> ejerciciosPrevios, int indiceEjercicioPrevio) throws FireBaseException {
 
 		this.idCliente = idCliente;
 		this.nivel = nivel;
 		this.idWorkoutSeleccionado = idWorkoutSeleccionado;
-		firebaseGestor = new FirebaseGestor();
-		List<Ejercicio> ejerciciosWorkoutSeleccionado = firebaseGestor
-				.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
+		this.nombreWorkoutSeleccionado = nombreWorkoutSeleccionado;
 
-		Ejercicio ejercicioSeleccionado = null;
-		for (Ejercicio e : ejerciciosWorkoutSeleccionado) {
-		    if (!e.isCompletado()) {
-		        ejercicioSeleccionado = e;
-		        break;
-		    }
+		if (ejerciciosPrevios != null) {
+			this.ejerciciosWorkoutSeleccionado = ejerciciosPrevios;
+			this.indiceEjercicioActual = indiceEjercicioPrevio;
+		} else {
+			try {
+				firebaseGestor = new FirebaseGestor();
+			} catch (FireBaseException e) {
+				e.printStackTrace();
+			}
+			firebaseController = new FirebaseController();
+			this.ejerciciosWorkoutSeleccionado = firebaseGestor.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
+			this.indiceEjercicioActual = 0;
+		}
+
+		Ejercicio ejercicioSeleccionado = getSiguienteEjercicio();
+		if (ejercicioSeleccionado != null) {
+			cargarSeriesLocal(ejercicioSeleccionado);
+		} else {
+			System.out.println("No hay ejercicios pendientes en este workout.");
+
 		}
 
 		if (ejercicioSeleccionado != null) {
-		    cargarSeriesLocal(ejercicioSeleccionado);
+			cargarSeriesLocal(ejercicioSeleccionado);
 		} else {
-		    System.out.println("No hay ejercicios pendientes en este workout.");
+			System.out.println("No hay ejercicios pendientes en este workout.");
 		}
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
@@ -113,8 +134,7 @@ public class EjercicioView extends JFrame {
 		btnPerfil = new JButton();
 
 		// LOGO MAITANE
-		ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA_AKIRA_PC));
-//		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
+		ImageIcon iconoOriginal = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
 		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 		btnPerfil.setIcon(new ImageIcon(imgEscalada));
 		btnPerfil.setBounds(10, 11, 60, 60);
@@ -158,23 +178,20 @@ public class EjercicioView extends JFrame {
 
 		cronometro = new CronometroLogica(() -> lblCronometroWorkout.setText(cronometro.obtenerTiempoFormateado()));
 
-		final TemporizadorLogica[] temporizadorEjercicio = new TemporizadorLogica[1];
+		// CAMBIAR ESTAS DECLARACIONES:
+		final CronometroLogica[] temporizadorEjercicio = new CronometroLogica[1]; // Era TemporizadorLogica
 		final TemporizadorLogica[] temporizadorSerie = new TemporizadorLogica[1];
 		final TemporizadorLogica[] descansoSerie = new TemporizadorLogica[1];
 
 		btnCronometro.addActionListener(new ActionListener() {
 
 			private boolean mostrarCuentaAtras = false;
+			private int indiceSerieActual = 0;
+			@SuppressWarnings("unused")
+			private long tiempoInicioEjercicio = 0;
 
 			public void actionPerformed(ActionEvent e) {
-
 				try {
-					String tiempoSerieStr = obtenerDatoPrimeraSerieNoCompletada("tiempo asignado");
-					int tiempoSerie = Integer.parseInt(tiempoSerieStr);
-
-					String tiempoDescansoStr = obtenerDatoPrimeraSerieNoCompletada("tiempo descanso");
-					int tiempoDescanso = Integer.parseInt(tiempoDescansoStr);
-
 					if (!cronometro.estaCorriendo()) {
 
 						if (!mostrarCuentaAtras) {
@@ -186,24 +203,17 @@ public class EjercicioView extends JFrame {
 						btnCronometro.setText(Constants.PAUSAR_BOTON);
 						btnCronometro.setBackground(new Color(139, 0, 0));
 
-						// Cronómetro total del ejercicio
-						temporizadorEjercicio[0] = new TemporizadorLogica(
-								() -> lblCronometroTotalEjercicio.setText(cronometro.obtenerTiempoFormateado()), null);
-						temporizadorEjercicio[0].iniciar(tiempoSerie);
+						// Guardar tiempo de inicio
+						tiempoInicioEjercicio = System.currentTimeMillis();
 
-						// Contador de la serie actual
-						temporizadorSerie[0] = new TemporizadorLogica(
-								() -> lblCuentaSerie.setText(temporizadorSerie[0].obtenerTiempoFormateado()), () -> {
-									// Al finalizar la serie, iniciar descanso
-									descansoSerie[0] = new TemporizadorLogica(
-											() -> lblCuentaDescanso.setText(descansoSerie[0].obtenerTiempoFormateado()),
-											null);
-									descansoSerie[0].iniciar(tiempoDescanso);
-								});
-						temporizadorSerie[0].iniciar(tiempoSerie);
+						temporizadorEjercicio[0] = new CronometroLogica(() -> lblCronometroTotalEjercicio
+								.setText(temporizadorEjercicio[0].obtenerTiempoFormateado()));
+						temporizadorEjercicio[0].iniciar();
+
+						// Iniciar la primera serie
+						iniciarSiguienteSerie();
 
 					} else {
-						// Pausar o reanudar todos
 						cronometro.pausarReanudar();
 						if (temporizadorEjercicio[0] != null)
 							temporizadorEjercicio[0].pausarReanudar();
@@ -219,11 +229,183 @@ public class EjercicioView extends JFrame {
 					ex.printStackTrace();
 				}
 			}
+
+			/**
+			 * Inicia la siguiente serie no completada
+			 */
+			private void iniciarSiguienteSerie() {
+				try {
+					Serie serieActual = null;
+					for (int i = 0; i < seriesActuales.size(); i++) {
+						if (!seriesActuales.get(i).isCompletado()) {
+							serieActual = seriesActuales.get(i);
+							indiceSerieActual = i;
+							break;
+						}
+					}
+
+					if (serieActual == null) {
+						finalizarEjercicio();
+						return;
+					}
+
+					int tiempoSerie = Integer.parseInt(serieActual.getTiempoDuracion());
+					int tiempoDescanso = Integer.parseInt(serieActual.getTiempoDescanso());
+
+					lblcantidadDescanso.setText(serieActual.getTiempoDescanso());
+					lblDuracionEjercicio.setText(serieActual.getTiempoDuracion());
+
+					lblCuentaSerie.setText(convertirTiempoAFromatoCronometro(serieActual.getTiempoDuracion()));
+					lblCuentaDescanso.setText(convertirTiempoAFromatoCronometro(serieActual.getTiempoDescanso()));
+
+					temporizadorSerie[0] = new TemporizadorLogica(
+							() -> lblCuentaSerie.setText(temporizadorSerie[0].obtenerTiempoFormateado()), () -> {
+
+								marcarSerieComoCompletada(indiceSerieActual);
+
+								iniciarDescanso(tiempoDescanso);
+							});
+
+					temporizadorSerie[0].iniciar(tiempoSerie);
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+
+			/**
+			 * Inicia el temporizador de descanso
+			 */
+			private void iniciarDescanso(int tiempoDescanso) {
+
+				if (temporizadorEjercicio[0] != null) {
+					temporizadorEjercicio[0].pausarReanudar();
+				}
+
+				descansoSerie[0] = new TemporizadorLogica(
+						() -> lblCuentaDescanso.setText(descansoSerie[0].obtenerTiempoFormateado()), () -> {
+							if (temporizadorEjercicio[0] != null) {
+								temporizadorEjercicio[0].pausarReanudar();
+							}
+							iniciarSiguienteSerie();
+						});
+				descansoSerie[0].iniciar(tiempoDescanso);
+			}
+
+			/**
+			 * Marca una serie como completada y actualiza la tabla
+			 */
+			private void marcarSerieComoCompletada(int indice) {
+				if (indice >= 0 && indice < seriesActuales.size()) {
+					seriesActuales.get(indice).setCompletado(true);
+
+					// Forzar actualización visual de la tabla
+					SwingUtilities.invokeLater(() -> {
+						tableSeries.repaint();
+						tableSeries.revalidate();
+					});
+
+					System.out.println("Serie completada: " + seriesActuales.get(indice).getNombre());
+				}
+			}
+
+			/**
+			 * Finaliza el ejercicio cuando todas las series están completadas
+			 */
+			// --- Método finalizarEjercicio actualizado ---
+			private void finalizarEjercicio() {
+				try {
+					cronometro.pausarReanudar();
+					if (temporizadorEjercicio[0] != null)
+						temporizadorEjercicio[0].pausarReanudar();
+
+					btnCronometro.setText("FINALIZADO");
+					btnCronometro.setEnabled(false);
+					btnCronometro.setBackground(Color.GRAY);
+
+					porcentajeCompletado = calcularPorcentajeEjerciciosCompletados();
+
+					System.out.println("Ejercicio completado!");
+					System.out.println(
+							"Porcentaje del workout completado: " + String.format("%.2f", porcentajeCompletado) + "%");
+
+					// Guardar histórico en Firebase
+					firebaseController.guardarWorkoutHistorico(idCliente, nombreWorkoutSeleccionado, nivel,
+							lblCronometroWorkout.getText(), lblCronometroTotalEjercicio.getText(),
+							java.time.LocalDateTime.now().toString(), String.format("%.2f", porcentajeCompletado));
+
+					// Marcar ejercicio completado en memoria
+					ejerciciosWorkoutSeleccionado.get(indiceEjercicioActual).setCompletado(true);
+					indiceEjercicioActual++;
+
+					// Mostrar pantalla de resumen
+					ResumenView pantallaResumen = new ResumenView(idCliente, nivel,
+							ejerciciosWorkoutSeleccionado.get(indiceEjercicioActual - 1).getNombre(),
+							lblCronometroTotalEjercicio.getText(), String.format("%.2f", porcentajeCompletado),
+							idWorkoutSeleccionado, nombreWorkoutSeleccionado);
+
+					// Pasar la lista y el índice al volver
+					pantallaResumen.setVisible(true);
+					dispose();
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+
+				// --- Al volver desde ResumenView ---
+				// Cuando crees un nuevo EjercicioView después de ResumenView:
+				EjercicioView siguienteEjercicioView = null;
+				try {
+					siguienteEjercicioView = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado,
+							nombreWorkoutSeleccionado, ejerciciosWorkoutSeleccionado, indiceEjercicioActual);
+				} catch (FireBaseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				siguienteEjercicioView.setVisible(true);
+			}
+
+			/**
+			 * Calcula el porcentaje de ejercicios completados en el workout
+			 * 
+			 * @return Porcentaje de 0 a 100
+			 */
+			private double calcularPorcentajeEjerciciosCompletados() {
+				try {
+					List<Ejercicio> todosLosEjercicios = firebaseGestor
+							.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
+
+					if (todosLosEjercicios == null || todosLosEjercicios.isEmpty()) {
+						return 0.0;
+					}
+
+					int totalEjercicios = todosLosEjercicios.size();
+					int ejerciciosCompletados = 0;
+
+					for (Ejercicio ejercicio : todosLosEjercicios) {
+						if (ejercicio.isCompletado()) {
+							ejerciciosCompletados++;
+						}
+					}
+
+					ejerciciosCompletados++;
+
+					return ((double) ejerciciosCompletados / totalEjercicios) * 100.0;
+
+				} catch (FireBaseException ex) {
+					ex.printStackTrace();
+					return 0.0;
+				}
+			}
 		});
 		btnCronometro.setBounds(360, 520, 133, 58);
 		contentPane.add(btnCronometro);
 
-		lblNombreEjercicio = new JLabel(obtenerDatoEjercicioSeleccionado("nombre"), SwingConstants.CENTER);
+		try {
+			lblNombreEjercicio = new JLabel(obtenerDatoEjercicioSeleccionado("nombre"), SwingConstants.CENTER);
+		} catch (FireBaseException e1) {
+			e1.printStackTrace();
+		}
 		lblNombreEjercicio.setFont(new Font("Arial", Font.BOLD, 30));
 		lblNombreEjercicio.setBounds(125, 11, 368, 55);
 		contentPane.add(lblNombreEjercicio);
@@ -269,13 +451,28 @@ public class EjercicioView extends JFrame {
 				try {
 					String nombreSerie = (String) table.getValueAt(row, 0);
 
+					// Buscar en seriesActuales (la lista local que se actualiza)
 					boolean completado = false;
-					for (Ejercicio ejercicio : ejerciciosWorkoutSeleccionado) {
-						for (Serie serie : ejercicio.getSeries()) {
+					if (seriesActuales != null) {
+						for (Serie serie : seriesActuales) {
 							if (serie.getNombre().equals(nombreSerie)) {
 								completado = serie.isCompletado();
 								break;
 							}
+						}
+					}
+
+					// Si no está en seriesActuales, buscar en todos los ejercicios
+					if (!completado && seriesActuales != null) {
+						for (Ejercicio ejercicio : ejerciciosWorkoutSeleccionado) {
+							for (Serie serie : ejercicio.getSeries()) {
+								if (serie.getNombre().equals(nombreSerie)) {
+									completado = serie.isCompletado();
+									break;
+								}
+							}
+							if (completado)
+								break;
 						}
 					}
 
@@ -327,7 +524,11 @@ public class EjercicioView extends JFrame {
 
 		JTextArea textADescripcion = new JTextArea();
 		textADescripcion.setFont(new Font("Tahoma", Font.BOLD, 16));
-		textADescripcion.setText(obtenerDatoEjercicioSeleccionado("Descripcion"));
+		try {
+			textADescripcion.setText(obtenerDatoEjercicioSeleccionado("Descripcion"));
+		} catch (FireBaseException e1) {
+			e1.printStackTrace();
+		}
 		textADescripcion.setBounds(0, 7, 347, 159);
 		contentPane.add(textADescripcion);
 		// estas dos siguientes lineas son para que no se corte el texto si la frase es
@@ -339,7 +540,7 @@ public class EjercicioView extends JFrame {
 		scrollDescripcion.setBounds(332, 110, 347, 159);
 		contentPane.add(scrollDescripcion);
 
-		JLabel lblDuracionEjercicio = new JLabel(obtenerDatoPrimeraSerieNoCompletada("tiempo asignado"),
+		lblDuracionEjercicio = new JLabel(obtenerDatoPrimeraSerieNoCompletada("tiempo asignado"),
 				SwingConstants.CENTER);
 		lblDuracionEjercicio.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblDuracionEjercicio.setBounds(158, 263, 46, 26);
@@ -354,6 +555,17 @@ public class EjercicioView extends JFrame {
 		lblCronometroTotalEjercicio.setBounds(44, 201, 180, 36);
 		contentPane.add(lblCronometroTotalEjercicio);
 
+	}
+
+	// --- Método para obtener el siguiente ejercicio ---
+	private Ejercicio getSiguienteEjercicio() {
+		while (indiceEjercicioActual < ejerciciosWorkoutSeleccionado.size()) {
+			Ejercicio e = ejerciciosWorkoutSeleccionado.get(indiceEjercicioActual);
+			if (!e.isCompletado())
+				return e;
+			indiceEjercicioActual++;
+		}
+		return null; // todos completados
 	}
 
 	/**
@@ -394,70 +606,64 @@ public class EjercicioView extends JFrame {
 	 * completado en false
 	 * 
 	 * @param dato (nombre del dato que se quiere obtener)
-	 * @return El valor del dato seleccionado, si estan todos completado = true devuelve null
+	 * @return El valor del dato seleccionado, si estan todos completado = true
+	 *         devuelve null
 	 * @throws FireBaseException
 	 */
 	private String obtenerDatoPrimeraSerieNoCompletada(String dato) {
 
-	    if (seriesActuales == null || seriesActuales.isEmpty()) {
-	        return null;
-	    }
+		if (seriesActuales == null || seriesActuales.isEmpty()) {
+			return null;
+		}
 
-	    for (Serie serie : seriesActuales) {
-	        if (!serie.isCompletado()) {
-	            switch (dato.toLowerCase()) {
-	                case "id":
-	                case "id serie":
-	                    return serie.getId();
-	                case "nombre":
-	                case "nombre serie":
-	                    return serie.getNombre();
-	                case "tiempo asignado":
-	                    return serie.getTiempoDuracion();
-	                case "tiempo descanso":
-	                    return serie.getTiempoDescanso();
-	                case "completado":
-	                case "completado serie":
-	                    return String.valueOf(serie.isCompletado());
-	                default:
-	                    return null;
-	            }
-	        }
-	    }
+		for (Serie serie : seriesActuales) {
+			if (!serie.isCompletado()) {
+				switch (dato.toLowerCase()) {
+				case "id":
+				case "id serie":
+					return serie.getId();
+				case "nombre":
+				case "nombre serie":
+					return serie.getNombre();
+				case "tiempo asignado":
+					return serie.getTiempoDuracion();
+				case "tiempo descanso":
+					return serie.getTiempoDescanso();
+				case "completado":
+				case "completado serie":
+					return String.valueOf(serie.isCompletado());
+				default:
+					return null;
+				}
+			}
+		}
 
-	    return null;
+		return null;
 	}
-	
+
 	// coge los datos recibidos del ejercicio
-	@SuppressWarnings("unused")
 	private void cargarSeriesLocal(Ejercicio ejercicio) {
 
-	    seriesActuales = new ArrayList<>();
-	    for (Serie serie : ejercicio.getSeries()) {
-	
-	        Serie copiaSerie = new Serie();
-	        copiaSerie.setId(serie.getId());
-	        copiaSerie.setNombre(serie.getNombre());
-	        copiaSerie.setTiempoDuracion(serie.getTiempoDuracion());
-	        copiaSerie.setTiempoDescanso(serie.getTiempoDescanso());
-	        copiaSerie.setCompletado(serie.isCompletado());
-	        seriesActuales.add(copiaSerie);
-	    }
-	    
-	    //print para probar que carga en la lista local las series
-	    System.out.println("Series cargadas en private List<Serie> seriesActuales: " + ejercicio.getNombre());
-	    for (int i = 0; i < seriesActuales.size(); i++) {
-	        Serie s = seriesActuales.get(i);
-	        System.out.println(String.format(
-	            "   [%d] ID: %s | Nombre: %s | Duración: %s | Descanso: %s | Completado: %s",
-	            i + 1,
-	            s.getId(),
-	            s.getNombre(),
-	            s.getTiempoDuracion(),
-	            s.getTiempoDescanso(),
-	            s.isCompletado()
-	        ));
-	    }
+		seriesActuales = Collections.synchronizedList(new ArrayList<>());
+		for (Serie serie : ejercicio.getSeries()) {
+
+			Serie copiaSerie = new Serie();
+			copiaSerie.setId(serie.getId());
+			copiaSerie.setNombre(serie.getNombre());
+			copiaSerie.setTiempoDuracion(serie.getTiempoDuracion());
+			copiaSerie.setTiempoDescanso(serie.getTiempoDescanso());
+			copiaSerie.setCompletado(serie.isCompletado());
+			seriesActuales.add(copiaSerie);
+		}
+
+		// print para probar que carga en la lista local las series
+		System.out.println("Series cargadas en private List<Serie> seriesActuales: " + ejercicio.getNombre());
+		for (int i = 0; i < seriesActuales.size(); i++) {
+			Serie s = seriesActuales.get(i);
+			System.out.println(
+					String.format("   [%d] ID: %s | Nombre: %s | Duración: %s | Descanso: %s | Completado: %s", i + 1,
+							s.getId(), s.getNombre(), s.getTiempoDuracion(), s.getTiempoDescanso(), s.isCompletado()));
+		}
 	}
 
 	private String convertirTiempoAFromatoCronometro(String tiempo) {
@@ -471,26 +677,26 @@ public class EjercicioView extends JFrame {
 	}
 
 	private void mostrarCuentaAtras(String nombreEjercicio) {
-	    JDialog dialog = new JDialog(this, "Preparado...", true);
-	    JLabel label = new JLabel(nombreEjercicio + " empieza en 5", SwingConstants.CENTER);
-	    label.setFont(new Font("Arial", Font.BOLD, 15));
-	    dialog.add(label);
-	    dialog.setSize(250, 150);
-	    dialog.setLocationRelativeTo(this);
+		JDialog dialog = new JDialog(this, "Preparado...", true);
+		JLabel label = new JLabel(nombreEjercicio + " empieza en 5", SwingConstants.CENTER);
+		label.setFont(new Font("Arial", Font.BOLD, 15));
+		dialog.add(label);
+		dialog.setSize(250, 150);
+		dialog.setLocationRelativeTo(this);
 
-	    new Thread(() -> {
-	        try {
-	            for (int i = 5; i >= 1; i--) {
-	                final int segundos = i;
-	                SwingUtilities.invokeLater(() -> label.setText(nombreEjercicio + " empieza en " + segundos));
-	                Thread.sleep(1000);
-	            }
-	        } catch (InterruptedException e) {
-	            e.printStackTrace();
-	        }
-	        dialog.dispose();
-	    }).start();
+		new Thread(() -> {
+			try {
+				for (int i = 5; i >= 1; i--) {
+					final int segundos = i;
+					SwingUtilities.invokeLater(() -> label.setText(nombreEjercicio + " empieza en " + segundos));
+					Thread.sleep(1000);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			dialog.dispose();
+		}).start();
 
-	    dialog.setVisible(true);
+		dialog.setVisible(true);
 	}
 }

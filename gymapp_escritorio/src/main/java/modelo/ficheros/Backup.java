@@ -28,7 +28,7 @@ public class Backup {
 			outputStream = new FileOutputStream(file);
 
 			objectOutputStream = new ObjectOutputStream(outputStream);
-
+			
 			for (Cliente cliente : clientes) {
 				objectOutputStream.writeObject(cliente);
 			}

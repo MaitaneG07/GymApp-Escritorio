@@ -13,10 +13,10 @@ public class CronometroLogica {
     public CronometroLogica(Runnable actualizador) {
         this.actualizar = actualizador;
 
-        timer = new Timer(100, e -> actualizador.run());
+        timer = new Timer(50, e -> actualizador.run());
     }
 
-    public void iniciar() {
+    public synchronized void iniciar() {
         if (!corriendo) {
             tiempoInicio = System.currentTimeMillis() - tiempoPausado;
             timer.start();
@@ -24,10 +24,10 @@ public class CronometroLogica {
         }
     }
 
-    public void pausarReanudar() {
+    public synchronized void pausarReanudar() {
         if (corriendo) {
+            timer.stop(); // ⬅️ Detén primero el Timer
             tiempoPausado = System.currentTimeMillis() - tiempoInicio;
-            timer.stop();
             corriendo = false;
         } else {
             tiempoInicio = System.currentTimeMillis() - tiempoPausado;
@@ -36,7 +36,7 @@ public class CronometroLogica {
         }
     }
 
-    public void reiniciar() {
+    public synchronized void reiniciar() {
         timer.stop();
         corriendo = false;
         tiempoInicio = 0;
