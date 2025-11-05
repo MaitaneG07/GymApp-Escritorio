@@ -52,9 +52,11 @@ public class EjercicioView extends JFrame {
 	private String idCliente;
 	private String nivel;
 	private String idWorkoutSeleccionado;
-	private CronometroLogica cronometro;
+	private CronometroLogica cronometroWorkout;
+	private CronometroLogica cronometroEjercicio;
 	private FirebaseGestor firebaseGestor;
 	private JLabel lblDuracionEjercicio;
+	private boolean enDescanso = false;
 
 	private final ControladorCronometros controladorMaestro = new ControladorCronometros();
 	private TemporizadorLogica temporizadorSerie;
@@ -141,13 +143,21 @@ public class EjercicioView extends JFrame {
 		btnCronometro.setFocusPainted(false);
 		btnCronometro.setBackground(new Color(0, 128, 0));
 
-		cronometro = new CronometroLogica(() -> {
-			String tiempo = cronometro.obtenerTiempoFormateado();
-			lblCronometroWorkout.setText(tiempo);
-			lblCronometroTotalEjercicio.setText(tiempo);
+		// Cronómetro total del workout (siempre activo)
+		cronometroWorkout = new CronometroLogica(() -> {
+		    String tiempo = cronometroWorkout.obtenerTiempoFormateado();
+		    lblCronometroWorkout.setText(tiempo);
 		}, controladorMaestro);
 
-		lblCronometroTotalEjercicio = new JLabel(cronometro.obtenerTiempoFormateado());
+		// Cronómetro de ejercicio (solo actualiza si no está en descanso)
+		cronometroEjercicio = new CronometroLogica(() -> {
+		    if (!enDescanso) {
+		        String tiempo = cronometroEjercicio.obtenerTiempoFormateado();
+		        lblCronometroTotalEjercicio.setText(tiempo);
+		    }
+		}, controladorMaestro);
+		
+		lblCronometroTotalEjercicio = new JLabel(cronometroEjercicio.obtenerTiempoFormateado());
 		lblCronometroTotalEjercicio.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblCronometroTotalEjercicio.setBounds(44, 201, 180, 36);
 		contentPane.add(lblCronometroTotalEjercicio);
@@ -284,9 +294,9 @@ public class EjercicioView extends JFrame {
 		}
 
 		boolean estabaPausadoGlobalmente = controladorMaestro.isPausado();
-		boolean primeraEjecucion = !cronometro.estaCorriendo() && !estabaPausadoGlobalmente;
+		boolean primeraEjecucion = !cronometroWorkout.estaCorriendo() && !estabaPausadoGlobalmente;
 
-		if (cronometro.estaCorriendo() && !estabaPausadoGlobalmente) {
+		if (cronometroWorkout.estaCorriendo() && !estabaPausadoGlobalmente) {
 			controladorMaestro.pausarTodos();
 			btnCronometro.setText(Constants.INICIAR_BOTON);
 			btnCronometro.setBackground(new Color(0, 128, 0));
@@ -294,7 +304,8 @@ public class EjercicioView extends JFrame {
 		} else {
 			if (primeraEjecucion) {
 				mostrarCuentaAtras(() -> {
-					cronometro.iniciar();
+					cronometroWorkout.iniciar();
+					cronometroEjercicio.iniciar();
 					iniciarSerieActual();
 					btnCronometro.setText(Constants.PAUSAR_BOTON);
 					btnCronometro.setBackground(new Color(139, 0, 0));
@@ -341,6 +352,9 @@ public class EjercicioView extends JFrame {
 
 	private void iniciarDescansoActual() {
 		try {
+			enDescanso = true;
+			lblCronometroTotalEjercicio.setForeground(Color.GRAY);
+			
 			String tiempoDescansoStr = obtenerDatoPrimeraSerieNoCompletada("tiempo descanso");
 			int tiempoDescanso = Integer.parseInt(tiempoDescansoStr);
 
@@ -369,6 +383,9 @@ public class EjercicioView extends JFrame {
 	}
 
 	private void manejarFinalizacionDescanso() {
+		enDescanso = false;
+		lblCronometroTotalEjercicio.setForeground(Color.BLACK);
+		
 		Serie serieActual = obtenerPrimeraSerieNoCompletada();
 		if (serieActual != null) {
 			serieActual.setCompletado(true);
@@ -396,15 +413,18 @@ public class EjercicioView extends JFrame {
 	}
 
 	private void pausarTodosLosTemporizadores() {
-		if (cronometro != null) {
-			cronometro.detener();
-		}
-		if (temporizadorSerie != null) {
-			temporizadorSerie.detener();
-		}
-		if (descansoSerie != null) {
-			descansoSerie.detener();
-		}
+		if (cronometroWorkout != null) {
+	        cronometroWorkout.detener();
+	    }
+	    if (cronometroEjercicio != null) {
+	        cronometroEjercicio.detener();
+	    }
+	    if (temporizadorSerie != null) {
+	        temporizadorSerie.detener();
+	    }
+	    if (descansoSerie != null) {
+	        descansoSerie.detener();
+	    }
 	}
 
 	private void finalizarEjercicio() {
@@ -414,6 +434,8 @@ public class EjercicioView extends JFrame {
 		if (ejercicioSeleccionado != null) {
 			ejercicioSeleccionado.setCompletado(true);
 		}
+		if (cronometroWorkout != null) cronometroWorkout.detener();
+		if (cronometroEjercicio != null) cronometroEjercicio.detener();
 
 		btnCronometro.setText("¡COMPLETADO!");
 		btnCronometro.setBackground(new Color(34, 139, 34));
