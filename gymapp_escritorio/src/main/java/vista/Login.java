@@ -7,9 +7,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
+import modelo.entity.Historico;
 import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FileException;
@@ -168,6 +171,18 @@ public class Login extends JFrame {
 						clientes = firebaseController.getClientes();
 						workouts = firebaseController.workout();
 
+						for (Cliente cliente : clientes) {
+							List<Historico> historicos = cliente.getHistoricos();
+							try {
+								modelo.ficheros.BackupXML.writeXMLFile(historicos);
+							} catch (FileException e) {
+								e.printStackTrace();
+							} catch (TransformerException e) {
+								e.printStackTrace();
+							} catch (ParserConfigurationException e) {
+								e.printStackTrace();
+							}
+						}
 						if (clientes != null && workouts != null) {
 							try {
 								modelo.ficheros.Backup.writeBinaryFile(clientes, workouts);

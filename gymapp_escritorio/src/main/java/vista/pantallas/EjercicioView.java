@@ -113,8 +113,8 @@ public class EjercicioView extends JFrame {
 		btnSalir.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				WorkoutView panelWorkout = new WorkoutView(idCliente, nivel);
-				panelWorkout.setVisible(true);
+				ResumenView panelResumen = new ResumenView(idCliente, nivel);
+				panelResumen.setVisible(true);
 				dispose();
 			}
 		});
@@ -468,7 +468,7 @@ public class EjercicioView extends JFrame {
 	    JDialog dialog = new JDialog(this, "Preparado...", true);
 	    JLabel label = new JLabel(nombreEjercicio + " empieza en 5", SwingConstants.CENTER);
 	    label.setFont(new Font("Arial", Font.BOLD, 15));
-	    dialog.add(label);
+	    dialog.getContentPane().add(label);
 	    dialog.setSize(250, 150);
 	    dialog.setLocationRelativeTo(this);
 

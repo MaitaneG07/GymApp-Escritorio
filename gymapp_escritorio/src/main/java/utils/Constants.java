@@ -103,6 +103,7 @@ public class Constants {
 	public static final String EMAIL_DUPLICADO = "Email duplicado";
 	
 	// Campos Clientes
+	
 	public static final String NOMBRE = "nombre";
 	public static final String APELLIDO1 = "apellido1";
 	public static final String APELLIDO2 = "apellido2";
@@ -114,6 +115,7 @@ public class Constants {
 	public static final String DESCRIPCION = "descripcion";
 	
 	// Campos Workouts
+	
 	public static final String NIVEL = "nivel";
 	public static final String VIDEO = "video";
 	public static final String TIEMPO_TOTAL = "tiempo_total";
@@ -125,4 +127,8 @@ public class Constants {
 	public static final String TIEMPO_ASIGNADO = "tiempo_asignado";
 	public static final String TIEMPO_DESCANSO = "tiempo_descanso";
 	public static final String COMPLETADO = "completado";
+	
+	
+	
+	
 }
