@@ -67,6 +67,13 @@ public class EjercicioView extends JFrame {
 	private List<Serie> seriesActuales;
 
 	private boolean cuentaAtrasMostrada = false;
+	
+	public void setIdCliente(String idCliente, String nivel) {
+		this.idCliente = idCliente;
+		this.nivel = nivel;
+		System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
+		System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
+	}
 
 	public EjercicioView(String idCliente, String nivel, String idWorkoutSeleccionado) throws FireBaseException {
 
