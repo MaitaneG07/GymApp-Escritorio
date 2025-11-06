@@ -59,7 +59,7 @@ public class EjercicioView extends JFrame {
 	private FirebaseGestor firebaseGestor;
 	private JLabel lblDuracionEjercicio;
 	private boolean enDescanso = false;
-	private long tiempoAcumuladoWorkout = 0;
+	private long tiempoAcumuladoWorkout;
 
 	private final ControladorCronometros controladorMaestro = new ControladorCronometros();
 	private TemporizadorLogica temporizadorSerie;
@@ -194,7 +194,7 @@ public class EjercicioView extends JFrame {
 			}
 		});
 
-		btnCronometro.setBounds(360, 520, 133, 58);
+		btnCronometro.setBounds(299, 520, 241, 58);
 		contentPane.add(btnCronometro);
 
 		lblNombreEjercicio = new JLabel(obtenerDatoEjercicioSeleccionado("nombre"), SwingConstants.CENTER);
