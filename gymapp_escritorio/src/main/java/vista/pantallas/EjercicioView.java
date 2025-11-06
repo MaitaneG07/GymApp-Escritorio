@@ -91,7 +91,6 @@ public class EjercicioView extends JFrame {
 		    System.out.println("Descripción: " + ejercicio.getDescripcion());
 		    System.out.println("Completado: " + ejercicio.isCompletado());
 
-		    // Imprimir las series del ejercicio
 		    if (ejercicio.getSeries() != null) {
 		        for (Serie serie : ejercicio.getSeries()) {
 		            System.out.println("\tSerie ID: " + serie.getId());
@@ -170,13 +169,11 @@ public class EjercicioView extends JFrame {
 		btnCronometro.setFocusPainted(false);
 		btnCronometro.setBackground(new Color(0, 128, 0));
 
-		// Cronómetro total del workout (siempre activo)
 		cronometroWorkout = new CronometroLogica(() -> {
 		    String tiempo = cronometroWorkout.obtenerTiempoFormateado();
 		    lblCronometroWorkout.setText(tiempo);
 		}, controladorMaestro);
 
-		// Cronómetro de ejercicio (solo actualiza si no está en descanso)
 		cronometroEjercicio = new CronometroLogica(() -> {
 		    if (!enDescanso) {
 		        String tiempo = cronometroEjercicio.obtenerTiempoFormateado();
