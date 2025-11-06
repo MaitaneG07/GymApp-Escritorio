@@ -16,6 +16,11 @@ public class CronometroLogica extends Thread {
     }
 
     public void iniciar() {
+    	if (this.isAlive()) {
+            System.out.println("El hilo ya iniciado, no se puede volver a iniciar.");
+            return;
+        }
+
         if (!corriendo) {
             tiempoPausado = 0;
             tiempoInicio = System.currentTimeMillis();
@@ -44,6 +49,14 @@ public class CronometroLogica extends Thread {
     public void detener() {
         this.corriendo = false;
         this.interrupt(); 
+    }
+    
+    public void reiniciar() {
+        detener();
+        this.tiempoInicio = 0;
+        this.tiempoPausado = 0;
+        this.pausado = false;
+        this.corriendo = false;
     }
 
     @Override

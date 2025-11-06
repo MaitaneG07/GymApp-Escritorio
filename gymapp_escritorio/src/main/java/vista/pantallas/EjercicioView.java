@@ -15,6 +15,7 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -84,13 +85,30 @@ public class EjercicioView extends JFrame {
 		this.listaEjercicios = ejercicios;
 		firebaseGestor = new FirebaseGestor();
 
-		ejerciciosWorkoutSeleccionado = firebaseGestor.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
+		for (Ejercicio ejercicio : ejercicios) {
+			System.out.println("Ejercicio ID: " + ejercicio.getId());
+		    System.out.println("Nombre: " + ejercicio.getNombre());
+		    System.out.println("Descripción: " + ejercicio.getDescripcion());
+		    System.out.println("Completado: " + ejercicio.isCompletado());
 
-		for (Ejercicio e : ejerciciosWorkoutSeleccionado) {
-			if (!e.isCompletado()) {
-				ejercicioSeleccionado = e;
-				break;
-			}
+		    // Imprimir las series del ejercicio
+		    if (ejercicio.getSeries() != null) {
+		        for (Serie serie : ejercicio.getSeries()) {
+		            System.out.println("\tSerie ID: " + serie.getId());
+		            System.out.println("\tNombre: " + serie.getNombre());
+		            System.out.println("\tTiempo asignado: " + serie.getTiempoDuracion());
+		            System.out.println("\tTiempo descanso: " + serie.getTiempoDescanso());
+		            System.out.println("\tCompletado: " + serie.isCompletado());
+		        }
+		    }
+		    System.out.println("---------------------------");
+		}
+		
+		for (Ejercicio e : listaEjercicios) {
+		    if (!e.isCompletado()) {
+		        ejercicioSeleccionado = e;
+		        break;
+		    }
 		}
 
 		if (ejercicioSeleccionado != null) {
@@ -313,8 +331,13 @@ public class EjercicioView extends JFrame {
 		} else {
 			if (primeraEjecucion) {
 				mostrarCuentaAtras(() -> {
-					cronometroWorkout.iniciar();
-					cronometroEjercicio.iniciar();
+					if (!cronometroWorkout.estaCorriendo()) {
+					    cronometroWorkout.iniciar();
+					}
+					if (!cronometroEjercicio.estaCorriendo()) {
+					    cronometroEjercicio.iniciar();
+					}
+
 					iniciarSerieActual();
 					btnCronometro.setText(Constants.PAUSAR_BOTON);
 					btnCronometro.setBackground(new Color(139, 0, 0));
@@ -438,18 +461,64 @@ public class EjercicioView extends JFrame {
 
 	private void finalizarEjercicio() {
 		pausarTodosLosTemporizadores();
-		controladorMaestro.reanudarTodos();
+	    controladorMaestro.reanudarTodos();
 
-		if (ejercicioSeleccionado != null) {
-			ejercicioSeleccionado.setCompletado(true);
-		}
-		if (cronometroWorkout != null) cronometroWorkout.detener();
-		if (cronometroEjercicio != null) cronometroEjercicio.detener();
+	    if (ejercicioSeleccionado != null) {
+	        ejercicioSeleccionado.setCompletado(true);
+	    }
 
-		btnCronometro.setText("¡COMPLETADO!");
-		btnCronometro.setBackground(new Color(34, 139, 34));
-		lblCuentaSerie.setText("00:00:00");
-		lblCuentaDescanso.setText("00:00:00");
+	    if (cronometroEjercicio != null) {
+	        cronometroEjercicio.detener();
+	        cronometroEjercicio = null;
+	    }
+	    if (temporizadorSerie != null) {
+	        temporizadorSerie.detener();
+	        temporizadorSerie = null;
+	    }
+	    if (descansoSerie != null) {
+	        descansoSerie.detener();
+	        descansoSerie = null;
+	    }
+
+	    Ejercicio siguiente = obtenerSiguienteEjercicio();
+
+	    if (siguiente != null) {
+	        ejercicioSeleccionado = siguiente;
+	        cargarSeriesLocal(siguiente);
+	        actualizarTablaSeries();
+
+	        lblNombreEjercicio.setText(siguiente.getNombre());
+	        lblDuracionEjercicio.setText(obtenerDatoPrimeraSerieNoCompletada("tiempo asignado"));
+	        lblcantidadDescanso.setText(obtenerDatoPrimeraSerieNoCompletada("tiempo descanso"));
+
+	        cronometroEjercicio = new CronometroLogica(() -> {
+	            if (!enDescanso) {
+	                lblCronometroTotalEjercicio.setText(cronometroEjercicio.obtenerTiempoFormateado());
+	            }
+	        }, controladorMaestro);
+
+	        btnCronometro.setText(Constants.INICIAR_BOTON);
+	        btnCronometro.setBackground(new Color(0, 128, 0));
+
+	        mostrarCuentaAtras(() -> {
+	            if (!cronometroEjercicio.estaCorriendo()) {
+	                cronometroEjercicio.iniciar();
+	            }
+	            iniciarSerieActual();
+	            btnCronometro.setText(Constants.PAUSAR_BOTON);
+	            btnCronometro.setBackground(new Color(139, 0, 0));
+	        });
+
+	    } else {
+	        btnCronometro.setText("WORKOUT COMPLETADO");
+	        btnCronometro.setBackground(new Color(34, 139, 34));
+	        lblCuentaSerie.setText("00:00:00");
+	        lblCuentaDescanso.setText("00:00:00");
+
+	        if (cronometroWorkout != null) {
+	            cronometroWorkout.detener();
+	        }
+	    }
 	}
 
 	private void actualizarUIConSiguienteSerie(Serie siguienteSerie) {
@@ -604,5 +673,22 @@ public class EjercicioView extends JFrame {
 		} catch (NumberFormatException e) {
 			return "00:00:00";
 		}
+	}
+	
+	private Ejercicio obtenerSiguienteEjercicio() {
+	    boolean encontradoActual = false;
+
+	    for (Ejercicio e : listaEjercicios) {
+	        if (e == ejercicioSeleccionado) {
+	            encontradoActual = true;
+	            continue;
+	        }
+
+	        if (encontradoActual && !e.isCompletado()) {
+	            return e;
+	        }
+	    }
+
+	    return null;
 	}
 }
