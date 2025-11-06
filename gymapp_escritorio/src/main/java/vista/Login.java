@@ -10,6 +10,8 @@ import javax.swing.border.EmptyBorder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.xml.sax.SAXException;
+
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
 import modelo.entity.Historico;
@@ -18,6 +20,7 @@ import modelo.entity.Workout;
 import modelo.exceptions.FileException;
 import modelo.exceptions.FireBaseException;
 import modelo.ficheros.Backup;
+import modelo.ficheros.BackupXML;
 import utils.Constants;
 import vista.pantallas.RegistroView;
 import vista.pantallas.WorkoutView;
@@ -32,6 +35,7 @@ import javax.swing.JButton;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,99 +151,144 @@ public class Login extends JFrame {
 			 * Valida que los campos no estén vacíos antes de proceder.
 			 */
 			private void realizarLogin() {
-				String email = textFieldUsuario.getText().trim();
-				String password = new String(passwordField.getPassword());
+			    String email = textFieldUsuario.getText().trim();
+			    String password = new String(passwordField.getPassword());
 
-				System.out.println(email + "\n" + password);
+			    System.out.println(email + "\n" + password);
 
-				if (email.isEmpty() || password.isEmpty()) {
-					JOptionPane.showMessageDialog(Login.this, Constants.SIN_USUARIO_CONTRASEÑA, Constants.CAMPOS_VACIOS,
-							JOptionPane.WARNING_MESSAGE);
-					return;
-				}
+			    if (email.isEmpty() || password.isEmpty()) {
+			        JOptionPane.showMessageDialog(Login.this,
+			                Constants.SIN_USUARIO_CONTRASEÑA,
+			                Constants.CAMPOS_VACIOS,
+			                JOptionPane.WARNING_MESSAGE);
+			        return;
+			    }
 
-				boolean online = utils.Network.isInternetAvailable();
-				Cliente clienteAutenticado = null;
-				List<Cliente> clientes = null;
-				List<Workout> workouts = null;
-				@SuppressWarnings("unused")
-				List<Serie> series = null;
+			    boolean online = utils.Network.isInternetAvailable();
+			    Cliente clienteAutenticado = null;
+			    List<Cliente> clientes = null;
+			    List<Workout> workouts = null;
+			    @SuppressWarnings("unused")
+			    List<Serie> series = null;
 
-				try {
-					if (online) {
+			    try {
+			        if (online) {
+			            // 🔹 ONLINE MODE
+			            clientes = firebaseController.getClientes();
+			            workouts = firebaseController.workout();
 
-						clientes = firebaseController.getClientes();
-						workouts = firebaseController.workout();
-
-						// ✅ Generar un único XML con todos los clientes e históricos
+			            //Guardar clientes + históricos en XML
 			            if (clientes != null && !clientes.isEmpty()) {
 			                try {
-								modelo.ficheros.BackupXML.writeXMLFile(clientes);
-							} catch (FileException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (TransformerException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (ParserConfigurationException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-			                System.out.println("✅ Backup XML generado correctamente");
+			                    modelo.ficheros.BackupXML.writeXMLFile(clientes);
+			                    System.out.println("✅ Backup XML generado correctamente");
+			                } catch (FileException | TransformerException | ParserConfigurationException e) {
+			                    e.printStackTrace();
+			                }
 			            } else {
 			                System.out.println("⚠️ No hay clientes para generar el XML.");
 			            }
-						if (clientes != null && workouts != null) {
-							try {
-								modelo.ficheros.Backup.writeBinaryFile(clientes, workouts);
-							} catch (FileException e) {
+
+			            //Guardar workouts en binario
+			            if (clientes != null && workouts != null) {
+			                try {
+			                    modelo.ficheros.Backup.writeBinaryFile(clientes, workouts);
+			                } catch (FileException e) {
+			                    e.printStackTrace();
+			                }
+
+			                // Buscar cliente autenticado
+			                clienteAutenticado = buscarCliente(clientes, email, password);
+			            }
+
+			            if (clienteAutenticado == null) {
+			                JOptionPane.showMessageDialog(Login.this,
+			                        Constants.USUARIO_CONTRASEÑA_ERROR,
+			                        Constants.ERROR_LOGIN,
+			                        JOptionPane.ERROR_MESSAGE);
+			                return;
+			            }
+
+			        } else {
+			            // 🔹 OFFLINE MODE
+			            System.out.println("🌐 Sin conexión - modo offline habilitado");
+
+			            List<Cliente> clientesBackup = new ArrayList<>();
+			            List<Workout> workoutsBackup = new ArrayList<>();
+
+			            try {
+			                //Leer clientes + históricos desde XML
+			                try {
+								clientesBackup = modelo.ficheros.BackupXML.readXMLFile(BackupXML.BACKUP_XML);
+							} catch (ParserConfigurationException e) {
+						
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
+							} catch (SAXException e) {
 								e.printStackTrace();
 							}
 
-							clienteAutenticado = buscarCliente(clientes, email, password);
-						}
+			                if (clientesBackup == null || clientesBackup.isEmpty()) {
+			                    System.out.println("⚠️ Backup XML vacío o no encontrado.");
+			                    JOptionPane.showMessageDialog(Login.this,
+			                            "No se encontró el backup XML de clientes/históricos.",
+			                            "Error offline", JOptionPane.WARNING_MESSAGE);
+			                    return;
+			                } else {
+			                    System.out.println("Clientes cargados desde backup XML: " + clientesBackup.size());
+			                }
 
-						if (clienteAutenticado == null) {
-							JOptionPane.showMessageDialog(Login.this, Constants.USUARIO_CONTRASEÑA_ERROR,
-									Constants.ERROR_LOGIN, JOptionPane.ERROR_MESSAGE);
-							return;
-						}
-					} else {
-						List<Cliente> clientesBackup = new ArrayList<>();
-						List<Workout> workoutsBackup = new ArrayList<>();
-						try {
-							
-							modelo.ficheros.Backup.readBinaryFile(clientesBackup, workoutsBackup);
-							clienteAutenticado = buscarCliente(clientesBackup, email, password);
-							if (clienteAutenticado == null) {
-								JOptionPane.showMessageDialog(Login.this,
-										"No se pudo iniciar sesión sin conexión (usuario/contraseña no coinciden).",
-										"Error offline", JOptionPane.WARNING_MESSAGE);
-								return;
-							} else {
-								System.out.println("Login offline con backup local");
-							}
-						} catch (FileException e) {
-							e.printStackTrace();
-							return;
-						}
-					}
+			                //Leer workouts desde fichero binario
+			                try {
+			                    modelo.ficheros.Backup.readBinaryFile(clientesBackup, workoutsBackup);
+			                    System.out.println("Workouts cargados desde backup binario: " + workoutsBackup.size());
+			                } catch (FileException e) {
+			                    System.out.println("No se pudo leer el backup binario de workouts.");
+			                }
 
-					if (clienteAutenticado != null) {
-						System.out.println("Login exitoso: " + clienteAutenticado.getNombre());
-						WorkoutView pantallaWorkout = new WorkoutView(clienteAutenticado.getId(),
-								clienteAutenticado.getNivel());
-						pantallaWorkout.setIdCliente(clienteAutenticado.getId(), clienteAutenticado.getNivel());
-						pantallaWorkout.setVisible(true);
-						dispose();
-					}
+			                //Buscar cliente autenticado
+			                clienteAutenticado = buscarCliente(clientesBackup, email, password);
 
-				} catch (FireBaseException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(Login.this, "Error de conexión con Firebase.", "Error",
-							JOptionPane.ERROR_MESSAGE);
-				}
+			                if (clienteAutenticado == null) {
+			                    JOptionPane.showMessageDialog(Login.this,
+			                            "No se pudo iniciar sesión sin conexión (usuario/contraseña no coinciden).",
+			                            "Error offline", JOptionPane.WARNING_MESSAGE);
+			                    return;
+			                } else {
+			                    System.out.println("Login offline con backup XML + workouts binario");
+			                }
+
+			            } catch (FileException e) {
+			                e.printStackTrace();
+			                return;
+			            }
+			        }
+
+			        //Si el login fue exitoso
+			        if (clienteAutenticado != null) {
+			            System.out.println("Login exitoso: " + clienteAutenticado.getNombre());
+			            WorkoutView pantallaWorkout = new WorkoutView(
+			                    clienteAutenticado.getId(),
+			                    clienteAutenticado.getNivel()
+			            );
+			            pantallaWorkout.setIdCliente(
+			                    clienteAutenticado.getId(),
+			                    clienteAutenticado.getNivel()
+			            );
+			            pantallaWorkout.setVisible(true);
+			            dispose();
+			        }
+
+			    } catch (FireBaseException e1) {
+			        e1.printStackTrace();
+			        JOptionPane.showMessageDialog(Login.this,
+			                "Error de conexión con Firebase.",
+			                "Error",
+			                JOptionPane.ERROR_MESSAGE);
+			    }
 			}
+			
 
 			private Cliente buscarCliente(List<Cliente> clientes, String email, String password) {
 				for (Cliente cliente : clientes) {
