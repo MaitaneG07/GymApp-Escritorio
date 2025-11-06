@@ -71,6 +71,7 @@ public class WorkoutView extends JFrame {
 	private Component lblNivelCliente;
 	private JMenuItem menuTodos;
 	private String idWorkoutSeleccionado = null;
+	private final List<Ejercicio> listaEjerciciosSeleccionados = new ArrayList<>();
 
 	/**
 	 * Establece el ID del cliente y su nivel.
@@ -335,7 +336,7 @@ public class WorkoutView extends JFrame {
 				if (idWorkoutSeleccionado != null && btnSeleccionar.isEnabled()) {
 					EjercicioView pantallaEjercicio = null;
 					try {
-						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado);
+						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado, listaEjerciciosSeleccionados);
 					} catch (FireBaseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -446,6 +447,7 @@ public class WorkoutView extends JFrame {
 	public void actualizarTablaDetallesWorkout(DefaultTableModel modeloDetallesWorkouts, String idWorkout) {
 		modeloDetallesWorkouts.setRowCount(0);
 
+		listaEjerciciosSeleccionados.clear();
 		List<Ejercicio> listaEjercicios = new ArrayList<>();
 
 		Workout workoutSeleccionado = null;
@@ -461,6 +463,8 @@ public class WorkoutView extends JFrame {
 		for (Ejercicio ejercicio : listaEjercicios) {
 			modeloDetallesWorkouts.addRow(new Object[] { ejercicio.getId(), ejercicio.getNombre(),
 					ejercicio.getDescripcion(), ejercicio.getSeries().size() });
+			
+			listaEjerciciosSeleccionados.add(ejercicio);
 		}
 	}
 }

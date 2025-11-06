@@ -65,6 +65,7 @@ public class EjercicioView extends JFrame {
 	private List<Ejercicio> ejerciciosWorkoutSeleccionado;
 	private Ejercicio ejercicioSeleccionado;
 	private List<Serie> seriesActuales;
+	private List<Ejercicio> listaEjercicios;
 
 	private boolean cuentaAtrasMostrada = false;
 	
@@ -75,11 +76,12 @@ public class EjercicioView extends JFrame {
 		System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
 	}
 
-	public EjercicioView(String idCliente, String nivel, String idWorkoutSeleccionado) throws FireBaseException {
+	public EjercicioView(String idCliente, String nivel, String idWorkoutSeleccionado, List<Ejercicio> ejercicios) throws FireBaseException {
 
 		this.idCliente = idCliente;
 		this.nivel = nivel;
 		this.idWorkoutSeleccionado = idWorkoutSeleccionado;
+		this.listaEjercicios = ejercicios;
 		firebaseGestor = new FirebaseGestor();
 
 		ejerciciosWorkoutSeleccionado = firebaseGestor.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
