@@ -171,18 +171,24 @@ public class Login extends JFrame {
 						clientes = firebaseController.getClientes();
 						workouts = firebaseController.workout();
 
-						for (Cliente cliente : clientes) {
-							List<Historico> historicos = cliente.getHistoricos();
-							try {
-								modelo.ficheros.BackupXML.writeXMLFile(historicos);
+						// ✅ Generar un único XML con todos los clientes e históricos
+			            if (clientes != null && !clientes.isEmpty()) {
+			                try {
+								modelo.ficheros.BackupXML.writeXMLFile(clientes);
 							} catch (FileException e) {
+								// TODO Auto-generated catch block
 								e.printStackTrace();
 							} catch (TransformerException e) {
+								// TODO Auto-generated catch block
 								e.printStackTrace();
 							} catch (ParserConfigurationException e) {
+								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-						}
+			                System.out.println("✅ Backup XML generado correctamente");
+			            } else {
+			                System.out.println("⚠️ No hay clientes para generar el XML.");
+			            }
 						if (clientes != null && workouts != null) {
 							try {
 								modelo.ficheros.Backup.writeBinaryFile(clientes, workouts);
@@ -202,6 +208,7 @@ public class Login extends JFrame {
 						List<Cliente> clientesBackup = new ArrayList<>();
 						List<Workout> workoutsBackup = new ArrayList<>();
 						try {
+							
 							modelo.ficheros.Backup.readBinaryFile(clientesBackup, workoutsBackup);
 							clienteAutenticado = buscarCliente(clientesBackup, email, password);
 							if (clienteAutenticado == null) {
