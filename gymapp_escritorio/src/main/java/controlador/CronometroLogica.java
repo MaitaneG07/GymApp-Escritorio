@@ -99,5 +99,19 @@ public class CronometroLogica extends Thread {
     public boolean estaCorriendo() {
         return corriendo && !pausado;
     }
+    
+    public void iniciarDesde(long milisegundosIniciales) {
+        if (this.isAlive()) {
+            System.out.println("El hilo ya ha sido iniciado, no se puede volver a iniciar.");
+            return;
+        }
+
+        if (!corriendo) {
+            tiempoPausado = milisegundosIniciales;
+            tiempoInicio = System.currentTimeMillis() - milisegundosIniciales;
+            corriendo = true;
+            this.start();
+        }
+    }
 
 }

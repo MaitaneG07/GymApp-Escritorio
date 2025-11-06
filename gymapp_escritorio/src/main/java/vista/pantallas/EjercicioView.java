@@ -45,6 +45,7 @@ public class EjercicioView extends JFrame {
 	private JLabel lblCuentaSerie;
 	private JLabel lblcantidadDescanso;
 	private JLabel lblCuentaDescanso;
+	private JTextArea textADescripcion;
 	private DefaultTableModel tablaDetallesSeries;
 	private JTable tableSeries;
 	private JScrollPane scrollPane;
@@ -58,6 +59,7 @@ public class EjercicioView extends JFrame {
 	private FirebaseGestor firebaseGestor;
 	private JLabel lblDuracionEjercicio;
 	private boolean enDescanso = false;
+	private long tiempoAcumuladoWorkout = 0;
 
 	private final ControladorCronometros controladorMaestro = new ControladorCronometros();
 	private TemporizadorLogica temporizadorSerie;
@@ -289,7 +291,7 @@ public class EjercicioView extends JFrame {
 		contentPane.add(lblCuentaDescanso);
 		lblCuentaDescanso.setVisible(false);
 
-		JTextArea textADescripcion = new JTextArea();
+		textADescripcion = new JTextArea();
 		textADescripcion.setFont(new Font("Tahoma", Font.BOLD, 16));
 		textADescripcion.setText(obtenerDatoEjercicioSeleccionado("Descripcion"));
 		textADescripcion.setBounds(0, 7, 347, 159);
@@ -328,10 +330,21 @@ public class EjercicioView extends JFrame {
 		} else {
 			if (primeraEjecucion) {
 				mostrarCuentaAtras(() -> {
-					if (!cronometroWorkout.estaCorriendo()) {
+					if (cronometroWorkout == null || !cronometroWorkout.isAlive()) {
+					    cronometroWorkout = new CronometroLogica(() -> {
+					        String tiempo = cronometroWorkout.obtenerTiempoFormateado();
+					        lblCronometroWorkout.setText(tiempo);
+					    }, controladorMaestro);
 					    cronometroWorkout.iniciar();
 					}
-					if (!cronometroEjercicio.estaCorriendo()) {
+
+					if (cronometroEjercicio == null || !cronometroEjercicio.isAlive()) {
+					    cronometroEjercicio = new CronometroLogica(() -> {
+					        if (!enDescanso) {
+					            String tiempo = cronometroEjercicio.obtenerTiempoFormateado();
+					            lblCronometroTotalEjercicio.setText(tiempo);
+					        }
+					    }, controladorMaestro);
 					    cronometroEjercicio.iniciar();
 					}
 
@@ -487,6 +500,8 @@ public class EjercicioView extends JFrame {
 	        lblNombreEjercicio.setText(siguiente.getNombre());
 	        lblDuracionEjercicio.setText(obtenerDatoPrimeraSerieNoCompletada("tiempo asignado"));
 	        lblcantidadDescanso.setText(obtenerDatoPrimeraSerieNoCompletada("tiempo descanso"));
+	        
+	        textADescripcion.setText(ejercicioSeleccionado.getDescripcion());
 
 	        cronometroEjercicio = new CronometroLogica(() -> {
 	            if (!enDescanso) {
@@ -496,15 +511,6 @@ public class EjercicioView extends JFrame {
 
 	        btnCronometro.setText(Constants.INICIAR_BOTON);
 	        btnCronometro.setBackground(new Color(0, 128, 0));
-
-	        mostrarCuentaAtras(() -> {
-	            if (!cronometroEjercicio.estaCorriendo()) {
-	                cronometroEjercicio.iniciar();
-	            }
-	            iniciarSerieActual();
-	            btnCronometro.setText(Constants.PAUSAR_BOTON);
-	            btnCronometro.setBackground(new Color(139, 0, 0));
-	        });
 
 	    } else {
 	        btnCronometro.setText("WORKOUT COMPLETADO");
