@@ -665,4 +665,83 @@ public class FirebaseGestor implements FirebaseInterface {
 			throw new FireBaseException("Error al guardar el histórico del workout: " + e.getMessage());
 		}
 	}
+	
+	/**
+	 * Busca un histórico existente del mismo día para un cliente y workout específico.
+	 * 
+	 * @param idCliente ID del cliente
+	 * @param idWorkout ID del workout (para identificar el workout en el futuro)
+	 * @param fechaHoy Fecha actual en formato String
+	 * @return Historico encontrado o null si no existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	@Override
+	public Historico buscarHistoricoDelDia(String idCliente, String nombreWorkout, String fechaHoy) throws FireBaseException {
+	    try {
+	        Firestore dataBase = FirestoreClient.getFirestore();
+
+	        ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM)
+	            .document(DOCUMENTO_GYM)
+	            .collection(COLLECTION_CLIENTE)
+	            .document(idCliente)
+	            .collection(COLLECTION_HISTORICO)
+	            .whereEqualTo(Constants.NOMBRE, nombreWorkout)
+	            .whereEqualTo(Constants.FECHA_INICIO, fechaHoy)
+	            .get();
+
+	        QuerySnapshot querySnapshot = query.get();
+	        
+	        if (!querySnapshot.isEmpty()) {
+	            QueryDocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+	            return new Historico(
+	                doc.getId(),
+	                doc.getString(Constants.NOMBRE),
+	                doc.getString(Constants.NIVEL),
+	                doc.getString(Constants.TIEMPO_TOTAL),
+	                doc.getString(Constants.TIEMPO_PREVISTO),
+	                doc.getString(Constants.FECHA_INICIO),
+	                doc.getString(Constants.PORCENTAJE)
+	            );
+	        }
+	        
+	        return null;
+	        
+	    } catch (Exception e) {
+	        throw new FireBaseException("Error al buscar histórico: " + e.getMessage());
+	    }
+	}
+
+	/**
+	 * Actualiza un histórico existente con nuevo tiempo y porcentaje
+	 * 
+	 * @param idCliente ID del cliente
+	 * @param idHistorico ID del documento histórico a actualizar
+	 * @param tiempoTotal Nuevo tiempo total
+	 * @param porcentaje Nuevo porcentaje de completado
+	 * @throws FireBaseException si hay error en la actualización
+	 */
+	@Override
+	public void actualizarHistorico(String idCliente, String idHistorico, String tiempoTotal, String porcentaje) throws FireBaseException {
+	    try {
+	        Firestore dataBase = FirestoreClient.getFirestore();
+	        
+	        Map<String, Object> updates = new HashMap<>();
+	        updates.put(Constants.TIEMPO_TOTAL, tiempoTotal);
+	        updates.put(Constants.PORCENTAJE, porcentaje);
+	        
+	        dataBase.collection(COLLECTION_GYM)
+	            .document(DOCUMENTO_GYM)
+	            .collection(COLLECTION_CLIENTE)
+	            .document(idCliente)
+	            .collection(COLLECTION_HISTORICO)
+	            .document(idHistorico)
+	            .update(updates)
+	            .get();
+	            
+	        System.out.println("Histórico actualizado: " + porcentaje + "% completado");
+	        
+	    } catch (Exception e) {
+	        throw new FireBaseException("Error al actualizar histórico: " + e.getMessage());
+	    }
+	}
 }

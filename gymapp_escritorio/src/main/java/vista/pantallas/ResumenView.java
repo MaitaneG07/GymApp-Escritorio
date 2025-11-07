@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,7 +19,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-import modelo.exceptions.FireBaseException;
+import modelo.entity.Ejercicio;
 import utils.Constants;
 
 public class ResumenView extends JFrame {
@@ -45,6 +47,8 @@ public class ResumenView extends JFrame {
 	private String idWorkoutSeleccionado;
 	@SuppressWarnings("unused")
 	private String nombreWorkoutSeleccionado;
+	@SuppressWarnings("unused")
+	private List<Ejercicio> ejercicios = new ArrayList<>();
 	
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
@@ -59,7 +63,7 @@ public class ResumenView extends JFrame {
 	 * @param tiempo_total 
 	 * @param nombre 
 	 */
-	public ResumenView(String idCliente, String nivel, String nombre, String tiempo_total, String porcentaje, String idWorkoutSeleccionado, String nombreWorkoutSeleccionado) {
+	public ResumenView(String idCliente, String nivel, String nombre, String tiempo_total, String porcentaje, String idWorkoutSeleccionado, String nombreWorkoutSeleccionado, List<Ejercicio> ejercicios) {
 		
 		this.idCliente = idCliente;
 		this.nivel = nivel;
@@ -68,6 +72,7 @@ public class ResumenView extends JFrame {
 		this.porcentaje = porcentaje;
 		this.idWorkoutSeleccionado = idWorkoutSeleccionado;
 		this.nombreWorkoutSeleccionado = nombreWorkoutSeleccionado;
+		this.ejercicios = ejercicios;
 		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -111,19 +116,15 @@ public class ResumenView extends JFrame {
 		scrollPaneResumen.setViewportView(tablaResumen);
 		
 		btnConfirmar = new JButton(Constants.CONFIRMAR_BOTON);
-//		btnConfirmar.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				EjercicioView pantallaEjercicio = null;
-//				try {
-//					pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado, nombreWorkoutSeleccionado);
-//				} catch (FireBaseException e1) {
-//					e1.printStackTrace();
-//				}
-//				pantallaEjercicio.setVisible(true);
-//				dispose();
-//			}
-//		});
+		btnConfirmar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				WorkoutView pantallaWorkout = null;
+				pantallaWorkout = new WorkoutView(idCliente, nivel);
+				pantallaWorkout.setVisible(true);
+				dispose();
+			}
+		});
 		btnConfirmar.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnConfirmar.setBounds(354, 554, 155, 40);
 		btnConfirmar.setFocusPainted(false);

@@ -78,6 +78,7 @@ public class WorkoutView extends JFrame {
 	private boolean online = utils.Network.isInternetAvailable();
 	private List<Cliente> clientesBackup = new ArrayList<>();
 	private List<Workout> workoutsBackup = new ArrayList<>();
+	private final List<Ejercicio> listaEjerciciosSeleccionados = new ArrayList<>();
 
 	/**
 	 * Establece el ID del cliente y su nivel.
@@ -346,7 +347,7 @@ public class WorkoutView extends JFrame {
 				if (idWorkoutSeleccionado != null && btnSeleccionar.isEnabled()) {
 					EjercicioView pantallaEjercicio = null;
 					try {
-						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado, nombreWorkoutSeleccionado);
+						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado, nombreWorkoutSeleccionado, listaEjerciciosSeleccionados);
 					} catch (FireBaseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -488,6 +489,8 @@ public class WorkoutView extends JFrame {
 	 */
 	public void actualizarTablaDetallesWorkout(DefaultTableModel modeloDetallesWorkouts, String idWorkout) {
 		modeloDetallesWorkouts.setRowCount(0);
+		
+		listaEjerciciosSeleccionados.clear();
 		List<Ejercicio> listaEjercicios = new ArrayList<>();
 		Workout workoutSeleccionado = null;
 
@@ -502,6 +505,8 @@ public class WorkoutView extends JFrame {
 				for (Ejercicio ejercicio : listaEjercicios) {
 					modeloDetallesWorkouts.addRow(new Object[] { ejercicio.getId(), ejercicio.getNombre(),
 							ejercicio.getDescripcion(), ejercicio.getSeries().size() });
+					
+					listaEjerciciosSeleccionados.add(ejercicio);
 				}
 			} else {
 				try {
@@ -516,6 +521,8 @@ public class WorkoutView extends JFrame {
 					for (Ejercicio ejercicio : listaEjercicios) {
 						modeloDetallesWorkouts.addRow(new Object[] { ejercicio.getId(), ejercicio.getNombre(),
 								ejercicio.getDescripcion(), ejercicio.getSeries().size() });
+						
+						listaEjerciciosSeleccionados.add(ejercicio);
 					}
 				} catch (FileException e) {
 					e.printStackTrace();

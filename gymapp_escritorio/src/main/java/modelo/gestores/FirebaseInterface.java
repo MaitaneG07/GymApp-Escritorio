@@ -146,5 +146,30 @@ public interface FirebaseInterface {
 			String tiempo_total, String fecha_inicio, String porcentaje) throws FireBaseException;
 
 
+	/**
+	 * Busca un histórico existente del mismo día para un cliente y workout específico.
+	 * 
+	 * @param idCliente ID del cliente
+	 * @param idWorkout ID del workout (para identificar el workout en el futuro)
+	 * @param fechaHoy Fecha actual en formato String
+	 * @return Historico encontrado o null si no existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	Historico buscarHistoricoDelDia(String idCliente, String nombreWorkout, String fechaHoy) throws FireBaseException;
+
+
+	/**
+	 * Actualiza un histórico existente con nuevo tiempo y porcentaje
+	 * 
+	 * @param idCliente ID del cliente
+	 * @param idHistorico ID del documento histórico a actualizar
+	 * @param tiempoTotal Nuevo tiempo total
+	 * @param porcentaje Nuevo porcentaje de completado
+	 * @throws FireBaseException si hay error en la actualización
+	 */
+	void actualizarHistorico(String idCliente, String idHistorico, String tiempoTotal, String porcentaje)
+			throws FireBaseException;
+
+
 
 }
