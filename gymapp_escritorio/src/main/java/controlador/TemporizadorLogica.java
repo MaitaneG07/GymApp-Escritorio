@@ -1,96 +1,99 @@
 package controlador;
 
-import javax.swing.Timer;
+public class TemporizadorLogica extends Thread {
 
-public class TemporizadorLogica {
-	private Timer timer;
-	private long tiempoRestante;
-	private boolean corriendo = false;
-	private final Runnable actualizar;
-	private final Runnable alFinalizar;
+    private long tiempoRestante;
+    private volatile boolean corriendo = false;
+    private volatile boolean pausado = false;
+    private final Runnable actualizar;
+    private final Runnable alFinalizar;
+    private final ControladorCronometros controladorGlobal;
 
-	/**
-	 * @param actualizador función que se ejecuta en cada actualización (ej:
-	 *                     refrescar la UI)
-	 * @param alFinalizar  función que se ejecuta cuando el temporizador llega a 0
-	 *                     (puede ser null)
-	 */
-	public TemporizadorLogica(Runnable actualizador, Runnable alFinalizar) {
-		this.actualizar = actualizador;
-		this.alFinalizar = alFinalizar;
-	}
+    public TemporizadorLogica(Runnable actualizador, Runnable alFinalizar, ControladorCronometros controladorGlobal) {
+        this.actualizar = actualizador;
+        this.alFinalizar = alFinalizar;
+        this.controladorGlobal = controladorGlobal;
+        setDaemon(true); 
+    }
 
-	/**
-	 * Inicia el temporizador con el tiempo indicado en segundos.
-	 * 
-	 * @param segundos tiempo inicial del temporizador
-	 */
-	public void iniciar(int segundos) {
-		if (corriendo)
-			return;
+    /**
+     * Inicia el temporizador con una duración en segundos.
+     */
+    public void iniciar(int duracionSegundos) {
+        if (!corriendo) {
+            this.tiempoRestante = (long) duracionSegundos * 1000;
+            this.corriendo = true;
+            this.start();
+        }
+    }
 
-		tiempoRestante = segundos * 1000L; // convertir a milisegundos
-		corriendo = true;
+    public void pausarReanudar() {
+        if (corriendo) {
+            pausado = !pausado;
+        }
+    }
+    
+    /**
+     * Detiene permanentemente el temporizador.
+     */
+    public void detener() {
+        this.corriendo = false;
+        this.interrupt(); 
+    }
 
-		// Timer que actualiza cada 100 ms
-		timer = new Timer(100, e -> {
-			tiempoRestante -= 100;
+    @Override
+    public void run() {
+        long ultimaActualizacion = System.currentTimeMillis();
 
-			if (tiempoRestante <= 0) {
-				tiempoRestante = 0;
-				detener();
-				if (alFinalizar != null)
-					alFinalizar.run();
-			}
+        while (corriendo && tiempoRestante > 0) {
+            if (controladorGlobal != null) {
+                controladorGlobal.esperarSiPausado();
+            }
 
-			actualizar.run();
-		});
+            if (!pausado) {
+                long ahora = System.currentTimeMillis();
+                long delta = ahora - ultimaActualizacion;
+                ultimaActualizacion = ahora;
 
-		timer.start();
-	}
+                tiempoRestante -= delta;
+                if (tiempoRestante < 0) tiempoRestante = 0;
 
-	/**
-	 * Pausa o reanuda el temporizador.
-	 */
-	public void pausarReanudar() {
-		if (corriendo) {
-			timer.stop();
-			corriendo = false;
-		} else {
-			timer.start();
-			corriendo = true;
-		}
-	}
+                if (actualizar != null) actualizar.run();
+            } else {
+                ultimaActualizacion = System.currentTimeMillis(); 
+            }
 
-	/**
-	 * Detiene completamente el temporizador.
-	 */
-	public void detener() {
-		if (timer != null)
-			timer.stop();
-		corriendo = false;
-	}
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
 
-	/**
-	 * Reinicia el temporizador con un nuevo tiempo.
-	 */
-	public void reiniciar(int segundos) {
-		detener();
-		iniciar(segundos);
-	}
+        corriendo = false;
+        if (alFinalizar != null && tiempoRestante <= 0) {
+            alFinalizar.run();
+        }
+    }
 
-	/**
-	 * Devuelve el tiempo restante en formato MM:SS:CC.
-	 */
-	public String obtenerTiempoFormateado() {
-		long minutos = (tiempoRestante / 1000) / 60;
-		long segundos = (tiempoRestante / 1000) % 60;
-		long centesimas = (tiempoRestante % 1000) / 10;
+    public String obtenerTiempoFormateado() {
+        long totalSegundos = tiempoRestante / 1000;
+        long minutos = totalSegundos / 60;
+        long segundos = totalSegundos % 60;
+        long centesimas = (tiempoRestante % 1000) / 10;
 
-		return String.format("%02d:%02d:%02d", minutos, segundos, centesimas);
-	}
+        return String.format("%02d:%02d:%02d", minutos, segundos, centesimas);
+    }
 
-	public boolean estaCorriendo() {
-		return corriendo;
-	}
+    public boolean estaCorriendo() {
+        return this.isAlive() && corriendo && !pausado;
+    }
+    
+    public String getTiempoRestanteFormateadoSinCentesimas() {
+        long totalSegundos = (tiempoRestante / 1000) + (tiempoRestante % 1000 > 0 ? 1 : 0);
+        long minutos = totalSegundos / 60;
+        long segundos = totalSegundos % 60;
+        return String.format("%02d:%02d", minutos, segundos);
+    }
 }

@@ -340,22 +340,22 @@ public class WorkoutView extends JFrame {
 
 		btnSeleccionar = new JButton(Constants.SELECCIONAR_BOTON);
 		btnSeleccionar.setEnabled(false);
-//		btnSeleccionar.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				if (idWorkoutSeleccionado != null && btnSeleccionar.isEnabled()) {
-//					EjercicioView pantallaEjercicio = null;
-//					try {
-//						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado, nombreWorkoutSeleccionado);
-//					} catch (FireBaseException e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
-//					pantallaEjercicio.setVisible(true);
-//					dispose();
-//				}
-//			}
-//		});
+		btnSeleccionar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (idWorkoutSeleccionado != null && btnSeleccionar.isEnabled()) {
+					EjercicioView pantallaEjercicio = null;
+					try {
+						pantallaEjercicio = new EjercicioView(idCliente, nivel, idWorkoutSeleccionado, nombreWorkoutSeleccionado);
+					} catch (FireBaseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					pantallaEjercicio.setVisible(true);
+					dispose();
+				}
+			}
+		});
 		btnSeleccionar.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
 		btnSeleccionar.setBounds(360, 554, 155, 40);
 		btnSeleccionar.setFocusPainted(false);
