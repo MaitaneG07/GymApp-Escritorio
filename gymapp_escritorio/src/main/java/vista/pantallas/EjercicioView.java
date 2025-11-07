@@ -1,58 +1,92 @@
 package vista.pantallas;
 
 import javax.swing.JFrame;
+
 import javax.swing.JPanel;
+
 import javax.swing.border.EmptyBorder;
+
 import javax.swing.table.DefaultTableModel;
 
 import utils.Constants;
 import javax.swing.JLabel;
+
 import javax.swing.ImageIcon;
+
 import javax.swing.JButton;
+
 import javax.swing.JDialog;
 import java.awt.Font;
+
 import java.awt.Image;
+
 import java.awt.event.MouseAdapter;
+
 import java.awt.event.MouseEvent;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import java.awt.event.ActionListener;
+
 import java.awt.event.ActionEvent;
+
 import java.awt.Color;
+
 import javax.swing.JScrollPane;
+
 import javax.swing.JTable;
+
 import javax.swing.SwingConstants;
+
 import javax.swing.SwingUtilities;
 
 import controlador.ControladorCronometros;
 import controlador.CronometroLogica;
 import controlador.TemporizadorLogica;
+
 import modelo.entity.Ejercicio;
 import modelo.entity.Historico;
 import modelo.entity.Serie;
+
 import modelo.exceptions.FireBaseException;
+
 import modelo.gestores.FirebaseGestor;
+
 import javax.swing.JTextArea;
 
 public class EjercicioView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+
 	private JPanel contentPane;
+
 	private JButton btnCronometro;
+
 	private JLabel lblCronometroWorkout;
+
 	private JLabel lblNombreEjercicio;
+
 	private JLabel lblCronometroTotalEjercicio;
 	private JLabel lblCuentaSerie;
+
 	private JLabel lblcantidadDescanso;
+
 	private JLabel lblCuentaDescanso;
 	private JTextArea textADescripcion;
 	private DefaultTableModel tablaDetallesSeries;
+
 	private JTable tableSeries;
+
 	private JScrollPane scrollPane;
+
 	private JLabel lblFotoEjercicio;
+
 	private JButton btnPerfil;
 	private String idCliente;
 	private String nivel;
+
+	@SuppressWarnings("unused")
 	private String idWorkoutSeleccionado;
 	private CronometroLogica cronometroWorkout;
 	private CronometroLogica cronometroEjercicio;
@@ -83,6 +117,7 @@ public class EjercicioView extends JFrame {
 		this.nivel = nivel;
 		System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
 		System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
+
 	}
 
 	public EjercicioView(String idCliente, String nivel, String idWorkoutSeleccionado, String nombreWorkoutSeleccionado,
@@ -112,6 +147,7 @@ public class EjercicioView extends JFrame {
 			}
 			System.out.println("---------------------------");
 		}
+		ejerciciosWorkoutSeleccionado = firebaseGestor.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
 
 		for (Ejercicio e : listaEjercicios) {
 			if (!e.isCompletado()) {
@@ -127,14 +163,14 @@ public class EjercicioView extends JFrame {
 			ejercicioSeleccionado = new Ejercicio();
 			ejercicioSeleccionado.setNombre("Fin de Workout");
 		}
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
+		
 		btnPerfil = new JButton();
 		ImageIcon iconoOriginal = new ImageIcon((Constants.LOGO_OSCURO_CASA_AKIRA_PC));
 		Image imgEscalada = iconoOriginal.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
@@ -149,7 +185,7 @@ public class EjercicioView extends JFrame {
 		lblCronometroWorkout.setFont(new Font("Tahoma", Font.BOLD, 48));
 		lblCronometroWorkout.setBounds(580, 11, 265, 74);
 		contentPane.add(lblCronometroWorkout);
-
+		
 		JButton btnSalir = new JButton(Constants.SALIR_BOTON);
 		btnSalir.addMouseListener(new MouseAdapter() {
 			@Override
@@ -158,6 +194,7 @@ public class EjercicioView extends JFrame {
 				panelWorkout.setVisible(true);
 				dispose();
 			}
+
 		});
 		btnSalir.setBackground(new Color(255, 255, 255));
 		btnSalir.addMouseListener(new MouseAdapter() {
@@ -229,7 +266,6 @@ public class EjercicioView extends JFrame {
 		tablaDetallesSeries.addColumn(Constants.COLUMNA_SERIES);
 		tablaDetallesSeries.addColumn(Constants.COLUMNA_TIEMPO);
 		tablaDetallesSeries.addColumn(Constants.COLUMNA_DESCANSO);
-
 		tableSeries = new JTable(tablaDetallesSeries);
 		scrollPane.setViewportView(tableSeries);
 
@@ -242,7 +278,7 @@ public class EjercicioView extends JFrame {
 			@Override
 			public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value,
 					boolean isSelected, boolean hasFocus, int row, int column) {
-
+				
 				java.awt.Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
 						column);
 
@@ -271,10 +307,12 @@ public class EjercicioView extends JFrame {
 				} catch (Exception e) {
 					cell.setBackground(Color.WHITE);
 					cell.setForeground(Color.BLACK);
-				}
 
+				}
 				return cell;
+
 			}
+
 		});
 
 		JLabel lblEjercicio = new JLabel("Duración serie:");
@@ -320,6 +358,10 @@ public class EjercicioView extends JFrame {
 		lblDuracionEjercicio.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblDuracionEjercicio.setBounds(158, 263, 46, 26);
 		contentPane.add(lblDuracionEjercicio);
+		
+		JLabel lblTiempoTotalEjercicioTitulo = new JLabel("Tiempo total ejercicio:");
+		lblTiempoTotalEjercicioTitulo.setBounds(44, 168, 143, 14);
+		contentPane.add(lblTiempoTotalEjercicioTitulo);
 
 		JLabel lblTiempoTotalEjercicioTitulo = new JLabel("Tiempo total ejercicio:");
 		lblTiempoTotalEjercicioTitulo.setBounds(44, 168, 143, 14);
@@ -610,6 +652,7 @@ public class EjercicioView extends JFrame {
 		}).start();
 
 		dialog.setVisible(true);
+
 	}
 
 	private Serie obtenerPrimeraSerieNoCompletada() {

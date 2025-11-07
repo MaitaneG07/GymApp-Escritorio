@@ -73,7 +73,9 @@ public class WorkoutView extends JFrame {
 	private String nivel;
 	private Component lblNivelCliente;
 	private JMenuItem menuTodos;
+	@SuppressWarnings("unused")
 	private String idWorkoutSeleccionado = null;
+	@SuppressWarnings("unused")
 	private String nombreWorkoutSeleccionado = null;
 	private boolean online = utils.Network.isInternetAvailable();
 	private List<Cliente> clientesBackup = new ArrayList<>();
