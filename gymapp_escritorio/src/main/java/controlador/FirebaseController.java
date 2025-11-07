@@ -3,11 +3,10 @@ package controlador;
 import java.util.List;
 
 import modelo.entity.Cliente;
-import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 import modelo.gestores.FirebaseGestor;
+import modelo.entity.Historico;
 
 /**
  * Controlador de operaciones con Firebase.
@@ -131,6 +130,78 @@ public class FirebaseController {
 	 */
 	public List<Cliente> getClientes() throws FireBaseException {
 		return firebaseGestor.getClientes();
+	}
+	
+	/**
+	 * Busca y obtiene un cliente por su nombre con sus históricos.
+	 * 
+	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer cliente que
+	 * coincida con el nombre especificado, incluyendo su lista completa de
+	 * históricos.
+	 * 
+	 * @param nombre Nombre del cliente a buscar
+	 * @return Cliente encontrado con todos sus datos e históricos, o null si no
+	 *         existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	public Cliente getCliente(String nombre) throws FireBaseException {
+		return firebaseGestor.getCliente(nombre);
+	}
+	
+	/**
+	 * Busca y obtiene un cliente por su ID con sus históricos.
+	 * 
+	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer cliente que
+	 * coincida con el nombre especificado, incluyendo su lista completa de
+	 * históricos.
+	 * 
+	 * @param idCliente ID del cliente a buscar
+	 * @return Cliente encontrado con todos sus datos e históricos, o null si no
+	 *         existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	public Cliente getClientePorId(String idCliente) throws FireBaseException {
+		return firebaseGestor.getCliente(idCliente);
+	}
+
+	/**
+	 * Obtenemos los historicos de la bbdd
+	 * 
+	 * @param idCliente ID del cliente 
+	 * @return retorna la lista de historicos de ese cliente
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	public List<Historico> historicos(String idCLiente) throws FireBaseException {
+		return firebaseGestor.getHistoricos(idCLiente);
+	}
+
+	/**
+	 * Guardamos en históricos el workout realizado
+	 * 
+	 * @param idCliente ID del cliente que realiza el workout
+	 * @param nombre nombre del workout
+	 * @param nivel nivel del cliente
+	 * @param tiempo_previsto tiempo previsto para la realizacion del ejercicio
+	 * @param tiempo_total tiempo total realizado para realizar ejercicio
+	 * @param fecha_inicio fecha en la que se ha empezado el ejercicio
+	 * @param porcentaje % de los ejercicios realizados
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	public void guardarWorkoutHistorico(String idCliente, String nombre, String nivel,
+			String tiempo_previsto, String tiempo_total, String fecha_inicio, String porcentaje) throws FireBaseException {
+		
+		firebaseGestor.guardarWorkoutHistorico(idCliente, nombre, nivel, tiempo_previsto, tiempo_total, fecha_inicio, porcentaje);
+	}
+
+	/**
+	 * Método para modificar el perfil del cliente
+	 * 
+	 * @param id el id del cliente que hay que modificar
+	 * @param clienteModificado datos para modificar el cliente
+	 * @throws FireBaseException si hay error en la actualización
+	 */
+	public void modificarPerfil(String id, Cliente clienteModificado) throws FireBaseException {
+		firebaseGestor.modificarPerfil(id, clienteModificado);
 	}
 	
 }

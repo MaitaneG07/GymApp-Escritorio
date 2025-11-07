@@ -1,6 +1,7 @@
 package modelo.entity;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 public class Cliente implements Serializable {
@@ -18,12 +19,13 @@ public class Cliente implements Serializable {
 	private String email;
 	private String password;
 	private String nivel;
+	private List<Historico> historicos;
 	
 	public Cliente() {
 		super();
 	}
 
-	public Cliente(String id, String nombre, String apellido1, String apellido2, String fechaNacimiento, String email, String password, String nivel) {
+	public Cliente(String id, String nombre, String apellido1, String apellido2, String fechaNacimiento, String email, String password, String nivel, List<Historico> historicos) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -33,6 +35,16 @@ public class Cliente implements Serializable {
 		this.email = email;
 		this.password = password;
 		this.nivel = nivel;
+		this.historicos = historicos;
+	}
+
+	
+	public List<Historico> getHistoricos() {
+		return historicos;
+	}
+
+	public void setHistoricos(List<Historico> historicos) {
+		this.historicos = historicos;
 	}
 
 	public String getId() {
@@ -100,9 +112,10 @@ public class Cliente implements Serializable {
 	}
 
 	
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(apellido1, apellido2, email, fechaNacimiento, id, nombre, nivel);
+		return Objects.hash(apellido1, apellido2, email, fechaNacimiento, historicos, id, nivel, nombre, password);
 	}
 
 	@Override
@@ -115,14 +128,15 @@ public class Cliente implements Serializable {
 			return false;
 		Cliente other = (Cliente) obj;
 		return Objects.equals(apellido1, other.apellido1) && Objects.equals(apellido2, other.apellido2)
-				&& Objects.equals(email, other.email) && Objects.equals(password, other.password)
-				&& Objects.equals(fechaNacimiento, other.fechaNacimiento) && id == other.id
-				&& Objects.equals(nombre, other.nombre) && Objects.equals(nivel, other.nivel);
+				&& Objects.equals(email, other.email) && Objects.equals(fechaNacimiento, other.fechaNacimiento)
+				&& Objects.equals(historicos, other.historicos) && Objects.equals(id, other.id)
+				&& Objects.equals(nivel, other.nivel) && Objects.equals(nombre, other.nombre)
+				&& Objects.equals(password, other.password);
 	}
 
 	@Override
 	public String toString() {
 		return id + ", " + nombre + ", " + apellido1 + ", " + apellido2
-				+ ", " + fechaNacimiento + ", " + email + ", " + password + ", " + nivel ;
+				+ ", " + fechaNacimiento + ", " + email + ", " + password + ", " + nivel + ", " + historicos ;
 	}
 }

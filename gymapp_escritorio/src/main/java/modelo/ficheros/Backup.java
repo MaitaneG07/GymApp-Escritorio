@@ -10,8 +10,6 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import modelo.entity.Cliente;
-import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FileException;
 
@@ -30,13 +28,13 @@ public class Backup {
 			outputStream = new FileOutputStream(file);
 
 			objectOutputStream = new ObjectOutputStream(outputStream);
-
+			
 			for (Cliente cliente : clientes) {
 				objectOutputStream.writeObject(cliente);
 			}
 
 			for (Workout workout : workouts) {
-				objectOutputStream.writeObject(workouts);
+				objectOutputStream.writeObject(workout);
 			}
 
 			System.out.println("Backup guardado en " + BACKUP_FILE);
@@ -62,7 +60,8 @@ public class Backup {
 	/**
 	 * Lee el archivo binario y devuelve el Cliente guardado.
 	 */
-	public static void readBinaryFile(List<Cliente> clientes, List<Workout> workouts) throws FileException {
+	public static void readBinaryFile(List<Cliente> clientes, List<Workout> workouts)
+			throws FileException {
 		File file = new File(BACKUP_FILE);
 		FileInputStream inputStream = null;
 		ObjectInputStream objectInputStream = null;
@@ -88,7 +87,7 @@ public class Backup {
 						clientes.add((Cliente) obj);
 					} else if (obj instanceof Workout) {
 						workouts.add((Workout) obj);
-					}
+					} 
 				}
 			} catch (EOFException e) {
 			}

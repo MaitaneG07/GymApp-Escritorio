@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<clientes>
+  <cliente id="C1">
+    <nombre>Giselle</nombre>
+    <apellido1>Santos</apellido1>
+    <apellido2>Andrade</apellido2>
+    <email>gsa@gmail.com</email>
+    <password>1234</password>
+    <nivel>Principiante</nivel>
+    <historicos>
+      <historico id="W1">
+        <nombre>Rutina principiante</nombre>
+        <nivel>Principiante</nivel>
+        <tiempo_total>30</tiempo_total>
+        <tiempo_previsto>30</tiempo_previsto>
+        <fecha_inicio>27-10-2015</fecha_inicio>
+        <porcentaje>100%</porcentaje>
+      </historico>
+    </historicos>
+  </cliente>
+  <cliente id="C2">
+    <nombre>Maituna</nombre>
+    <apellido1>Aceituna</apellido1>
+    <apellido2>Gatuna</apellido2>
+    <email>mag@gmail.com</email>
+    <password>$2a$10$3nK0tfKsLepm51oKDbllGuLvkROQjVYpc////cbWOef7hauebBBAO</password>
+    <nivel>Principiante</nivel>
+  </cliente>
+</clientes>

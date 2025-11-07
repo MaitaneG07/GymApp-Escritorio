@@ -5,6 +5,9 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,6 +20,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import modelo.entity.Ejercicio;
 import utils.Constants;
 
 public class ResumenView extends JFrame {
@@ -30,8 +34,35 @@ public class ResumenView extends JFrame {
 	private JButton btnConfirmar;
 	private JButton btnPerfil;
 	private JLabel lblMensaje;	
+	@SuppressWarnings("unused")
 	private String idCliente;
+	@SuppressWarnings("unused")
 	private String nivel;
+	@SuppressWarnings("unused")
+	private String nombre;
+	@SuppressWarnings("unused")
+	private String tiempo_total;
+	@SuppressWarnings("unused")
+	private String porcentaje;
+	@SuppressWarnings("unused")
+	private String idWorkoutSeleccionado;
+	@SuppressWarnings("unused")
+	private String nombreWorkoutSeleccionado;
+	@SuppressWarnings("unused")
+	private List<Ejercicio> ejercicios = new ArrayList<>();
+	
+	private static final String[] MENSAJES = {
+            "¡Excelente trabajo!",
+            "¡Bien hecho!",
+            "¡Sigue así!",
+            "¡Gran esfuerzo!",
+            "¡Lo estás haciendo genial!",
+            "¡Muy bien!",
+            "¡Fantástico!",
+            "¡Continúa así!",
+            "¡Eres increíble!",
+            "¡No te rindas!"
+        };
 	
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
@@ -42,11 +73,20 @@ public class ResumenView extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @param porcentaje 
+	 * @param tiempo_total 
+	 * @param nombre 
 	 */
-	public ResumenView(String idCliente, String nivel) {
+	public ResumenView(String idCliente, String nivel, String nombre, String tiempo_total, String porcentaje, String idWorkoutSeleccionado, String nombreWorkoutSeleccionado, List<Ejercicio> ejercicios) {
 		
 		this.idCliente = idCliente;
 		this.nivel = nivel;
+		this.nombre = nombre;
+		this.tiempo_total = tiempo_total;
+		this.porcentaje = porcentaje;
+		this.idWorkoutSeleccionado = idWorkoutSeleccionado;
+		this.nombreWorkoutSeleccionado = nombreWorkoutSeleccionado;
+		this.ejercicios = ejercicios;
 		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -93,7 +133,8 @@ public class ResumenView extends JFrame {
 		btnConfirmar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				WorkoutView pantallaWorkout = new WorkoutView(idCliente, nivel);
+				WorkoutView pantallaWorkout = null;
+				pantallaWorkout = new WorkoutView(idCliente, nivel);
 				pantallaWorkout.setVisible(true);
 				dispose();
 			}
@@ -105,11 +146,23 @@ public class ResumenView extends JFrame {
 		btnConfirmar.setBorderPainted(false);
 		contentPane.add(btnConfirmar);
 		
-		lblMensaje = new JLabel("Aquí va el mensaje motivacional");
+		Random random = new Random();
+        String mensajeAleatorio = MENSAJES[random.nextInt(MENSAJES.length)];
+
+		
+		lblMensaje = new JLabel(mensajeAleatorio);
 		lblMensaje.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMensaje.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
 		lblMensaje.setBounds(286, 368, 297, 107);
 		contentPane.add(lblMensaje);
 
+		actualizarTablaResumen(nombre, tiempo_total, porcentaje);
+		
+	}
+
+	private void actualizarTablaResumen(String nombre, String tiempo_total, String porcentaje) {
+		modeloResumen.addRow(new Object[] {
+				nombre, tiempo_total, porcentaje
+		});
 	}
 }

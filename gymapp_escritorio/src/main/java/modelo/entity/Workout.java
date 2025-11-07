@@ -12,12 +12,12 @@ public class Workout implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String id;
-	private String nombre;
-	private String nivel;
-	private String video;
-	private boolean completado;
-	private List<Ejercicio> ejercicios;
+	protected String id;
+	protected String nombre;
+	protected String nivel;
+	protected String video;
+	protected boolean completado;
+	protected List<Ejercicio> ejercicios;
 	
 	public Workout() {
 		super();

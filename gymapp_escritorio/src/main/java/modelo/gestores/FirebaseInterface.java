@@ -4,7 +4,7 @@ import java.util.List;
 
 import modelo.entity.Cliente;
 import modelo.entity.Ejercicio;
-import modelo.entity.Serie;
+import modelo.entity.Historico;
 import modelo.entity.Workout;
 import modelo.exceptions.FireBaseException;
 
@@ -118,5 +118,73 @@ public interface FirebaseInterface {
 	 * @throws FireBaseException si hay error en la consulta
 	 */
 	boolean existeEmailCliente(String email) throws FireBaseException;
+
+
+	/**
+	 * Obtenemos los historicos de la bbdd
+	 * 
+	 * @param idCliente ID del cliente 
+	 * @return retorna la lista de historicos de ese cliente
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	List<Historico> getHistoricos(String idCliente) throws FireBaseException;
+
+
+	/**
+	 * Guardamos en históricos el workout realizado
+	 * 
+	 * @param idCliente ID del cliente que realiza el workout
+	 * @param nombre nombre del workout
+	 * @param nivel nivel del cliente
+	 * @param tiempo_previsto tiempo previsto para la realizacion del ejercicio
+	 * @param tiempo_total tiempo total realizado para realizar ejercicio
+	 * @param fecha_inicio fecha en la que se ha empezado el ejercicio
+	 * @param porcentaje % de los ejercicios realizados
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	void guardarWorkoutHistorico(String idCliente, String nombre, String nivel, String tiempo_previsto,
+			String tiempo_total, String fecha_inicio, String porcentaje) throws FireBaseException;
+
+
+	/**
+	 * Busca un histórico existente del mismo día para un cliente y workout específico.
+	 * 
+	 * @param idCliente ID del cliente
+	 * @param idWorkout ID del workout (para identificar el workout en el futuro)
+	 * @param fechaHoy Fecha actual en formato String
+	 * @return Historico encontrado o null si no existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	Historico buscarHistoricoDelDia(String idCliente, String nombreWorkout, String fechaHoy) throws FireBaseException;
+
+
+	/**
+	 * Actualiza un histórico existente con nuevo tiempo y porcentaje
+	 * 
+	 * @param idCliente ID del cliente
+	 * @param idHistorico ID del documento histórico a actualizar
+	 * @param tiempoTotal Nuevo tiempo total
+	 * @param porcentaje Nuevo porcentaje de completado
+	 * @throws FireBaseException si hay error en la actualización
+	 */
+	void actualizarHistorico(String idCliente, String idHistorico, String tiempoTotal, String porcentaje)
+			throws FireBaseException;
+
+
+	/**
+	 * Busca y obtiene un cliente por su nombre con sus históricos.
+	 * 
+	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer cliente que
+	 * coincida con el nombre especificado, incluyendo su lista completa de
+	 * históricos.
+	 * 
+	 * @param nombre Nombre del cliente a buscar
+	 * @return Cliente encontrado con todos sus datos e históricos, o null si no
+	 *         existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	Cliente getClientePorId(String idCliente) throws FireBaseException;
+
+
 
 }

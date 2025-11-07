@@ -7,10 +7,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
-import modelo.entity.Ejercicio;
 import modelo.entity.Serie;
 import modelo.entity.Workout;
 import modelo.exceptions.FileException;
@@ -56,6 +57,7 @@ public class Login extends JFrame {
 	private JLabel tituloLogin;
 	private JPasswordField passwordField;
 	private FirebaseController firebaseController;
+	@SuppressWarnings("unused")
 	private Backup backup;
 
 	/**
@@ -95,7 +97,6 @@ public class Login extends JFrame {
 		labelFondo = new JLabel();
 
 		// LOGO MAITANE
-//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
 		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
@@ -159,7 +160,7 @@ public class Login extends JFrame {
 				Cliente clienteAutenticado = null;
 				List<Cliente> clientes = null;
 				List<Workout> workouts = null;
-				List<Ejercicio> ejercicios = null;
+				@SuppressWarnings("unused")
 				List<Serie> series = null;
 
 				try {
@@ -167,10 +168,18 @@ public class Login extends JFrame {
 
 						clientes = firebaseController.getClientes();
 						workouts = firebaseController.workout();
-
+						
 						if (clientes != null && workouts != null) {
 							try {
 								modelo.ficheros.Backup.writeBinaryFile(clientes, workouts);
+								try {
+									modelo.ficheros.BackupXML.writeXMLFile(clientes);
+								} catch (TransformerException e) {
+									e.printStackTrace();
+								} catch (ParserConfigurationException e) {
+									e.printStackTrace();
+								}
+								
 							} catch (FileException e) {
 								e.printStackTrace();
 							}
@@ -207,6 +216,7 @@ public class Login extends JFrame {
 						System.out.println("Login exitoso: " + clienteAutenticado.getNombre());
 						WorkoutView pantallaWorkout = new WorkoutView(clienteAutenticado.getId(),
 								clienteAutenticado.getNivel());
+						
 						pantallaWorkout.setIdCliente(clienteAutenticado.getId(), clienteAutenticado.getNivel());
 						pantallaWorkout.setVisible(true);
 						dispose();
