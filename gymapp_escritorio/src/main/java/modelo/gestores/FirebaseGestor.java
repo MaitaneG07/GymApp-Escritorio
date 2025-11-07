@@ -194,6 +194,61 @@ public class FirebaseGestor implements FirebaseInterface {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Busca y obtiene un cliente por su nombre con sus históricos.
+	 * 
+	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer cliente que
+	 * coincida con el nombre especificado, incluyendo su lista completa de
+	 * históricos.
+	 * 
+	 * @param nombre Nombre del cliente a buscar
+	 * @return Cliente encontrado con todos sus datos e históricos, o null si no
+	 *         existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	@Override
+	public Cliente getClientePorId(String idCliente) throws FireBaseException {
+		Cliente ret = null;
+		try {
+			Firestore dataBase = FirestoreClient.getFirestore();
+
+			ApiFuture<QuerySnapshot> query = dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM)
+					.collection(COLLECTION_CLIENTE).whereEqualTo(Constants.ID, idCliente).get();
+
+			// Procesamos la query
+			QuerySnapshot querySnapshot = query.get();
+			List<QueryDocumentSnapshot> clientes = querySnapshot.getDocuments();
+
+			for (QueryDocumentSnapshot cliente : clientes) {
+				// Obtener históricos del cliente de forma anidada
+				ApiFuture<QuerySnapshot> historicosQuery = cliente.getReference().collection(COLLECTION_HISTORICO)
+						.get();
+
+				QuerySnapshot historicosSnapshot = historicosQuery.get();
+				List<Historico> historicos = new ArrayList<>();
+
+				for (QueryDocumentSnapshot historicoDoc : historicosSnapshot) {
+					Historico historico = new Historico(historicoDoc.getId(), historicoDoc.getString(Constants.NOMBRE),
+							historicoDoc.getString(Constants.NIVEL), historicoDoc.getString(Constants.TIEMPO_TOTAL),
+							historicoDoc.getString(Constants.TIEMPO_PREVISTO),
+							historicoDoc.getString(Constants.FECHA_INICIO),
+							historicoDoc.getString(Constants.PORCENTAJE));
+					historicos.add(historico);
+				}
+
+				ret = new Cliente(cliente.getId(), cliente.getString(Constants.NOMBRE),
+						cliente.getString(Constants.APELLIDO1), cliente.getString(Constants.APELLIDO2),
+						cliente.getString(Constants.FECHA_NACIMIENTO), cliente.getString(Constants.EMAIL),
+						cliente.getString(Constants.PASSWORD), cliente.getString(Constants.NIVEL), historicos);
+				break;
+			}
+
+		} catch (Exception e) {
+			throw new FireBaseException("Error - " + e.getLocalizedMessage());
+		}
+		return ret;
+	}
 
 	/**
 	 * Autentica a un cliente mediante email y contraseña.
@@ -743,5 +798,33 @@ public class FirebaseGestor implements FirebaseInterface {
 	    } catch (Exception e) {
 	        throw new FireBaseException("Error al actualizar histórico: " + e.getMessage());
 	    }
+	}
+
+	/**
+	 * Método para modificar el perfil del cliente
+	 * 
+	 * @param id el id del cliente que hay que modificar
+	 * @param clienteModificado datos para modificar el cliente
+	 * @throws FireBaseException si hay error en la actualización
+	 */
+	public void modificarPerfil(String id, Cliente clienteModificado) throws FireBaseException {
+		try {
+			Firestore dataBase = FirestoreClient.getFirestore();
+
+			Map<String, Object> cliente = new HashMap<>();
+			cliente.put(Constants.NOMBRE, clienteModificado.getNombre());
+			cliente.put(Constants.APELLIDO1, clienteModificado.getApellido1());
+			cliente.put(Constants.APELLIDO2, clienteModificado.getApellido2());
+			cliente.put(Constants.EMAIL, clienteModificado.getEmail());
+			cliente.put(Constants.FECHA_NACIMIENTO, clienteModificado.getFechaNacimiento());
+			cliente.put(Constants.PASSWORD, clienteModificado.getPassword());
+
+			dataBase.collection(COLLECTION_GYM).document(DOCUMENTO_GYM).collection(COLLECTION_CLIENTE)
+					.document(id).update(cliente);
+
+			System.out.println("Cliente modificado correctamente");
+		} catch (Exception e) {
+			throw new FireBaseException("Error al guardar el histórico del workout: " + e.getMessage());
+		}
 	}
 }

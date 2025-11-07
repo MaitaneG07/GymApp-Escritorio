@@ -115,8 +115,8 @@ public class EjercicioView extends JFrame {
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
 		this.nivel = nivel;
-		System.out.println("🛠️Seteando ID Cliente en PanelViajesEventos: " + idCliente);
-		System.out.println("🛠️Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
+		System.out.println("🛠Seteando ID Cliente en PanelViajesEventos: " + idCliente);
+		System.out.println("🛠Seteando Nivel Cliente en PanelViajesEventos: " + nivel);
 
 	}
 
@@ -138,14 +138,13 @@ public class EjercicioView extends JFrame {
 
 			if (ejercicio.getSeries() != null) {
 				for (Serie serie : ejercicio.getSeries()) {
-					System.out.println("\tSerie ID: " + serie.getId());
-					System.out.println("\tNombre: " + serie.getNombre());
-					System.out.println("\tTiempo asignado: " + serie.getTiempoDuracion());
-					System.out.println("\tTiempo descanso: " + serie.getTiempoDescanso());
-					System.out.println("\tCompletado: " + serie.isCompletado());
+					System.out.println("Serie ID: " + serie.getId());
+					System.out.println("Nombre: " + serie.getNombre());
+					System.out.println("Tiempo asignado: " + serie.getTiempoDuracion());
+					System.out.println("Tiempo descanso: " + serie.getTiempoDescanso());
+					System.out.println("Completado: " + serie.isCompletado());
 				}
 			}
-			System.out.println("---------------------------");
 		}
 		ejerciciosWorkoutSeleccionado = firebaseGestor.obtenerEjerciciosPorWorkout(idWorkoutSeleccionado);
 
@@ -359,10 +358,6 @@ public class EjercicioView extends JFrame {
 		lblDuracionEjercicio.setBounds(158, 263, 46, 26);
 		contentPane.add(lblDuracionEjercicio);
 		
-		JLabel lblTiempoTotalEjercicioTitulo = new JLabel("Tiempo total ejercicio:");
-		lblTiempoTotalEjercicioTitulo.setBounds(44, 168, 143, 14);
-		contentPane.add(lblTiempoTotalEjercicioTitulo);
-
 		JLabel lblTiempoTotalEjercicioTitulo = new JLabel("Tiempo total ejercicio:");
 		lblTiempoTotalEjercicioTitulo.setBounds(44, 168, 143, 14);
 		contentPane.add(lblTiempoTotalEjercicioTitulo);
@@ -806,7 +801,7 @@ public class EjercicioView extends JFrame {
 		}
 
 		double porcentaje = ((double) ejerciciosCompletados / totalEjercicios) * 100.0;
-		return String.format("%.0f", porcentaje); // Sin decimales
+		return String.format("%.0f", porcentaje); 
 	}
 
 	// Método para obtener el tiempo actual del ejercicio en segundos:
@@ -824,7 +819,7 @@ public class EjercicioView extends JFrame {
 			int segundos = Integer.parseInt(partes[2]);
 			return (horas * 3600L) + (minutos * 60L) + segundos;
 		} catch (Exception e) {
-			System.err.println("Error al parsear tiempo: " + e.getMessage());
+			System.out.println("Error al parsear tiempo: " + e.getMessage());
 			return 0;
 		}
 	}

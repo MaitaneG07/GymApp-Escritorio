@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -49,6 +50,19 @@ public class ResumenView extends JFrame {
 	private String nombreWorkoutSeleccionado;
 	@SuppressWarnings("unused")
 	private List<Ejercicio> ejercicios = new ArrayList<>();
+	
+	private static final String[] MENSAJES = {
+            "¡Excelente trabajo!",
+            "¡Bien hecho!",
+            "¡Sigue así!",
+            "¡Gran esfuerzo!",
+            "¡Lo estás haciendo genial!",
+            "¡Muy bien!",
+            "¡Fantástico!",
+            "¡Continúa así!",
+            "¡Eres increíble!",
+            "¡No te rindas!"
+        };
 	
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
@@ -132,7 +146,11 @@ public class ResumenView extends JFrame {
 		btnConfirmar.setBorderPainted(false);
 		contentPane.add(btnConfirmar);
 		
-		lblMensaje = new JLabel("Aquí va el mensaje motivacional");
+		Random random = new Random();
+        String mensajeAleatorio = MENSAJES[random.nextInt(MENSAJES.length)];
+
+		
+		lblMensaje = new JLabel(mensajeAleatorio);
 		lblMensaje.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMensaje.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 39));
 		lblMensaje.setBounds(286, 368, 297, 107);

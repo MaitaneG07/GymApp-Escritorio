@@ -32,6 +32,7 @@ public class Constants {
 	
 	
 	// Nombre de los label
+	public static final String ID = "id";
 	public static final String NOMBRE_LABEL = "NOMBRE";
 	public static final String APELLIDO_LABEL = "APELLIDO";
 	public static final String APELLIDO_DOS_LABEL = APELLIDO_LABEL;
@@ -100,12 +101,14 @@ public class Constants {
 	public static final String ACCESO_DENEGADO = "Acceso denegado";
 	public static final String EMAIL_EXISTENTE = "El email ya existe en la bbdd";
 	public static final String EMAIL_DUPLICADO = "Email duplicado";
+	public static final String SIN_MODIFICAR = "No se ha podido modificar correctamente";
+	public static final String MODIFICADO = "Se ha modificado correctamente";
 	
 	// Campos Clientes
 	public static final String NOMBRE = "nombre";
 	public static final String APELLIDO1 = "apellido1";
 	public static final String APELLIDO2 = "apellido2";
-	public static final String FECHA_NACIMIENTO = "fecha_nacimiento";
+	public static final String FECHA_NACIMIENTO = "fechaNacimiento";
 	public static final String EMAIL = "email";
 	public static final String PASSWORD = "password";
 	

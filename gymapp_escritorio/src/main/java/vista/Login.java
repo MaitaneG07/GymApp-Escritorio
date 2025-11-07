@@ -7,6 +7,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
@@ -95,7 +97,6 @@ public class Login extends JFrame {
 		labelFondo = new JLabel();
 
 		// LOGO MAITANE
-//		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CASA);
 		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_CLARO_CLASE);
 
 		Image imagenOriginal = originalIcon.getImage();
@@ -171,6 +172,14 @@ public class Login extends JFrame {
 						if (clientes != null && workouts != null) {
 							try {
 								modelo.ficheros.Backup.writeBinaryFile(clientes, workouts);
+								try {
+									modelo.ficheros.BackupXML.writeXMLFile(clientes);
+								} catch (TransformerException e) {
+									e.printStackTrace();
+								} catch (ParserConfigurationException e) {
+									e.printStackTrace();
+								}
+								
 							} catch (FileException e) {
 								e.printStackTrace();
 							}

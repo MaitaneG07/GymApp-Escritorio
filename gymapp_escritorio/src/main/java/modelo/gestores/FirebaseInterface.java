@@ -171,5 +171,20 @@ public interface FirebaseInterface {
 			throws FireBaseException;
 
 
+	/**
+	 * Busca y obtiene un cliente por su nombre con sus históricos.
+	 * 
+	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer cliente que
+	 * coincida con el nombre especificado, incluyendo su lista completa de
+	 * históricos.
+	 * 
+	 * @param nombre Nombre del cliente a buscar
+	 * @return Cliente encontrado con todos sus datos e históricos, o null si no
+	 *         existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	Cliente getClientePorId(String idCliente) throws FireBaseException;
+
+
 
 }

@@ -10,12 +10,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import controlador.FirebaseController;
+import modelo.entity.Cliente;
+import modelo.exceptions.FireBaseException;
 import utils.Constants;
 
 public class PerfilView extends JFrame {
@@ -42,7 +46,8 @@ public class PerfilView extends JFrame {
 	private String idCliente;
 	@SuppressWarnings("unused")
 	private String nivel;
-	
+	private FirebaseController firebaseController;
+
 	public void setIdCliente(String idCliente, String nivel) {
 		this.idCliente = idCliente;
 		this.nivel = nivel;
@@ -54,33 +59,34 @@ public class PerfilView extends JFrame {
 	 * Create the frame.
 	 */
 	public PerfilView(String idCliente, String nivel) {
-		
+
 		this.idCliente = idCliente;
 		this.nivel = nivel;
-		
-		
+
+		firebaseController = new FirebaseController();
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 885, 658);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		lblFondoPerfil = new JLabel();
-		
-		//LOGO MAITANE
+
+		// LOGO MAITANE
 //		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_OSCURO_CASA);
 		ImageIcon originalIcon = new ImageIcon(Constants.LOGO_OSCURO_CLASE);
-		
+
 		Image imagenOriginal = originalIcon.getImage();
 
 		Image imagenEscalada = imagenOriginal.getScaledInstance(885, 658, Image.SCALE_SMOOTH);
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-		
+
 		lblFondoPerfil.setIcon(iconoEscalado);
 		lblFondoPerfil.setBounds(0, 0, 873, 623);
 		contentPane.add(lblFondoPerfil);
-		
+
 		tituloPerfil = new JLabel(Constants.PERFIL_LABEL);
 		tituloPerfil.setOpaque(true);
 		tituloPerfil.setForeground(Color.WHITE);
@@ -89,7 +95,7 @@ public class PerfilView extends JFrame {
 		tituloPerfil.setHorizontalAlignment(SwingConstants.CENTER);
 		tituloPerfil.setBounds(218, 23, 432, 79);
 		lblFondoPerfil.add(tituloPerfil);
-		
+
 		btnModificar = new JButton(Constants.MODIFICAR_BOTON);
 		btnModificar.setOpaque(true);
 		btnModificar.setForeground(Color.WHITE);
@@ -98,9 +104,64 @@ public class PerfilView extends JFrame {
 		btnModificar.setContentAreaFilled(false);
 		btnModificar.setBorderPainted(false);
 		btnModificar.setBackground(new Color(255, 255, 255, 150));
+
+		btnModificar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				modificarPerfil();
+				limpiarCampos();
+				
+			}
+
+			private void limpiarCampos() {
+				textFieldNombre.setText("");
+				textFieldApellidoUno.setText("");
+				textFieldApellidoDos.setText("");
+				textFieldEmail.setText("");
+				textFieldFecNac.setText("");
+				passwordField.setText("");
+			}
+
+			private void modificarPerfil() {
+				boolean modificado = false;
+				String nombre = textFieldNombre.getText().trim();
+				String apellido1 = textFieldApellidoUno.getText().trim();
+				String apellido2 = textFieldApellidoDos.getText().trim();
+				String email = textFieldEmail.getText().trim();
+				String fecha = textFieldFecNac.getText().trim();
+				@SuppressWarnings("deprecation")
+				String password = passwordField.getText().trim();
+
+				Cliente clienteModificado = new Cliente();
+				clienteModificado.setNombre(nombre);
+				clienteModificado.setApellido1(apellido1);
+				clienteModificado.setApellido2(apellido2);
+				clienteModificado.setEmail(email);
+				clienteModificado.setFechaNacimiento(fecha);
+				clienteModificado.setPassword(password);
+				
+				try {
+					firebaseController.modificarPerfil(idCliente, clienteModificado);
+				} catch (FireBaseException e1) {
+					e1.printStackTrace();
+				}
+				
+				if (modificado) {
+					JOptionPane.showMessageDialog(PerfilView.this, Constants.SIN_MODIFICAR, Constants.CAMPOS_VACIOS,
+							JOptionPane.WARNING_MESSAGE);
+					return;
+				} else {
+					JOptionPane.showMessageDialog(PerfilView.this, Constants.MODIFICADO,
+							clienteModificado.getId(), JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+
+		});
+
 		btnModificar.setBounds(237, 534, 159, 41);
 		lblFondoPerfil.add(btnModificar);
-		
+
 		btnVolver = new JButton(Constants.VOLVER_BOTON);
 		btnVolver.addMouseListener(new MouseAdapter() {
 			@Override
@@ -110,7 +171,7 @@ public class PerfilView extends JFrame {
 				dispose();
 			}
 		});
-		
+
 		btnVolver.setOpaque(true);
 		btnVolver.setForeground(Color.WHITE);
 		btnVolver.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 13));
@@ -120,26 +181,26 @@ public class PerfilView extends JFrame {
 		btnVolver.setBackground(new Color(255, 255, 255, 150));
 		btnVolver.setBounds(480, 534, 159, 41);
 		lblFondoPerfil.add(btnVolver);
-		
+
 		textFieldNombre = new JTextField();
 		lblFondoPerfil.add(textFieldNombre);
 		textFieldNombre.setBounds(439, 136, 279, 30);
 		textFieldNombre.setColumns(10);
-		
+
 		textFieldApellidoUno = new JTextField();
 		lblFondoPerfil.add(textFieldApellidoUno);
 		textFieldApellidoUno.setColumns(10);
 		textFieldApellidoUno.setBounds(439, 191, 279, 30);
-		
+
 		passwordField = new JPasswordField();
 		lblFondoPerfil.add(passwordField);
 		passwordField.setBounds(441, 457, 279, 30);
-		
+
 		textFieldFecNac = new JTextField();
 		lblFondoPerfil.add(textFieldFecNac);
 		textFieldFecNac.setColumns(10);
 		textFieldFecNac.setBounds(442, 368, 279, 30);
-		
+
 		lblNombre = new JLabel(Constants.NOMBRE_LABEL);
 		lblFondoPerfil.add(lblNombre);
 		lblNombre.setHorizontalAlignment(SwingConstants.CENTER);
@@ -148,7 +209,7 @@ public class PerfilView extends JFrame {
 		lblNombre.setBounds(224, 136, 148, 29);
 		lblNombre.setOpaque(true);
 		lblNombre.setBackground(new Color(181, 179, 179, 150));
-		
+
 		lblApellidoUno = new JLabel(Constants.APELLIDO_LABEL);
 		lblFondoPerfil.add(lblApellidoUno);
 		lblApellidoUno.setOpaque(true);
@@ -157,7 +218,7 @@ public class PerfilView extends JFrame {
 		lblApellidoUno.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblApellidoUno.setBackground(new Color(181, 179, 179, 150));
 		lblApellidoUno.setBounds(224, 191, 148, 29);
-		
+
 		lblApellidoDos = new JLabel(Constants.APELLIDO_DOS_LABEL);
 		lblFondoPerfil.add(lblApellidoDos);
 		lblApellidoDos.setOpaque(true);
@@ -166,7 +227,7 @@ public class PerfilView extends JFrame {
 		lblApellidoDos.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblApellidoDos.setBackground(new Color(181, 179, 179, 150));
 		lblApellidoDos.setBounds(224, 245, 148, 29);
-		
+
 		lblEmail = new JLabel(Constants.EMAIL_LABEL);
 		lblFondoPerfil.add(lblEmail);
 		lblEmail.setOpaque(true);
@@ -175,7 +236,7 @@ public class PerfilView extends JFrame {
 		lblEmail.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblEmail.setBackground(new Color(181, 179, 179, 150));
 		lblEmail.setBounds(225, 298, 148, 29);
-		
+
 		lblFecNac = new JLabel(Constants.FECHA_NACIMIENTO_LABEL);
 		lblFondoPerfil.add(lblFecNac);
 		lblFecNac.setOpaque(true);
@@ -184,17 +245,17 @@ public class PerfilView extends JFrame {
 		lblFecNac.setFont(new Font(Constants.FONT_FAMILY, Font.BOLD, 14));
 		lblFecNac.setBackground(new Color(181, 179, 179, 150));
 		lblFecNac.setBounds(223, 368, 184, 29);
-		
+
 		textFieldEmail = new JTextField();
 		lblFondoPerfil.add(textFieldEmail);
 		textFieldEmail.setColumns(10);
 		textFieldEmail.setBounds(442, 298, 276, 30);
-		
+
 		textFieldApellidoDos = new JTextField();
 		lblFondoPerfil.add(textFieldApellidoDos);
 		textFieldApellidoDos.setColumns(10);
 		textFieldApellidoDos.setBounds(441, 243, 277, 30);
-		
+
 		lblPassword = new JLabel(Constants.PASSWORD_LABEL);
 		lblFondoPerfil.add(lblPassword);
 		lblPassword.setOpaque(true);

@@ -131,6 +131,38 @@ public class FirebaseController {
 	public List<Cliente> getClientes() throws FireBaseException {
 		return firebaseGestor.getClientes();
 	}
+	
+	/**
+	 * Busca y obtiene un cliente por su nombre con sus históricos.
+	 * 
+	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer cliente que
+	 * coincida con el nombre especificado, incluyendo su lista completa de
+	 * históricos.
+	 * 
+	 * @param nombre Nombre del cliente a buscar
+	 * @return Cliente encontrado con todos sus datos e históricos, o null si no
+	 *         existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	public Cliente getCliente(String nombre) throws FireBaseException {
+		return firebaseGestor.getCliente(nombre);
+	}
+	
+	/**
+	 * Busca y obtiene un cliente por su ID con sus históricos.
+	 * 
+	 * Realiza una búsqueda por el campo "nombre" y devuelve el primer cliente que
+	 * coincida con el nombre especificado, incluyendo su lista completa de
+	 * históricos.
+	 * 
+	 * @param idCliente ID del cliente a buscar
+	 * @return Cliente encontrado con todos sus datos e históricos, o null si no
+	 *         existe
+	 * @throws FireBaseException si hay error en la consulta
+	 */
+	public Cliente getClientePorId(String idCliente) throws FireBaseException {
+		return firebaseGestor.getCliente(idCliente);
+	}
 
 	/**
 	 * Obtenemos los historicos de la bbdd
@@ -159,6 +191,17 @@ public class FirebaseController {
 			String tiempo_previsto, String tiempo_total, String fecha_inicio, String porcentaje) throws FireBaseException {
 		
 		firebaseGestor.guardarWorkoutHistorico(idCliente, nombre, nivel, tiempo_previsto, tiempo_total, fecha_inicio, porcentaje);
+	}
+
+	/**
+	 * Método para modificar el perfil del cliente
+	 * 
+	 * @param id el id del cliente que hay que modificar
+	 * @param clienteModificado datos para modificar el cliente
+	 * @throws FireBaseException si hay error en la actualización
+	 */
+	public void modificarPerfil(String id, Cliente clienteModificado) throws FireBaseException {
+		firebaseGestor.modificarPerfil(id, clienteModificado);
 	}
 	
 }

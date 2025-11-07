@@ -13,6 +13,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import controlador.FirebaseController;
 import modelo.entity.Cliente;
@@ -27,6 +30,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +49,7 @@ public class HistoricoView extends JFrame {
 	private FirebaseController firebaseController;
 	private boolean online = utils.Network.isInternetAvailable();
 	private List<Cliente> clientesBackup = new ArrayList<>();
+	@SuppressWarnings("unused")
 	private List<Workout> workoutsBackup = new ArrayList<>();
 
 	public void setIdCliente(String idCliente) {
@@ -153,35 +158,49 @@ public class HistoricoView extends JFrame {
 	private void actualizarTableHistoricos(DefaultTableModel modeloTabla, String idCliente) {
 		modeloTabla.setRowCount(0);
 		List<Historico> listaHistoricos = null;
-		
+
 		try {
 			if (online) {
 				listaHistoricos = firebaseController.historicos(idCliente);
-				
+
 				if (listaHistoricos == null || listaHistoricos.isEmpty()) {
 					listaHistoricos = new ArrayList<>();
 				}
-				
+
 				for (Historico historico : listaHistoricos) {
 					modeloTabla.addRow(new Object[] { historico.getId(), historico.getNombre(), historico.getNivel(),
-							historico.getTiempoTotal(), historico.getTiempoPrevisto(), historico.getFecha(), historico.getEjerciciosCompletados()});
-					
+							historico.getTiempoTotal(), historico.getTiempoPrevisto(), historico.getFecha(),
+							historico.getEjerciciosCompletados() });
+
 				}
 			} else {
 				try {
-					modelo.ficheros.Backup.readBinaryFile(clientesBackup, workoutsBackup);
+					try {
+						clientesBackup = modelo.ficheros.BackupXML.readXMLFile(modelo.ficheros.BackupXML.BACKUP_XML);
+					} catch (ParserConfigurationException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (SAXException e) {
+						e.printStackTrace();
+					}
+
 					for (Cliente cliente : clientesBackup) {
 						if (cliente.getId().equals(idCliente)) {
 							listaHistoricos = cliente.getHistoricos();
+							break;
 						}
 					}
-					
-					for (Historico historico : listaHistoricos) {
-						modeloTabla.addRow(new Object[] { historico.getId(), historico.getNombre(), historico.getNivel(),
-								historico.getTiempoTotal(), historico.getTiempoPrevisto(), historico.getFecha(), historico.getEjerciciosCompletados()});
-						
+
+					if (listaHistoricos != null && !listaHistoricos.isEmpty()) {
+						for (Historico historico : listaHistoricos) {
+							modeloTabla.addRow(new Object[] { historico.getId(), historico.getNombre(),
+									historico.getNivel(), historico.getTiempoTotal(), historico.getTiempoPrevisto(),
+									historico.getFecha(), historico.getEjerciciosCompletados() });
+
+						}
 					}
-					
+
 				} catch (FileException e) {
 					e.printStackTrace();
 					return;
